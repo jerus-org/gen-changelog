@@ -13,7 +13,8 @@ fn main() {
 // 3. readme-tail from docs/readme/tail.md
 fn make_readme() {
     // Backup the README.md
-    fs::copy("README.md", "README.old").expect("unable to create backup copy of README.md");
+    let bytes = backup("README.md").expect("unable to create backup copy of README.md");
+    println!("Wrote `{bytes}` bytes to backup README.md");
 
     // remove README.md
     fs::remove_file("README.md").expect("failed to remove README.md");
@@ -21,14 +22,24 @@ fn make_readme() {
     // Recreate README.md based on docs data
     let head_file = PathBuf::new().join("docs").join("readme").join("head.md");
     let lib_file = PathBuf::new().join("docs").join("lib.md");
+    let main_file = PathBuf::new().join("docs").join("main.md");
     let tail_file = PathBuf::new().join("docs").join("readme").join("tail.md");
 
-    let head = read_to_string(head_file).expect("could not read readme head");
-    let lib = read_to_string(lib_file).expect("could not read library docs");
-    let tail = read_to_string(tail_file).expect("cound not read readme tail");
+    let head = read_to_string(head_file).unwrap_or_default();
+    let lib = read_to_string(lib_file).unwrap_or_default();
+    let main = read_to_string(main_file).unwrap_or_default();
+    let tail = read_to_string(tail_file).unwrap_or_default();
 
-    let readme = format!("{head}{lib}{tail}");
+    let readme = format!("{head}{lib}{main}{tail}");
     let buffer = readme.as_bytes();
 
     fs::write("README.md", buffer).expect("could not write new README.md");
+}
+
+fn backup(file: &str) -> Result<u64, std::io::Error> {
+    let timestamp = chrono::Utc::now().timestamp();
+    let ts = base62::encode(timestamp as u64);
+
+    let backup_file = format!("{file}-{ts}");
+    fs::copy(file, backup_file)
 }
