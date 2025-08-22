@@ -19,3 +19,7 @@ include = [
 ]
 
 [dependencies]
+
+[build-dependencies]
+base62 = "2.2.1"
+chrono = "0.4.41"
