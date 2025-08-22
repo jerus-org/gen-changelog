@@ -18,8 +18,10 @@ include = [
     "LICENSE-APACHE",
 ]
 
-[dependencies]
-
 [build-dependencies]
 base62 = "2.2.1"
 chrono = "0.4.41"
+
+[dependencies]
+git2 = "0.20.2"
+log = "0.4.27"
