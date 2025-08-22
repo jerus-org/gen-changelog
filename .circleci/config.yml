@@ -3,7 +3,7 @@ version: 2.1
 parameters:
   min-rust-version:
     type: string
-    default: "1.81"
+    default: "1.85"
   fingerprint:
     type: string
     default: SHA256:OkxsH8Z6Iim6WDJBaII9eTT9aaO1f3eDc6IpsgYYPVg
@@ -21,7 +21,7 @@ parameters:
     description: "If true, the release workflow will be executed."
 
 orbs:
-  toolkit: jerus-org/circleci-toolkit@2.9.1
+  toolkit: jerus-org/circleci-toolkit@2.12.1
 
 workflows:
   check_last_commit:
@@ -54,9 +54,6 @@ workflows:
             branches:
               only:
                 - main
-      - toolkit/code_coverage:
-          min_rust_version: << pipeline.parameters.min-rust-version >>
-          package: nextsv
       - toolkit/required_builds:
           min_rust_version: << pipeline.parameters.min-rust-version >>
       - toolkit/optional_builds:
@@ -73,7 +70,6 @@ workflows:
             - toolkit/test_doc_build
             - toolkit/idiomatic_rust
             - toolkit/security
-            - toolkit/code_coverage
           context:
             - release
             - bot-check
