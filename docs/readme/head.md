@@ -28,5 +28,4 @@ Generate a change log based on the git commits compatible with keep-a-changelog 
 [ghub-badge]: https://img.shields.io/badge/sponsor-30363D?logo=GitHub-Sponsors&logoColor=#white
 [ghub-url]: https://github.com/sponsors/jerusdp
 
-## Gen-changelog 
 
