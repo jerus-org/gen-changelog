@@ -1,0 +1,11 @@
+version-url
+circleci-badge
+circleci-url
+crates-url
+docs-url
+mit-url
+apache-url
+BuyMeaCoffee
+bmac-url
+ghub-url
+GitHubSponsors
