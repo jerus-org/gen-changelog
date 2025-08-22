@@ -5,6 +5,10 @@ use std::{
 
 fn main() {
     make_readme();
+    println!("cargo::rerun-if-changed=docs/readme/head.md");
+    println!("cargo::rerun-if-changed=docs/lib.md");
+    println!("cargo::rerun-if-changed=docs/main.md");
+    println!("cargo::rerun-if-changed=docs/readme/tail.md");
 }
 
 // Assemble the readfile from three components:
