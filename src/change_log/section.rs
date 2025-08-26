@@ -93,9 +93,9 @@ impl Section {
         {} removed commits
         {} miscellaneous commits",
             if let Some(tag) = &self.tag {
-                &tag.to_string()
+                tag.to_string()
             } else {
-                "Unreleased"
+                "Unreleased".to_string()
             },
             self.added_commits.len(),
             self.fixed_commits.len(),
