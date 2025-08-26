@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- ✨ add initial changelog module(pr [#8])
+
 ### Changed
 
 - 👷 ci(build)-add rerun-if-changed directives for documentation(pr [#3])
@@ -21,3 +25,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#5]: https://github.com/jerus-org/gen-changelog/pull/5
 [#6]: https://github.com/jerus-org/gen-changelog/pull/6
 [#7]: https://github.com/jerus-org/gen-changelog/pull/7
+[#8]: https://github.com/jerus-org/gen-changelog/pull/8
