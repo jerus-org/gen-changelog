@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 👷 ci(build)-add rerun-if-changed directives for documentation(pr [#3])
 - 📦 build(Cargo)-update dependencies in Cargo.toml(pr [#4])
+- 🔧 chore(build)-add build script execution log(pr [#5])
 
 [#3]: https://github.com/jerus-org/gen-changelog/pull/3
 [#4]: https://github.com/jerus-org/gen-changelog/pull/4
+[#5]: https://github.com/jerus-org/gen-changelog/pull/5
