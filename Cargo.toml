@@ -30,12 +30,12 @@ log = "0.4.27"
 semver = "1.0.26"
 thiserror = "2.0.16"
 
+[dev-dependencies]
+env_logger = "0.11.8"
+rstest = "0.26.1"
+
 [lints.clippy]
 uninlined-format-args = "warn"
 
 [lints.rust]
 dead-code = "allow" # allow temporarily while developing initial code
-
-[dev-dependencies]
-env_logger = "0.11.8"
-rstest = "0.26.1"
