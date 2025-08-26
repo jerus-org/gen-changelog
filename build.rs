@@ -4,6 +4,14 @@ use std::{
 };
 
 fn main() {
+    println!(
+        "cargo::warning=BUILD SCRIPT RUNNING - {}",
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_secs()
+    );
+
     make_readme();
     println!("cargo::rerun-if-changed=docs/readme/head.md");
     println!("cargo::rerun-if-changed=docs/lib.md");
