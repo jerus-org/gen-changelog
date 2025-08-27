@@ -1,3 +1,4 @@
+mod header;
 mod section;
 mod tag;
 
@@ -9,15 +10,7 @@ use section::Section;
 use tag::Tag;
 use thiserror::Error;
 
-const DEFAULT_HEADER: &str = r##"
-# Changelog
-
-All notable changes to this project will be documented in this file.
-
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
-
-"##;
+use crate::change_log::header::Header;
 
 const DEFAULT_FOOTER: &str = r##""##;
 
@@ -40,7 +33,7 @@ pub struct ChangeLog<'a> {
     repository: &'a Repository,
     owner: String,
     repo: String,
-    header: String,
+    header: Header,
     sections: Vec<Section>,
     links: String,
     footer: String,
@@ -68,7 +61,7 @@ impl<'a> ChangeLog<'a> {
             repository,
             owner,
             repo,
-            header: DEFAULT_HEADER.to_string(),
+            header: Header::default(),
             footer: DEFAULT_FOOTER.to_string(),
             links: String::new(),
             sections: Vec::default(),
@@ -94,11 +87,11 @@ impl<'a> ChangeLog<'a> {
         Ok((owner, repo))
     }
 
-    /// set header
-    pub fn set_header(&mut self, value: &str) -> &mut Self {
-        self.header = value.to_string();
-        self
-    }
+    // /// set header
+    // pub fn set_header(&mut self, value: &str) -> &mut Self {
+    //     self.header = value.to_string();
+    //     self
+    // }
 
     /// set footer
     pub fn set_footer(&mut self, value: &str) -> &mut Self {
