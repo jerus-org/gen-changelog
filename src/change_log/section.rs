@@ -1,9 +1,9 @@
 mod cc_commit;
 mod change_log_class;
-mod markdown_link;
+
+use std::collections::HashSet;
 
 use chrono::NaiveDate;
-use markdown_link::MarkdownLink;
 use semver::Version;
 
 use crate::change_log::{
@@ -17,9 +17,9 @@ pub(crate) struct Section {
     title: String,
     version: Option<Version>,
     date: Option<NaiveDate>,
+    headings: HashSet<String>,
     description: String,
     yanked: bool,
-    url: MarkdownLink,
     // Added for new features.
     added_commits: Vec<ConvCommit>,
     // Fixed for any bug fixes.
@@ -48,8 +48,14 @@ pub(crate) struct Section {
 
 impl Section {
     pub(crate) fn new(tag: Option<Tag>) -> Self {
+        let mut headings = HashSet::new();
+        headings.insert(String::from("added"));
+        headings.insert(String::from("fixed"));
+        headings.insert(String::from("changed"));
+
         Section {
             tag,
+            headings,
             ..Default::default()
         }
     }
@@ -112,6 +118,12 @@ impl Section {
         )
     }
 
+    pub(crate) fn version(&self) -> Option<String> {
+        let vs = self.tag.as_ref()?.version()?.to_string();
+
+        Some(vs)
+    }
+
     pub(crate) fn section_markdown(&self) -> String {
         let header = if let Some(t) = &self.tag {
             let version = if t.version().is_some() {
@@ -131,18 +143,18 @@ impl Section {
             "## [Unreleased]".to_string()
         };
 
-        let added = Section::commits_markdown("added", &self.added_commits);
-        let fixed = Section::commits_markdown("fixed", &self.fixed_commits);
-        let changed = Section::commits_markdown("changed", &self.changed_commits);
-        let security = Section::commits_markdown("security", &self.security_commits);
-        let build = Section::commits_markdown("security", &self.build_commits);
-        let test = Section::commits_markdown("test", &self.test_commits);
-        let documentation = Section::commits_markdown("documentation", &self.documentation_commits);
-        let chore = Section::commits_markdown("chore", &self.chore_commits);
-        let ci = Section::commits_markdown("ci", &self.ci_commits);
-        let deprecated = Section::commits_markdown("deprecated", &self.deprecated_commits);
-        let removed = Section::commits_markdown("removed", &self.removed_commits);
-        let misc = Section::commits_markdown("misc", &self.misc_commits);
+        let added = self.commits_markdown("added", &self.added_commits);
+        let fixed = self.commits_markdown("fixed", &self.fixed_commits);
+        let changed = self.commits_markdown("changed", &self.changed_commits);
+        let security = self.commits_markdown("security", &self.security_commits);
+        let build = self.commits_markdown("security", &self.build_commits);
+        let test = self.commits_markdown("test", &self.test_commits);
+        let documentation = self.commits_markdown("documentation", &self.documentation_commits);
+        let chore = self.commits_markdown("chore", &self.chore_commits);
+        let ci = self.commits_markdown("ci", &self.ci_commits);
+        let deprecated = self.commits_markdown("deprecated", &self.deprecated_commits);
+        let removed = self.commits_markdown("removed", &self.removed_commits);
+        let misc = self.commits_markdown("misc", &self.misc_commits);
 
         format!(
             "{header}\n\n{}{}{}{}{}{}{}{}{}{}{}{}",
@@ -161,8 +173,8 @@ impl Section {
         )
     }
 
-    fn commits_markdown(heading: &str, commits: &[ConvCommit]) -> Option<String> {
-        if commits.is_empty() {
+    fn commits_markdown(&self, heading: &str, commits: &[ConvCommit]) -> Option<String> {
+        if !self.headings.contains(heading) | commits.is_empty() {
             None
         } else {
             Some(format!(
