@@ -18,7 +18,7 @@ pub(crate) struct Link {
 
 impl Display for Link {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "[{}] {}", self.anchor, self.url)
+        writeln!(f, "[{}]: {}", self.anchor, self.url)
     }
 }
 
