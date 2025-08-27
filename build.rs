@@ -8,6 +8,8 @@ fn main() {
     println!("cargo::rerun-if-changed=docs/lib.md");
     println!("cargo::rerun-if-changed=docs/main.md");
     println!("cargo::rerun-if-changed=docs/readme/tail.md");
+    println!("cargo::rerun-if-changed=build.rs");
+
     println!(
         "cargo::warning=BUILD SCRIPT RUNNING - {}",
         std::time::SystemTime::now()
