@@ -1,13 +1,16 @@
 use std::path::PathBuf;
 
 use gen_changelog::ChangeLog;
+use git2::Repository;
 
 fn main() {
     let mut logging = get_logging(log::LevelFilter::Debug);
     logging.init();
 
     let repo_dir = PathBuf::new().join(".");
-    let mut change_log = ChangeLog::new(&repo_dir).unwrap();
+    let repository = Repository::open(&repo_dir)
+        .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
+    let mut change_log = ChangeLog::new(&repository).unwrap();
 
     change_log.build().unwrap().print();
 }
