@@ -30,6 +30,7 @@ lazy-regex = "3.4.1"
 log = "0.4.27"
 semver = "1.0.26"
 thiserror = "2.0.16"
+url = "2.5.7"
 
 [dev-dependencies]
 rstest = "0.26.1"
