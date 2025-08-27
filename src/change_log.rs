@@ -13,6 +13,8 @@ use section::Section;
 use tag::Tag;
 use thiserror::Error;
 
+use crate::Config;
+
 const DEFAULT_FOOTER: &str = r##""##;
 
 pub static REMOTE: Lazy<Regex> = lazy_regex!(
@@ -37,6 +39,7 @@ pub struct ChangeLog<'a> {
     header: Header,
     sections: Vec<Section>,
     links: Vec<Link>,
+    config: Config,
 }
 
 impl<'a> Debug for ChangeLog<'a> {
@@ -63,6 +66,25 @@ impl<'a> ChangeLog<'a> {
             header: Header::default(),
             links: Vec::new(),
             sections: Vec::default(),
+            config: Config::default(),
+        })
+    }
+
+    /// create new ChangeLog struct with config
+    pub fn new_with_config(
+        repository: &Repository,
+        config: Config,
+    ) -> Result<ChangeLog<'_>, ChangeLogError> {
+        let (owner, repo) = ChangeLog::get_remote_details(repository)?;
+
+        Ok(ChangeLog {
+            repository,
+            owner,
+            repo,
+            header: Header::default(),
+            links: Vec::new(),
+            sections: Vec::default(),
+            config,
         })
     }
 
