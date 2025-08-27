@@ -1,7 +1,7 @@
 mod section;
 mod tag;
 
-use std::path::{Path, PathBuf};
+use std::fmt::Debug;
 
 use git2::Repository;
 use lazy_regex::{Lazy, Regex, lazy_regex};
@@ -36,45 +36,46 @@ pub enum ChangeLogError {
 }
 
 /// ChangeLog main struct
-#[derive(Debug)]
-pub struct ChangeLog {
-    repo_dir: PathBuf,
+pub struct ChangeLog<'a> {
+    repository: &'a Repository,
     owner: String,
     repo: String,
     header: String,
     sections: Vec<Section>,
+    links: String,
     footer: String,
 }
 
-impl Default for ChangeLog {
-    fn default() -> Self {
-        ChangeLog {
-            repo_dir: PathBuf::new().join("."),
-            owner: String::default(),
-            repo: String::default(),
-            header: DEFAULT_HEADER.to_string(),
-            footer: DEFAULT_FOOTER.to_string(),
-            sections: Vec::default(),
-        }
+impl<'a> Debug for ChangeLog<'a> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ChangeLog")
+            .field("owner", &self.owner)
+            .field("repo", &self.repo)
+            .field("header", &self.header)
+            .field("sections", &self.sections)
+            .field("links", &self.links)
+            .field("footer", &self.footer)
+            .finish()
     }
 }
 
-impl ChangeLog {
+impl<'a> ChangeLog<'a> {
     /// create new ChangeLog struct
-    pub fn new(repo_dir: &Path) -> Result<ChangeLog, ChangeLogError> {
-        let (owner, repo) = ChangeLog::get_remote_details(repo_dir)?;
+    pub fn new(repository: &Repository) -> Result<ChangeLog<'_>, ChangeLogError> {
+        let (owner, repo) = ChangeLog::get_remote_details(repository)?;
 
         Ok(ChangeLog {
-            repo_dir: PathBuf::new().join(repo_dir),
+            repository,
             owner,
             repo,
-            ..Default::default()
+            header: DEFAULT_HEADER.to_string(),
+            footer: DEFAULT_FOOTER.to_string(),
+            links: String::new(),
+            sections: Vec::default(),
         })
     }
 
-    fn get_remote_details(repo_dir: &Path) -> Result<(String, String), ChangeLogError> {
-        let repository = Repository::open(repo_dir)?;
-
+    fn get_remote_details(repository: &Repository) -> Result<(String, String), ChangeLogError> {
         let config = repository.config()?;
         let url = config.get_entry("remote.origin.url")?;
         let Some(haystack) = url.value() else {
@@ -107,13 +108,11 @@ impl ChangeLog {
 
     /// Build the sections of the change log
     pub fn build(&mut self) -> Result<&mut Self, ChangeLogError> {
-        let repo = Repository::open(&self.repo_dir)?;
-
         let mut tags = Vec::new();
 
-        repo.tag_foreach(|id, name| {
+        self.repository.tag_foreach(|id, name| {
             let name = String::from_utf8(name.to_vec()).unwrap_or("invalid utf8".to_string());
-            let tag = Tag::new(id, name, &repo);
+            let tag = Tag::new(id, name, self.repository);
             tags.push(tag);
             true
         })?;
@@ -126,7 +125,7 @@ impl ChangeLog {
                 .join(", ")
         );
 
-        let mut revwalk = repo.revwalk()?;
+        let mut revwalk = self.repository.revwalk()?;
 
         revwalk.set_sorting(git2::Sort::NONE)?;
         revwalk.push_head()?;
@@ -144,7 +143,7 @@ impl ChangeLog {
                 current_section = Section::new(Some(tag.clone()));
             };
 
-            let Ok(commit) = repo.find_commit(oid) else {
+            let Ok(commit) = self.repository.find_commit(oid) else {
                 continue;
             };
 
