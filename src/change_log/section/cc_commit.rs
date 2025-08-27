@@ -1,9 +1,15 @@
 //! Convention Commit
 //!
-//! Classified conventional commit based on analysis of the commit summary only. The analysis of the summary determines if it is a conventional commit and provides segregated emoji, commit kind, scope and breaking flag if it is. If not the summary in its entirety is listed in the title. The commit summary and body are displayed correctly regardless whether or not the commit is a conventional commit.
+//! Classified conventional commit based on analysis of the commit summary only.
+//! The analysis of the summary determines if it is a conventional commit and
+//! provides segregated emoji, commit kind, scope and breaking flag if it is. If
+//! not the summary in its entirety is listed in the title. The commit summary
+//! and body are displayed correctly regardless whether or not the commit is a
+//! conventional commit.
 //!
-//! No analysis is done on the body to separate main information and footer information. This is stored and reported as it is in the original commit message.
-//!
+//! No analysis is done on the body to separate main information and footer
+//! information. This is stored and reported as it is in the original commit
+//! message.
 
 use lazy_regex::{Lazy, Regex, lazy_regex};
 
@@ -114,9 +120,10 @@ impl std::fmt::Display for ConvCommit {
 #[cfg(test)]
 mod tests {
 
-    use super::*;
     use log::LevelFilter;
     use rstest::rstest;
+
+    use super::*;
 
     fn get_test_logger() {
         let mut builder = env_logger::Builder::new();
