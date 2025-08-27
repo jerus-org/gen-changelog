@@ -2,9 +2,8 @@ use std::fmt::Display;
 
 use chrono::{DateTime, Utc};
 use git2::{Oid, Repository};
-use semver::Version;
-
 use lazy_regex::{Lazy, Regex, lazy_regex};
+use semver::Version;
 
 pub static SEMVER: Lazy<Regex> = lazy_regex!(
     r#"(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<pre>-[a-z\.A-Z0-9]+)?(?P<build>\+[0-9A-Za-z-\.]+)?"#
@@ -88,7 +87,8 @@ impl Display for Tag {
 
 //     #[test]
 //     fn test_new_with_simple_semver() {
-//         let id = Oid::from_str("00d7d05408751ccf747371e6b1f2b142a8314fbd").unwrap();
+//         let id =
+// Oid::from_str("00d7d05408751ccf747371e6b1f2b142a8314fbd").unwrap();
 //         let name = "refs/tags/v0.1.19";
 
 //         let tag = Tag::new(id, name);
@@ -100,7 +100,8 @@ impl Display for Tag {
 
 //     #[test]
 //     fn test_new_with_pre_release_and_build_semver() {
-//         let id = Oid::from_str("00d7d05408751ccf747371e6b1f2b142a8314fbd").unwrap();
+//         let id =
+// Oid::from_str("00d7d05408751ccf747371e6b1f2b142a8314fbd").unwrap();
 //         let name = "refs/tags/v0.1.19-alpha.3+build2937";
 
 //         let tag = Tag::new(id, name);
@@ -112,7 +113,8 @@ impl Display for Tag {
 
 //     #[test]
 //     fn test_new_with_pre_release_semver() {
-//         let id = Oid::from_str("00d7d05408751ccf747371e6b1f2b142a8314fbd").unwrap();
+//         let id =
+// Oid::from_str("00d7d05408751ccf747371e6b1f2b142a8314fbd").unwrap();
 //         let name = "refs/tags/v0.1.19-alpha.3";
 
 //         let tag = Tag::new(id, name);
@@ -124,7 +126,8 @@ impl Display for Tag {
 
 //     #[test]
 //     fn test_new_with_build_semver() {
-//         let id = Oid::from_str("00d7d05408751ccf747371e6b1f2b142a8314fbd").unwrap();
+//         let id =
+// Oid::from_str("00d7d05408751ccf747371e6b1f2b142a8314fbd").unwrap();
 //         let name = "refs/tags/v0.1.19+build2937";
 
 //         let tag = Tag::new(id, name);
@@ -136,7 +139,8 @@ impl Display for Tag {
 
 //     #[test]
 //     fn test_new_with_no_semver() {
-//         let id = Oid::from_str("00d7d05408751ccf747371e6b1f2b142a8314fbd").unwrap();
+//         let id =
+// Oid::from_str("00d7d05408751ccf747371e6b1f2b142a8314fbd").unwrap();
 //         let name = "refs/tags/just my tag";
 
 //         let tag = Tag::new(id, name);
