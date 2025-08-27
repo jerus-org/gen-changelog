@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ enhance ChangeLog with remote details extraction(pr [#9])
 - ✨ add logging functionality to main(pr [#10])
 - ✨ add header struct for changelog format(pr [#14])
+- ✨ add link module for URL handling(pr [#15])
 
 ### Changed
 
@@ -38,3 +39,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#12]: https://github.com/jerus-org/gen-changelog/pull/12
 [#13]: https://github.com/jerus-org/gen-changelog/pull/13
 [#14]: https://github.com/jerus-org/gen-changelog/pull/14
+[#15]: https://github.com/jerus-org/gen-changelog/pull/15
