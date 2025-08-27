@@ -24,6 +24,7 @@ chrono = "0.4.41"
 
 [dependencies]
 chrono = { version = "0.4.41", features = ["alloc"] }
+env_logger = "0.11.8"
 git2 = "0.20.2"
 lazy-regex = "3.4.1"
 log = "0.4.27"
@@ -31,7 +32,6 @@ semver = "1.0.26"
 thiserror = "2.0.16"
 
 [dev-dependencies]
-env_logger = "0.11.8"
 rstest = "0.26.1"
 
 [lints.clippy]
