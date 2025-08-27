@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(build)-reorder rerun-if-changed println calls(pr [#11])
 - ♻️ refactor(change_log)-replace println with log macros(pr [#12])
 - ♻️ refactor(change_log)-improve ChangeLog struct design(pr [#13])
+- 💄 style(change_log)-reorder imports for readability(pr [#16])
 
 [#3]: https://github.com/jerus-org/gen-changelog/pull/3
 [#4]: https://github.com/jerus-org/gen-changelog/pull/4
@@ -40,3 +41,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#13]: https://github.com/jerus-org/gen-changelog/pull/13
 [#14]: https://github.com/jerus-org/gen-changelog/pull/14
 [#15]: https://github.com/jerus-org/gen-changelog/pull/15
+[#16]: https://github.com/jerus-org/gen-changelog/pull/16
