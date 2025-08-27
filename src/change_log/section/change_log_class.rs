@@ -1,6 +1,9 @@
 //! Classify the kinds of Conventional Commit for display in a changelog
 //!
-//! The classifications are based on Keep a Changelog with an additional `Misc` classification for unknown classifications and `Unclassified` for when the there is no kind identified. Multiple kinds may be given the same classification for the purpose of the changelog.
+//! The classifications are based on Keep a Changelog with an additional `Misc`
+//! classification for unknown classifications and `Unclassified` for when the
+//! there is no kind identified. Multiple kinds may be given the same
+//! classification for the purpose of the changelog.
 
 #[derive(Debug)]
 pub(crate) enum ChangeLogClass {
