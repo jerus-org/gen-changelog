@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔧 chore(build)-add build script execution log(pr [#5])
 - 🔧 chore(scripts)-add justfile for task automation(pr [#6])
 - 📝 docs(CHANGELOG)-add LTex comment to disable spell checking(pr [#7])
+- ♻️ refactor(build)-reorder rerun-if-changed println calls(pr [#11])
 
 [#3]: https://github.com/jerus-org/gen-changelog/pull/3
 [#4]: https://github.com/jerus-org/gen-changelog/pull/4
@@ -30,3 +31,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#8]: https://github.com/jerus-org/gen-changelog/pull/8
 [#9]: https://github.com/jerus-org/gen-changelog/pull/9
 [#10]: https://github.com/jerus-org/gen-changelog/pull/10
+[#11]: https://github.com/jerus-org/gen-changelog/pull/11
