@@ -40,10 +40,10 @@ impl ConvCommit {
     }
 
     fn parse(title: &str) -> Self {
-        log::debug!("String to parse: `{title}`");
+        log::trace!("String to parse: `{title}`");
 
         let cmt_summary = if let Some(captures) = CONVENTIONAL.captures(title) {
-            log::debug!("Captures: {captures:#?}");
+            log::trace!("Captures: {captures:#?}");
             let emoji = captures.name("emoji").map(|m| m.as_str().to_string());
             let kind = captures.name("type").map(|m| m.as_str().to_string());
             let scope = captures.name("scope").map(|m| m.as_str().to_string());
@@ -72,7 +72,7 @@ impl ConvCommit {
             }
         };
 
-        log::debug!("Parsed title: {cmt_summary:?}");
+        log::trace!("Parsed title: {cmt_summary:?}");
 
         cmt_summary
     }
