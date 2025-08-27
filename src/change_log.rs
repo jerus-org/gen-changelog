@@ -6,13 +6,12 @@ mod tag;
 use std::fmt::Debug;
 
 use git2::Repository;
+use header::Header;
 use lazy_regex::{Lazy, Regex, lazy_regex};
+use link::Link;
 use section::Section;
 use tag::Tag;
 use thiserror::Error;
-
-use header::Header;
-use link::Link;
 
 const DEFAULT_FOOTER: &str = r##""##;
 
