@@ -118,12 +118,12 @@ impl ChangeLog {
             true
         })?;
 
-        println!(
-            "Tags:\n{}",
+        log::debug!(
+            "Tags:`{}`",
             tags.iter()
                 .map(|t| t.name().to_string())
                 .collect::<Vec<String>>()
-                .join("\n")
+                .join(", ")
         );
 
         let mut revwalk = repo.revwalk()?;
@@ -138,8 +138,8 @@ impl ChangeLog {
 
         for oid in revwalk.flatten() {
             if let Some(tag) = tags.iter().find(|t| t.id() == &oid) {
-                println!("found the tag: `{tag}`");
-                println!("{}", current_section.report_status());
+                log::debug!("found the tag: `{tag}`");
+                log::debug!("{}", current_section.report_status());
                 self.sections.push(current_section);
                 current_section = Section::new(Some(tag.clone()));
             };
@@ -152,10 +152,10 @@ impl ChangeLog {
                 continue;
             };
             let body = commit.body();
-            // println!("Found commit with Summary:\t`{summary}.");
+            log::trace!("Found commit with Summary:\t`{summary}.");
             current_section.add_commit(Some(summary), body);
         }
-        println!("{}", current_section.report_status());
+        log::debug!("{}", current_section.report_status());
         self.sections.push(current_section);
 
         Ok(self)
@@ -180,7 +180,7 @@ impl ChangeLog {
             //     } else {
             let mut first = true;
             let mut last_version = String::from("");
-            println!("Processing `{}` sections", self.sections.len());
+            log::debug!("Processing `{}` sections", self.sections.len());
             for section in self.sections.iter().rev() {
                 if first {
                     if let Some(version) = section.version() {
