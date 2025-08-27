@@ -1,4 +1,5 @@
 mod header;
+mod link;
 mod section;
 mod tag;
 
@@ -10,7 +11,8 @@ use section::Section;
 use tag::Tag;
 use thiserror::Error;
 
-use crate::change_log::header::Header;
+use header::Header;
+use link::Link;
 
 const DEFAULT_FOOTER: &str = r##""##;
 
@@ -35,8 +37,7 @@ pub struct ChangeLog<'a> {
     repo: String,
     header: Header,
     sections: Vec<Section>,
-    links: String,
-    footer: String,
+    links: Vec<Link>,
 }
 
 impl<'a> Debug for ChangeLog<'a> {
@@ -47,7 +48,6 @@ impl<'a> Debug for ChangeLog<'a> {
             .field("header", &self.header)
             .field("sections", &self.sections)
             .field("links", &self.links)
-            .field("footer", &self.footer)
             .finish()
     }
 }
@@ -62,8 +62,7 @@ impl<'a> ChangeLog<'a> {
             owner,
             repo,
             header: Header::default(),
-            footer: DEFAULT_FOOTER.to_string(),
-            links: String::new(),
+            links: Vec::new(),
             sections: Vec::default(),
         })
     }
@@ -92,12 +91,6 @@ impl<'a> ChangeLog<'a> {
     //     self.header = value.to_string();
     //     self
     // }
-
-    /// set footer
-    pub fn set_footer(&mut self, value: &str) -> &mut Self {
-        self.footer = value.to_string();
-        self
-    }
 
     /// Build the sections of the change log
     pub fn build(&mut self) -> Result<&mut Self, ChangeLogError> {
@@ -207,7 +200,6 @@ impl<'a> ChangeLog<'a> {
             log::warn!("unable to build links as owner and repo not known.");
         }
 
-        footer_vec.push(self.footer.clone());
         let footer = footer_vec.join("\n");
         println!("{}{}{}", self.header, report, footer)
     }
