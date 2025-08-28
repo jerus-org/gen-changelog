@@ -29,6 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(change_log)-improve ChangeLog struct design(pr [#13])
 - 💄 style(change_log)-reorder imports for readability(pr [#16])
 
+### Fixed
+
+- 🐛 config: correct typo in module import(pr [#18])
+
 [#3]: https://github.com/jerus-org/gen-changelog/pull/3
 [#4]: https://github.com/jerus-org/gen-changelog/pull/4
 [#5]: https://github.com/jerus-org/gen-changelog/pull/5
@@ -44,3 +48,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#15]: https://github.com/jerus-org/gen-changelog/pull/15
 [#16]: https://github.com/jerus-org/gen-changelog/pull/16
 [#17]: https://github.com/jerus-org/gen-changelog/pull/17
+[#18]: https://github.com/jerus-org/gen-changelog/pull/18
