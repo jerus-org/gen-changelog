@@ -1,42 +1,40 @@
 use std::fmt::Display;
 
 use chrono::{DateTime, Utc};
-use git2::{Oid, Repository};
+use git2::{ObjectType, Oid, Repository};
 use lazy_regex::{Lazy, Regex, lazy_regex};
 use semver::Version;
+use thiserror::Error;
 
-pub static SEMVER: Lazy<Regex> = lazy_regex!(
-    r#"(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<pre>-[a-z\.A-Z0-9]+)?(?P<build>\+[0-9A-Za-z-\.]+)?"#
+use crate::config::ReleasePattern;
+
+pub static PREFIX: Lazy<Regex> = lazy_regex!(
+    r#"(?P<prefix>\w+)(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<pre>-[a-z\.A-Z0-9]+)?(?P<build>\+[0-9A-Za-z-\.]+)?"#
+);
+pub static PACKAGE_PREFIX: Lazy<Regex> = lazy_regex!(
+    r#"(?P<package>(([-_]?\w+)+))-(?P<prefix>\w+)(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<pre>-[a-z\.A-Z0-9]+)?(?P<build>\+[0-9A-Za-z-\.]+)?"#
 );
 
 #[derive(Debug, Clone)]
 pub(crate) struct Tag {
     id: Oid,
     name: String,
+    package: Option<String>,
     semver: Option<Version>,
     date: Option<DateTime<Utc>>,
 }
 
 impl Tag {
-    pub(crate) fn new<S: Display>(id: Oid, name: S, repo: &Repository) -> Self {
+    pub(crate) fn builder<S: Display>(id: Oid, name: S, repo: &Repository) -> TagBuilder<'_> {
         let name = name.to_string();
-        let semver = if let Some(v) = SEMVER.captures(&name) {
-            Version::parse(v.get(0).unwrap().as_str()).ok()
-        } else {
-            None
-        };
 
-        let date = if semver.is_some() {
-            Self::get_date(&id, repo)
-        } else {
-            None
-        };
-
-        Tag {
+        TagBuilder {
             id,
+            repo,
             name,
-            semver,
-            date,
+            package: None,
+            semver: None,
+            date: None,
         }
     }
 
@@ -59,25 +57,157 @@ impl Tag {
     pub(crate) fn is_version_tag(&self) -> bool {
         self.semver.is_some()
     }
-
-    pub(crate) fn get_date(id: &Oid, repo: &Repository) -> Option<DateTime<Utc>> {
-        let Ok(git_tag) = repo.find_tag(*id) else {
-            return None;
-        };
-
-        let tagged_id = git_tag.target_id();
-        let Ok(commit) = repo.find_commit(tagged_id) else {
-            return None;
-        };
-
-        let time = commit.time();
-        chrono::DateTime::from_timestamp(time.seconds(), 0)
-    }
 }
 
 impl Display for Tag {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self.name())
+    }
+}
+
+#[derive(Debug, Error)]
+pub(crate) enum TagBuilderError {
+    #[error("Tag object kind identification failed")]
+    TagObjectKindFailed,
+    /// Error from the git2 crate
+    #[error("Git2 says: {0}")]
+    Git2Error(#[from] git2::Error),
+    /// Error from the Semver crate
+    #[error("Semver says: {0}")]
+    SemverError(#[from] semver::Error),
+}
+
+#[derive(Clone)]
+pub(crate) struct TagBuilder<'a> {
+    id: Oid,
+    repo: &'a Repository,
+    name: String,
+    package: Option<String>,
+    semver: Option<Version>,
+    date: Option<DateTime<Utc>>,
+}
+
+impl<'a> TagBuilder<'a> {
+    pub(crate) fn set_package(&mut self, package: &str) -> &mut Self {
+        self.package = Some(package.to_string());
+        self
+    }
+
+    pub(crate) fn get_semver(&mut self, release_pattern: &ReleasePattern) -> &mut Self {
+        macro_rules! set_semver {
+            ($valid:expr, $semver:expr) => {
+                if $valid {
+                    let semver = match Version::parse($semver.as_str()) {
+                        Ok(sv) => Some(sv),
+                        Err(e) => {
+                            log::warn!(
+                                "failed to parse `{:?}` to semver::Version. error: `{e}`",
+                                $semver
+                            );
+                            None
+                        }
+                    };
+                    self.semver = semver;
+                    self
+                } else {
+                    self
+                }
+            };
+        }
+
+        match release_pattern {
+            ReleasePattern::Prefix(p) => {
+                let Some(caps) = PREFIX.captures(&self.name) else {
+                    return self;
+                };
+
+                let Some(prefix) = caps.name("prefix") else {
+                    return self;
+                };
+                let Some(semver) = caps.name("semver") else {
+                    return self;
+                };
+
+                let valid = prefix.as_str() == p.as_str();
+                set_semver!(valid, semver)
+            }
+
+            ReleasePattern::PackagePrefix(p) => {
+                let Some(expected_package) = self.package.as_ref() else {
+                    return self;
+                };
+
+                let Some(caps) = PACKAGE_PREFIX.captures(&self.name) else {
+                    return self;
+                };
+
+                let Some(prefix) = caps.name("prefix") else {
+                    return self;
+                };
+                let Some(package) = caps.name("package") else {
+                    return self;
+                };
+                let Some(semver) = caps.name("semver") else {
+                    return self;
+                };
+
+                let valid = prefix.as_str() == p.as_str() && package.as_str() == expected_package;
+                set_semver!(valid, semver)
+            }
+        }
+    }
+
+    pub(crate) fn get_date(&mut self) -> &mut Self {
+        let Ok(git_tag) = self.repo.find_tag(self.id) else {
+            return self;
+        };
+
+        let tag_object = match git_tag.peel() {
+            Ok(to) => to,
+            Err(_) => {
+                log::warn!("could not peel {} to tag object", self.name);
+                return self;
+            }
+        };
+
+        let Some(kind) = tag_object.kind() else {
+            log::warn!("object type not identified for {}", self.name);
+            return self;
+        };
+
+        let commit;
+        match kind {
+            ObjectType::Commit => {
+                let c = tag_object.as_commit().unwrap();
+                commit = c.clone();
+            }
+            _ => {
+                let peel = tag_object.clone().peel_to_commit();
+                match peel {
+                    Ok(c) => commit = c,
+                    Err(e) => {
+                        log::warn!("Error peeling tag to commit {e}");
+                        return self;
+                    }
+                }
+            }
+        }
+
+        let time = commit.time();
+        let date = chrono::DateTime::from_timestamp(time.seconds(), 0);
+        self.date = date;
+
+        self
+    }
+
+    pub(crate) fn build(&self) -> Tag {
+        Tag {
+            id: self.id,
+            name: self.name.clone(),
+            package: self.package.clone(),
+            semver: self.semver.clone(),
+            date: self.date,
+        }
     }
 }
 
