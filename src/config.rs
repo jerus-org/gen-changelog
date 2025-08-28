@@ -19,6 +19,17 @@ pub enum DisplaySections {
     Custom(usize),
 }
 
+/// Pattern to identify a tag as a release tag.
+///
+/// Examples of valid patterns are:
+/// - v0.2.4
+/// - gen-changelog-v0.1.9
+#[derive(Debug)]
+pub enum ReleasePattern {
+    Prefix(String),
+    PackagePrefix(String),
+}
+
 /// Configuration settings for the Change Log
 #[derive(Debug)]
 pub struct Config {
@@ -38,6 +49,8 @@ pub struct Config {
     /// - One           [display recent section - last release or unreleased]
     /// - Custom(num)   [a custom number of sections]
     display_sections: DisplaySections,
+    /// Pattern to identify a tag as a release tag.
+    release_tag: ReleasePattern,
 }
 
 impl Default for Config {
@@ -47,9 +60,12 @@ impl Default for Config {
         headings.add_group("fixed");
         headings.add_group("changed");
 
+        let release_tag = ReleasePattern::Prefix(String::from("v"));
+
         Self {
             headings,
             display_sections: DisplaySections::default(),
+            release_tag,
         }
     }
 }
