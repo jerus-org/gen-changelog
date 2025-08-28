@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ add header struct for changelog format(pr [#14])
 - ✨ add link module for URL handling(pr [#15])
 - ✨ add new configuration settings for change log(pr [#17])
+- ✨ add display sections configuration(pr [#19])
 
 ### Changed
 
@@ -49,3 +50,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#16]: https://github.com/jerus-org/gen-changelog/pull/16
 [#17]: https://github.com/jerus-org/gen-changelog/pull/17
 [#18]: https://github.com/jerus-org/gen-changelog/pull/18
+[#19]: https://github.com/jerus-org/gen-changelog/pull/19
