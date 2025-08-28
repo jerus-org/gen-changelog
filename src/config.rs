@@ -1,7 +1,7 @@
 use std::collections::BTreeMap;
 
 mod group_mgmt;
-use group_mgmt::GroupMgnt;
+use group_mgmt::GroupMgmt;
 
 /// Configuration settings for the Change Log
 #[derive(Debug)]
