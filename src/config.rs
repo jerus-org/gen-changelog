@@ -1,7 +1,22 @@
 use std::collections::BTreeMap;
 
 mod group_mgmt;
+
 use group_mgmt::GroupMgmt;
+
+/// How many sections to display in the changelog
+///
+/// ## Options:
+/// - All (display all sections - the default)
+/// - One (display the most recent section - last release or unreleased)
+/// - Custom(<num>) (a custom number of sections)
+#[derive(Debug, Default)]
+pub enum DisplaySections {
+    #[default]
+    All,
+    One,
+    Custom(usize),
+}
 
 /// Configuration settings for the Change Log
 #[derive(Debug)]
@@ -15,6 +30,13 @@ pub struct Config {
     /// - fixed (to display fix commits)
     /// - changed (to display refactor commits)
     headings: BTreeMap<u8, String>,
+    /// How many sections to display in the changelog
+    ///
+    /// ## Options:
+    /// - All (display all sections - the default)
+    /// - One (display the most recent section - last release or unreleased)
+    /// - Custom(<num>) (a custom number of sections)
+    display_sections: DisplaySections,
 }
 
 impl Default for Config {
@@ -24,7 +46,10 @@ impl Default for Config {
         headings.add_group("fixed");
         headings.add_group("changed");
 
-        Self { headings }
+        Self {
+            headings,
+            display_sections: DisplaySections::default(),
+        }
     }
 }
 
@@ -49,6 +74,17 @@ impl Config {
     /// Remove miscellaneous group from headings
     pub fn remove_miscellaneous_heading(&mut self) -> &mut Self {
         self.headings.remove_miscellaneous();
+        self
+    }
+
+    /// Get a reference to the current display sections value
+    pub fn display_sections(&self) -> &DisplaySections {
+        &self.display_sections
+    }
+
+    /// Set a new `display_sections` value
+    pub fn set_display_sections(&mut self, value: DisplaySections) -> &mut Self {
+        self.display_sections = value;
         self
     }
 }
