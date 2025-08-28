@@ -7,9 +7,10 @@ use group_mgmt::GroupMgmt;
 /// How many sections to display in the changelog
 ///
 /// ## Options:
-/// - All (display all sections - the default)
-/// - One (display the most recent section - last release or unreleased)
-/// - Custom(<num>) (a custom number of sections)
+/// - All           [display all sections - the default]
+/// - One           [display the most recent section - last release or
+///   unreleased]
+/// - Custom(num)   [a custom number of sections]
 #[derive(Debug, Default)]
 pub enum DisplaySections {
     #[default]
@@ -26,16 +27,16 @@ pub struct Config {
     /// changelog.
     ///
     /// Default settings are:
-    /// - added (to display feat commits)
-    /// - fixed (to display fix commits)
-    /// - changed (to display refactor commits)
+    /// - added         [to display feat commits]
+    /// - fixed         [to display fix commits]
+    /// - changed       [to display refactor commits]
     headings: BTreeMap<u8, String>,
     /// How many sections to display in the changelog
     ///
     /// ## Options:
-    /// - All (display all sections - the default)
-    /// - One (display the most recent section - last release or unreleased)
-    /// - Custom(<num>) (a custom number of sections)
+    /// - All           [display all sections - the default]
+    /// - One           [display recent section - last release or unreleased]
+    /// - Custom(num)   [a custom number of sections]
     display_sections: DisplaySections,
 }
 
