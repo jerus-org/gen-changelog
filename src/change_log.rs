@@ -119,7 +119,21 @@ impl<'a> ChangeLog<'a> {
 
         self.repository.tag_foreach(|id, name| {
             let name = String::from_utf8(name.to_vec()).unwrap_or("invalid utf8".to_string());
-            let tag = Tag::new(id, name, self.repository);
+            log::debug!("processing {name} as a tag");
+            let mut tag_builder = Tag::builder(id, name, self.repository);
+            let tag = tag_builder
+                .get_semver(self.config.release_pattern())
+                .get_date()
+                .build();
+            log::debug!(
+                "Identified `{}` as version `{:?}`",
+                tag.name(),
+                if tag.is_version_tag() {
+                    tag.version().unwrap().to_string()
+                } else {
+                    "NOT A VERSION".to_string()
+                }
+            );
             tags.push(tag);
             true
         })?;
