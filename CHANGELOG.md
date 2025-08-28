@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ add new configuration settings for change log(pr [#17])
 - ✨ add display sections configuration(pr [#19])
 - ✨ add release pattern configuration(pr [#20])
+- ✨ add release_pattern accessor(pr [#21])
 
 ### Changed
 
@@ -53,3 +54,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#18]: https://github.com/jerus-org/gen-changelog/pull/18
 [#19]: https://github.com/jerus-org/gen-changelog/pull/19
 [#20]: https://github.com/jerus-org/gen-changelog/pull/20
+[#21]: https://github.com/jerus-org/gen-changelog/pull/21
