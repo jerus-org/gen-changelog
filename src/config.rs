@@ -24,7 +24,7 @@ pub enum DisplaySections {
 /// Examples of valid patterns are:
 /// - v0.2.4
 /// - gen-changelog-v0.1.9
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum ReleasePattern {
     Prefix(String),
     PackagePrefix(String),
@@ -50,7 +50,7 @@ pub struct Config {
     /// - Custom(num)   [a custom number of sections]
     display_sections: DisplaySections,
     /// Pattern to identify a tag as a release tag.
-    release_tag: ReleasePattern,
+    release_pattern: ReleasePattern,
 }
 
 impl Default for Config {
@@ -60,12 +60,12 @@ impl Default for Config {
         headings.add_group("fixed");
         headings.add_group("changed");
 
-        let release_tag = ReleasePattern::Prefix(String::from("v"));
+        let release_pattern = ReleasePattern::Prefix(String::from("v"));
 
         Self {
             headings,
             display_sections: DisplaySections::default(),
-            release_tag,
+            release_pattern,
         }
     }
 }
@@ -92,6 +92,11 @@ impl Config {
     pub fn remove_miscellaneous_heading(&mut self) -> &mut Self {
         self.headings.remove_miscellaneous();
         self
+    }
+
+    /// Return a reference to release_pattern
+    pub fn release_pattern(&self) -> &ReleasePattern {
+        &self.release_pattern
     }
 
     /// Get a reference to the current display sections value
