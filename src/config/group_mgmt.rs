@@ -1,12 +1,12 @@
 use std::collections::BTreeMap;
 
-pub(crate) trait GroupMgnt {
+pub(crate) trait GroupMgmt {
     fn add_group(&mut self, group: &str) -> &mut Self;
     fn add_miscellaneous(&mut self) -> &mut Self;
     fn remove_miscellaneous(&mut self) -> &mut Self;
 }
 
-impl GroupMgnt for BTreeMap<u8, String> {
+impl GroupMgmt for BTreeMap<u8, String> {
     fn add_group(&mut self, group: &str) -> &mut Self {
         let i = self.len() as u8;
         if i == u8::MAX {
@@ -50,7 +50,7 @@ impl GroupMgnt for BTreeMap<u8, String> {
 mod tests {
     use std::collections::BTreeMap;
 
-    use super::GroupMgnt;
+    use super::GroupMgmt;
 
     #[test]
     fn test_keep_misc_last() {
@@ -89,7 +89,7 @@ mod tests {
     }
 
     #[test]
-    fn test_adding_group_idempotic() {
+    fn test_adding_group_idempotence() {
         let mut headings = BTreeMap::new();
         headings.add_group("added");
         assert_eq!(headings.len(), 1);
