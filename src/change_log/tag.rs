@@ -2,7 +2,7 @@ use std::fmt::Display;
 
 use chrono::{DateTime, Utc};
 use git2::{ObjectType, Oid, Repository};
-use lazy_regex::{Lazy, Regex, lazy_regex, regex::Match};
+use lazy_regex::{Lazy, Regex, lazy_regex};
 use semver::Version;
 use thiserror::Error;
 
@@ -93,8 +93,8 @@ impl<'a> TagBuilder<'a> {
         self
     }
 
-    fn set_semver(&mut self, semver: Match) -> &mut Self {
-        let semver = match Version::parse(semver.as_str()) {
+    fn set_semver(&mut self, semver: &str) -> &mut Self {
+        let semver = match Version::parse(semver) {
             Ok(sv) => Some(sv),
             Err(e) => {
                 log::warn!("failed to parse `{semver:?}` to semver::Version. error: `{e}`");
@@ -131,7 +131,7 @@ impl<'a> TagBuilder<'a> {
                 };
 
                 if prefix.as_str() == p.as_str() {
-                    self.set_semver(semver)
+                    self.set_semver(semver.as_str())
                 } else {
                     self
                 }
@@ -157,7 +157,7 @@ impl<'a> TagBuilder<'a> {
                 };
 
                 if prefix.as_str() == p.as_str() && package.as_str() == expected_package {
-                    self.set_semver(semver)
+                    self.set_semver(semver.as_str())
                 } else {
                     self
                 }
