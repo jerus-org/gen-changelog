@@ -2,17 +2,17 @@ use std::fmt::Display;
 
 use chrono::{DateTime, Utc};
 use git2::{ObjectType, Oid, Repository};
-use lazy_regex::{Lazy, Regex, lazy_regex};
+use lazy_regex::{Lazy, Regex, lazy_regex, regex::Match};
 use semver::Version;
 use thiserror::Error;
 
 use crate::config::ReleasePattern;
 
 pub static PREFIX: Lazy<Regex> = lazy_regex!(
-    r#"(?P<prefix>\w+)(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<pre>-[a-z\.A-Z0-9]+)?(?P<build>\+[0-9A-Za-z-\.]+)?"#
+    r#"(?P<prefix>\w+)(?P<semver>(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<pre>-[a-z\.A-Z0-9]+)?(?P<build>\+[0-9A-Za-z-\.]+)?)"#
 );
 pub static PACKAGE_PREFIX: Lazy<Regex> = lazy_regex!(
-    r#"(?P<package>(([-_]?\w+)+))-(?P<prefix>\w+)(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<pre>-[a-z\.A-Z0-9]+)?(?P<build>\+[0-9A-Za-z-\.]+)?"#
+    r#"(?P<package>(([-_]?\w+)+))-(?P<prefix>\w+)(?P<semver>(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<pre>-[a-z\.A-Z0-9]+)?(?P<build>\+[0-9A-Za-z-\.]+)?)"#
 );
 
 #[derive(Debug, Clone)]
@@ -93,43 +93,48 @@ impl<'a> TagBuilder<'a> {
         self
     }
 
+    fn set_semver(&mut self, semver: Match) -> &mut Self {
+        let semver = match Version::parse(semver.as_str()) {
+            Ok(sv) => Some(sv),
+            Err(e) => {
+                log::warn!("failed to parse `{semver:?}` to semver::Version. error: `{e}`");
+                None
+            }
+        };
+        self.semver = semver;
+        self
+    }
+
     pub(crate) fn get_semver(&mut self, release_pattern: &ReleasePattern) -> &mut Self {
-        macro_rules! set_semver {
-            ($valid:expr, $semver:expr) => {
-                if $valid {
-                    let semver = match Version::parse($semver.as_str()) {
-                        Ok(sv) => Some(sv),
-                        Err(e) => {
-                            log::warn!(
-                                "failed to parse `{:?}` to semver::Version. error: `{e}`",
-                                $semver
-                            );
-                            None
-                        }
-                    };
-                    self.semver = semver;
-                    self
-                } else {
-                    self
-                }
-            };
-        }
+        log::trace!(
+            "getting semver for {} using the pattern {release_pattern:?}",
+            self.name
+        );
+        let haystack = self.name.clone();
 
         match release_pattern {
             ReleasePattern::Prefix(p) => {
-                let Some(caps) = PREFIX.captures(&self.name) else {
+                log::trace!("Applying the PREFIX pattern");
+                let Some(caps) = PREFIX.captures(&haystack) else {
+                    log::warn!("Failed to extract captures from haystack");
                     return self;
                 };
-
+                log::trace!("Captured groups: `{caps:?}`");
                 let Some(prefix) = caps.name("prefix") else {
+                    log::warn!("Failed to find prefix in captures");
                     return self;
                 };
+                log::trace!("Prefix: `{prefix:?}`");
                 let Some(semver) = caps.name("semver") else {
+                    log::warn!("Failed to find semver in captures");
                     return self;
                 };
 
-                let valid = prefix.as_str() == p.as_str();
-                set_semver!(valid, semver)
+                if prefix.as_str() == p.as_str() {
+                    self.set_semver(semver)
+                } else {
+                    self
+                }
             }
 
             ReleasePattern::PackagePrefix(p) => {
@@ -137,7 +142,7 @@ impl<'a> TagBuilder<'a> {
                     return self;
                 };
 
-                let Some(caps) = PACKAGE_PREFIX.captures(&self.name) else {
+                let Some(caps) = PACKAGE_PREFIX.captures(&haystack) else {
                     return self;
                 };
 
@@ -151,8 +156,11 @@ impl<'a> TagBuilder<'a> {
                     return self;
                 };
 
-                let valid = prefix.as_str() == p.as_str() && package.as_str() == expected_package;
-                set_semver!(valid, semver)
+                if prefix.as_str() == p.as_str() && package.as_str() == expected_package {
+                    self.set_semver(semver)
+                } else {
+                    self
+                }
             }
         }
     }
