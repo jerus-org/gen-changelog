@@ -17,7 +17,7 @@ pub static CONVENTIONAL: Lazy<Regex> = lazy_regex!(
     r"^(?P<emoji>.+\s)?(?P<type>[a-z]+)(?:\((?P<scope>.+)\))?(?P<breaking>!)?: (?P<description>.*)$$"
 );
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub(crate) struct ConvCommit {
     title: String,
     emoji: Option<String>,
