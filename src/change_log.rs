@@ -3,7 +3,7 @@ mod link;
 mod section;
 mod tag;
 
-use std::fmt::Debug;
+use std::fmt::{Debug, Display};
 
 use git2::Repository;
 use header::Header;
@@ -32,7 +32,33 @@ pub enum ChangeLogError {
 }
 
 /// ChangeLog main struct
-pub struct ChangeLog<'a> {
+pub struct ChangeLog {
+    header: Header,
+    sections: Vec<Section>,
+    links: Vec<Link>,
+}
+
+impl ChangeLog {
+    /// create new ChangeLog struct
+    pub fn builder(repo: &Repository) -> Result<ChangeLogBuilder<'_>, ChangeLogError> {
+        ChangeLogBuilder::new(repo)
+    }
+}
+
+impl Display for ChangeLog {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let sections = self
+            .sections
+            .iter()
+            .map(|s| s.to_string())
+            .collect::<String>();
+        let links = self.links.iter().map(|s| s.to_string()).collect::<String>();
+        writeln!(f, "{}{}{}", self.header, sections, links)
+    }
+}
+
+/// ChangeLogBuilder struct
+pub struct ChangeLogBuilder<'a> {
     repository: &'a Repository,
     owner: String,
     repo: String,
@@ -42,7 +68,7 @@ pub struct ChangeLog<'a> {
     config: Config,
 }
 
-impl<'a> Debug for ChangeLog<'a> {
+impl<'a> Debug for ChangeLogBuilder<'a> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ChangeLog")
             .field("owner", &self.owner)
@@ -54,12 +80,12 @@ impl<'a> Debug for ChangeLog<'a> {
     }
 }
 
-impl<'a> ChangeLog<'a> {
-    /// create new ChangeLog struct
-    pub fn new(repository: &Repository) -> Result<ChangeLog<'_>, ChangeLogError> {
-        let (owner, repo) = ChangeLog::get_remote_details(repository)?;
+impl<'a> ChangeLogBuilder<'a> {
+    /// create new ChangeLogBuilder struct
+    pub(crate) fn new(repository: &Repository) -> Result<ChangeLogBuilder<'_>, ChangeLogError> {
+        let (owner, repo) = ChangeLogBuilder::get_remote_details(repository)?;
 
-        Ok(ChangeLog {
+        Ok(ChangeLogBuilder {
             repository,
             owner,
             repo,
@@ -70,22 +96,18 @@ impl<'a> ChangeLog<'a> {
         })
     }
 
-    /// create new ChangeLog struct with config
-    pub fn new_with_config(
-        repository: &Repository,
-        config: Config,
-    ) -> Result<ChangeLog<'_>, ChangeLogError> {
-        let (owner, repo) = ChangeLog::get_remote_details(repository)?;
+    pub fn build(&self) -> ChangeLog {
+        ChangeLog {
+            header: self.header.clone(),
+            sections: self.sections.clone(),
+            links: self.links.clone(),
+        }
+    }
 
-        Ok(ChangeLog {
-            repository,
-            owner,
-            repo,
-            header: Header::default(),
-            links: Vec::new(),
-            sections: Vec::default(),
-            config,
-        })
+    /// Replace default config with custom config
+    pub fn with_config(&mut self, config: Config) -> &mut Self {
+        self.config = config;
+        self
     }
 
     fn get_remote_details(repository: &Repository) -> Result<(String, String), ChangeLogError> {
@@ -113,8 +135,8 @@ impl<'a> ChangeLog<'a> {
     //     self
     // }
 
-    /// Build the sections of the change log
-    pub fn build(&mut self) -> Result<&mut Self, ChangeLogError> {
+    /// Add sections to the change log
+    pub fn add_sections(&mut self) -> Result<&mut Self, ChangeLogError> {
         let mut tags = Vec::new();
 
         self.repository.tag_foreach(|id, name| {
