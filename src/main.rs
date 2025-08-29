@@ -10,9 +10,10 @@ fn main() {
     let repo_dir = PathBuf::new().join(".");
     let repository = Repository::open(&repo_dir)
         .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
-    let mut change_log = ChangeLog::new(&repository).unwrap();
+    let change_log_builder = ChangeLog::builder(&repository).unwrap();
+    let change_log = change_log_builder.build();
 
-    change_log.build().unwrap().print();
+    println!("{change_log}");
 }
 
 fn get_logging(level: log::LevelFilter) -> env_logger::Builder {
