@@ -23,6 +23,16 @@ impl Default for Header {
         Self { title, paragraphs }
     }
 }
+impl Header {
+    pub(crate) fn new(title: &str, paras: &[&str]) -> Self {
+        let title = String::from(title);
+        let mut paragraphs = Vec::new();
+        for paragraph in paras {
+            paragraphs.push(paragraph.to_string());
+        }
+        Self { title, paragraphs }
+    }
+}
 
 impl Display for Header {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
