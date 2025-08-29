@@ -10,7 +10,7 @@ pub(crate) enum LinkError {
     UrlError(#[from] url::ParseError),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub(crate) struct Link {
     anchor: String,
     url: Url,
