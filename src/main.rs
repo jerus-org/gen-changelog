@@ -10,8 +10,12 @@ fn main() {
     let repo_dir = PathBuf::new().join(".");
     let repository = Repository::open(&repo_dir)
         .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
-    let change_log_builder = ChangeLog::builder(&repository).unwrap();
-    let change_log = change_log_builder.build();
+    let mut change_log_builder = ChangeLog::builder();
+
+    let change_log = change_log_builder
+        .with_repository(&repository)
+        .unwrap()
+        .build();
 
     println!("{change_log}");
 }
