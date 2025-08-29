@@ -1,7 +1,7 @@
 mod cc_commit;
 mod change_log_class;
 
-use std::collections::HashSet;
+use std::{collections::HashSet, fmt::Display};
 
 use chrono::NaiveDate;
 use semver::Version;
@@ -11,7 +11,7 @@ use crate::change_log::{
     tag::Tag,
 };
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Clone)]
 pub(crate) struct Section {
     tag: Option<Tag>,
     title: String,
@@ -44,6 +44,12 @@ pub(crate) struct Section {
     removed_commits: Vec<ConvCommit>,
     // Miscellaneous commits not fitting any previous classification.
     misc_commits: Vec<ConvCommit>,
+}
+
+impl Display for Section {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(f, "nothing to see yet!")
+    }
 }
 
 impl Section {
