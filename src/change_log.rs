@@ -40,8 +40,8 @@ pub struct ChangeLog {
 
 impl ChangeLog {
     /// create new ChangeLog struct
-    pub fn builder(repo: &Repository) -> Result<ChangeLogBuilder<'_>, ChangeLogError> {
-        ChangeLogBuilder::new(repo)
+    pub fn builder() -> ChangeLogBuilder {
+        ChangeLogBuilder::new()
     }
 }
 
@@ -58,8 +58,7 @@ impl Display for ChangeLog {
 }
 
 /// ChangeLogBuilder struct
-pub struct ChangeLogBuilder<'a> {
-    repository: &'a Repository,
+pub struct ChangeLogBuilder {
     owner: String,
     repo: String,
     header: Header,
@@ -68,7 +67,7 @@ pub struct ChangeLogBuilder<'a> {
     config: Config,
 }
 
-impl<'a> Debug for ChangeLogBuilder<'a> {
+impl Debug for ChangeLogBuilder {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("ChangeLog")
             .field("owner", &self.owner)
@@ -80,20 +79,19 @@ impl<'a> Debug for ChangeLogBuilder<'a> {
     }
 }
 
-impl<'a> ChangeLogBuilder<'a> {
+impl ChangeLogBuilder {
     /// create new ChangeLogBuilder struct
-    pub(crate) fn new(repository: &Repository) -> Result<ChangeLogBuilder<'_>, ChangeLogError> {
-        let (owner, repo) = ChangeLogBuilder::get_remote_details(repository)?;
+    pub(crate) fn new() -> ChangeLogBuilder {
+        // let (owner, repo) = ChangeLogBuilder::get_remote_details(repository)?;
 
-        Ok(ChangeLogBuilder {
-            repository,
-            owner,
-            repo,
+        ChangeLogBuilder {
+            owner: String::default(),
+            repo: String::default(),
             header: Header::default(),
             links: Vec::new(),
             sections: Vec::default(),
             config: Config::default(),
-        })
+        }
     }
 
     pub fn build(&self) -> ChangeLog {
@@ -129,20 +127,19 @@ impl<'a> ChangeLogBuilder<'a> {
         Ok((owner, repo))
     }
 
-    // /// set header
-    // pub fn set_header(&mut self, value: &str) -> &mut Self {
-    //     self.header = value.to_string();
-    //     self
-    // }
+    /// set header
+    pub fn with_header(&mut self, title: &str, paragraphs: &[&str]) -> &mut Self {
+        self.header = Header::new(title, paragraphs);
+        self
+    }
 
-    /// Add sections to the change log
-    pub fn add_sections(&mut self) -> Result<&mut Self, ChangeLogError> {
+    fn get_tags(&self, repository: &Repository) -> Result<(Vec<Tag>, Vec<Tag>), ChangeLogError> {
         let mut tags = Vec::new();
 
-        self.repository.tag_foreach(|id, name| {
+        repository.tag_foreach(|id, name| {
             let name = String::from_utf8(name.to_vec()).unwrap_or("invalid utf8".to_string());
             log::debug!("processing {name} as a tag");
-            let mut tag_builder = Tag::builder(id, name, self.repository);
+            let mut tag_builder = Tag::builder(id, name, repository);
             let tag = tag_builder
                 .get_semver(self.config.release_pattern())
                 .get_date()
@@ -160,6 +157,11 @@ impl<'a> ChangeLogBuilder<'a> {
             true
         })?;
 
+        let mut version_tags = tags.clone();
+        version_tags.retain(|t| t.is_version_tag());
+        version_tags.sort_by_key(|k| k.version().unwrap().clone());
+        version_tags.reverse();
+        log::debug!("Identified {} version tags.", version_tags.len());
         log::debug!(
             "Tags:`{}`",
             tags.iter()
@@ -168,10 +170,31 @@ impl<'a> ChangeLogBuilder<'a> {
                 .join(", ")
         );
 
-        let mut revwalk = self.repository.revwalk()?;
+        Ok((tags, version_tags))
+    }
 
-        revwalk.set_sorting(git2::Sort::NONE)?;
-        revwalk.push_head()?;
+    /// Add sections  and links to the change log
+    pub fn with_repository(
+        &mut self,
+        repository: &Repository,
+    ) -> Result<&mut Self, ChangeLogError> {
+        let (tags, version_tags) = self.get_tags(repository)?;
+
+        let mut revwalk = repository.revwalk()?;
+        revwalk.set_sorting(git2::Sort::TIME)?;
+
+        // Case where no release has been made - no version tags
+        if version_tags.is_empty() {
+            log::debug!("Walk from the head to the start of time.");
+            // let mut current_section = Section::new(None);
+        } else {
+            log::debug!("Walking from the head to the latest release.");
+            log::debug!("starting the walk from the HEAD");
+            let reference = version_tags.first().unwrap().to_string();
+            log::debug!("the reference to walk back to is: `{reference}`");
+            revwalk.hide_ref(&reference)?;
+        }
+
         log::debug!("starting the walk from the HEAD");
         // log::debug!("the reference to walk back to is: `{reference}`");
         // revwalk.hide_ref(reference)?;
@@ -186,7 +209,7 @@ impl<'a> ChangeLogBuilder<'a> {
                 current_section = Section::new(Some(tag.clone()));
             };
 
-            let Ok(commit) = self.repository.find_commit(oid) else {
+            let Ok(commit) = repository.find_commit(oid) else {
                 continue;
             };
 
