@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ add display sections configuration(pr [#19])
 - ✨ add release pattern configuration(pr [#20])
 - ✨ add release_pattern accessor(pr [#21])
+- ✨ add new constructor for Header struct(pr [#24])
 
 ### Changed
 
@@ -59,3 +60,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#21]: https://github.com/jerus-org/gen-changelog/pull/21
 [#22]: https://github.com/jerus-org/gen-changelog/pull/22
 [#23]: https://github.com/jerus-org/gen-changelog/pull/23
+[#24]: https://github.com/jerus-org/gen-changelog/pull/24
