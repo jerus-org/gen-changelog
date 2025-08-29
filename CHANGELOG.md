@@ -31,6 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(change_log)-replace println with log macros(pr [#12])
 - ♻️ refactor(change_log)-improve ChangeLog struct design(pr [#13])
 - 💄 style(change_log)-reorder imports for readability(pr [#16])
+- ♻️ refactor(tag)-improve semver extraction logic(pr [#22])
 
 ### Fixed
 
@@ -55,3 +56,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#19]: https://github.com/jerus-org/gen-changelog/pull/19
 [#20]: https://github.com/jerus-org/gen-changelog/pull/20
 [#21]: https://github.com/jerus-org/gen-changelog/pull/21
+[#22]: https://github.com/jerus-org/gen-changelog/pull/22
