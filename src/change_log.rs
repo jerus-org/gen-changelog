@@ -196,18 +196,27 @@ impl ChangeLogBuilder {
 
         self.sections.push(current_section);
 
-        // if !version_tags.is_empty() {
-        //     let peekable_tags = version_tags.iter().peekable() ;
-        //     while let tag = peekable_tags.next() {
-        //         let next_tag =  peekable_tags.peek();
-        //         let section = Section::new(tag);
-        //         section.walk_repository();
+        if !version_tags.is_empty() {
+            let mut peekable_tags = version_tags.iter().peekable();
+            loop {
+                let Some(tag) = peekable_tags.next() else {
+                    break;
+                };
 
-        //         }
+                let mut section = Section::new(Some(tag.clone()));
 
-        //     }
+                let next_tag = peekable_tags.peek();
 
-        // }
+                if let Some(next_tag) = next_tag {
+                    let setup = WalkSetup::FromTagtoTag(tag, next_tag);
+                    section.walk_repository(setup, repository, &mut revwalk)?;
+                } else {
+                    let setup = WalkSetup::ReleaseToStart(tag);
+
+                    section.walk_repository(setup, repository, &mut revwalk)?;
+                }
+            }
+        };
 
         Ok(self)
     }
