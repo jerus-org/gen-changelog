@@ -96,10 +96,13 @@ impl Section {
                 self.get_commits(revwalk, repository);
                 log::debug!("{}", self.report_status());
             }
-            WalkSetup::FromReleaseToRelease(from, to) => {
-                log::debug!("Walking from the release `{from}` to release `{to}`");
-                // self.get_commits(revwalk, repository);
-                // log::debug!("{}", self.report_status());
+            WalkSetup::FromReleaseToRelease(from_tag, to_tag) => {
+                revwalk.push(*from_tag.id())?;
+                let reference = to_tag.to_string();
+                revwalk.hide_ref(&reference)?;
+                log::debug!("Walking from the release `{from_tag}` to release `{to_tag}`");
+                self.get_commits(revwalk, repository);
+                log::debug!("{}", self.report_status());
             }
             WalkSetup::ReleaseToStart(tag) => {
                 revwalk.push(*tag.id())?;
