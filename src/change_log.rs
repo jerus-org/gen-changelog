@@ -208,11 +208,10 @@ impl ChangeLogBuilder {
                 let next_tag = peekable_tags.peek();
 
                 if let Some(next_tag) = next_tag {
-                    let setup = WalkSetup::FromTagtoTag(tag, next_tag);
+                    let setup = WalkSetup::FromReleaseToRelease(tag, next_tag);
                     section.walk_repository(setup, repository, &mut revwalk)?;
                 } else {
                     let setup = WalkSetup::ReleaseToStart(tag);
-
                     section.walk_repository(setup, repository, &mut revwalk)?;
                 }
             }
