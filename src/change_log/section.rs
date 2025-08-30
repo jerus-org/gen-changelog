@@ -4,12 +4,21 @@ mod change_log_class;
 use std::{collections::HashSet, fmt::Display};
 
 use chrono::NaiveDate;
+use git2::{Repository, Revwalk};
 use semver::Version;
 
 use crate::change_log::{
+    ChangeLogError,
     section::{cc_commit::ConvCommit, change_log_class::ChangeLogClass},
     tag::Tag,
 };
+
+pub(crate) enum WalkSetup<'a> {
+    NoReleases,
+    HeadToRelease(&'a Tag),
+    ReleaseToStart(&'a Tag),
+    FromTagtoTag(&'a Tag, &'a Tag),
+}
 
 #[derive(Debug, Default, Clone)]
 pub(crate) struct Section {
@@ -64,6 +73,45 @@ impl Section {
             headings,
             ..Default::default()
         }
+    }
+
+    pub(crate) fn walk_repository(
+        &mut self,
+        setup: WalkSetup,
+        repository: &Repository,
+        revwalk: &mut Revwalk,
+    ) -> Result<&mut Self, ChangeLogError> {
+        match setup {
+            WalkSetup::NoReleases => {
+                revwalk.push_head()?;
+                log::debug!("Walking from the HEAD to the start of time");
+            }
+            WalkSetup::HeadToRelease(tag) => {
+                revwalk.push_head()?;
+                let reference = tag.to_string();
+                revwalk.hide_ref(&reference)?;
+                log::debug!("Walking from the HEAD to the latest release");
+            }
+            WalkSetup::FromTagtoTag(_from, _to) => {}
+            WalkSetup::ReleaseToStart(_tag) => {}
+        }
+
+        for oid in revwalk.flatten() {
+            let Ok(commit) = repository.find_commit(oid) else {
+                continue;
+            };
+
+            let summary = commit.summary();
+            let body = commit.body();
+            if summary.is_some() {
+                log::trace!("Found commit with Summary:\t`{}.", summary.unwrap());
+                self.add_commit(summary, body);
+            }
+        }
+
+        log::debug!("{}", self.report_status());
+
+        Ok(self)
     }
 
     pub(crate) fn add_commit(&mut self, summary: Option<&str>, message: Option<&str>) -> &mut Self {
