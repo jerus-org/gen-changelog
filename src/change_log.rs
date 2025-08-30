@@ -14,6 +14,7 @@ use tag::Tag;
 use thiserror::Error;
 
 use crate::Config;
+use section::WalkSetup;
 
 const DEFAULT_FOOTER: &str = r##""##;
 
@@ -133,7 +134,7 @@ impl ChangeLogBuilder {
         self
     }
 
-    fn get_tags(&self, repository: &Repository) -> Result<(Vec<Tag>, Vec<Tag>), ChangeLogError> {
+    fn get_version_tags(&self, repository: &Repository) -> Result<Vec<Tag>, ChangeLogError> {
         let mut tags = Vec::new();
 
         repository.tag_foreach(|id, name| {
@@ -170,7 +171,7 @@ impl ChangeLogBuilder {
                 .join(", ")
         );
 
-        Ok((tags, version_tags))
+        Ok(version_tags)
     }
 
     /// Add sections  and links to the change log
@@ -178,50 +179,35 @@ impl ChangeLogBuilder {
         &mut self,
         repository: &Repository,
     ) -> Result<&mut Self, ChangeLogError> {
-        let (tags, version_tags) = self.get_tags(repository)?;
+        let version_tags = self.get_version_tags(repository)?;
 
         let mut revwalk = repository.revwalk()?;
         revwalk.set_sorting(git2::Sort::TIME)?;
 
-        // Case where no release has been made - no version tags
-        if version_tags.is_empty() {
-            log::debug!("Walk from the head to the start of time.");
-            // let mut current_section = Section::new(None);
-        } else {
-            log::debug!("Walking from the head to the latest release.");
-            log::debug!("starting the walk from the HEAD");
-            let reference = version_tags.first().unwrap().to_string();
-            log::debug!("the reference to walk back to is: `{reference}`");
-            revwalk.hide_ref(&reference)?;
-        }
-
-        log::debug!("starting the walk from the HEAD");
-        // log::debug!("the reference to walk back to is: `{reference}`");
-        // revwalk.hide_ref(reference)?;
-
         let mut current_section = Section::new(None);
 
-        for oid in revwalk.flatten() {
-            if let Some(tag) = tags.iter().find(|t| t.id() == &oid) {
-                log::debug!("found the tag: `{tag}`");
-                log::debug!("{}", current_section.report_status());
-                self.sections.push(current_section);
-                current_section = Section::new(Some(tag.clone()));
-            };
-
-            let Ok(commit) = repository.find_commit(oid) else {
-                continue;
-            };
-
-            let Some(summary) = commit.summary() else {
-                continue;
-            };
-            let body = commit.body();
-            log::trace!("Found commit with Summary:\t`{summary}.");
-            current_section.add_commit(Some(summary), body);
+        // Case where no release has been made - no version tags
+        if version_tags.is_empty() {
+            current_section.walk_repository(WalkSetup::NoReleases, repository, &mut revwalk)?;
+        } else {
+            let setup = WalkSetup::HeadToRelease(version_tags.first().unwrap());
+            current_section.walk_repository(setup, repository, &mut revwalk)?;
         }
-        log::debug!("{}", current_section.report_status());
+
         self.sections.push(current_section);
+
+        // if !version_tags.is_empty() {
+        //     let peekable_tags = version_tags.iter().peekable() ;
+        //     while let tag = peekable_tags.next() {
+        //         let next_tag =  peekable_tags.peek();
+        //         let section = Section::new(tag);
+        //         section.walk_repository();
+
+        //         }
+
+        //     }
+
+        // }
 
         Ok(self)
     }
