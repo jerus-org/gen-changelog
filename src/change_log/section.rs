@@ -16,8 +16,8 @@ use crate::change_log::{
 pub(crate) enum WalkSetup<'a> {
     NoReleases,
     HeadToRelease(&'a Tag),
+    FromReleaseToRelease(&'a Tag, &'a Tag),
     ReleaseToStart(&'a Tag),
-    FromTagtoTag(&'a Tag, &'a Tag),
 }
 
 #[derive(Debug, Default, Clone)]
@@ -85,21 +85,33 @@ impl Section {
             WalkSetup::NoReleases => {
                 revwalk.push_head()?;
                 log::debug!("Walking from the HEAD to the first commit");
+                self.get_commits(revwalk, repository);
+                log::debug!("{}", self.report_status());
             }
             WalkSetup::HeadToRelease(tag) => {
                 revwalk.push_head()?;
                 let reference = tag.to_string();
                 revwalk.hide_ref(&reference)?;
-                log::debug!("Walking from the HEAD to the last release");
+                log::debug!("Walking from the HEAD to the last release `{tag}`",);
+                self.get_commits(revwalk, repository);
+                log::debug!("{}", self.report_status());
             }
-            WalkSetup::FromTagtoTag(_from, _to) => {
-                log::debug!("Walking from the release to release");
+            WalkSetup::FromReleaseToRelease(from, to) => {
+                log::debug!("Walking from the release `{from}` to release `{to}`");
+                // self.get_commits(revwalk, repository);
+                // log::debug!("{}", self.report_status());
             }
-            WalkSetup::ReleaseToStart(_tag) => {
-                log::debug!("Walking from the first release to first commit");
+            WalkSetup::ReleaseToStart(tag) => {
+                log::debug!("Walking from the first release `{tag}` to first commit");
+                // self.get_commits(revwalk, repository);
+                // log::debug!("{}", self.report_status());
             }
         }
 
+        Ok(self)
+    }
+
+    fn get_commits(&mut self, revwalk: &mut Revwalk, repository: &Repository) -> &mut Self {
         for oid in revwalk.flatten() {
             let Ok(commit) = repository.find_commit(oid) else {
                 continue;
@@ -113,9 +125,7 @@ impl Section {
             }
         }
 
-        log::debug!("{}", self.report_status());
-
-        Ok(self)
+        self
     }
 
     pub(crate) fn add_commit(&mut self, summary: Option<&str>, message: Option<&str>) -> &mut Self {
