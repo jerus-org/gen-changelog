@@ -139,13 +139,13 @@ impl ChangeLogBuilder {
 
         repository.tag_foreach(|id, name| {
             let name = String::from_utf8(name.to_vec()).unwrap_or("invalid utf8".to_string());
-            log::debug!("processing {name} as a tag");
+            log::trace!("processing {name} as a tag");
             let mut tag_builder = Tag::builder(id, name, repository);
             let tag = tag_builder
                 .get_semver(self.config.release_pattern())
                 .get_date()
                 .build();
-            log::debug!(
+            log::trace!(
                 "Identified `{}` as version `{:?}`",
                 tag.name(),
                 if tag.is_version_tag() {
