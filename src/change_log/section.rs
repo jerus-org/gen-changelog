@@ -153,38 +153,88 @@ impl Section {
     }
 
     pub(crate) fn report_status(&self) -> String {
-        format!(
-            "Section: {} contains:
-        {} added commits
-        {} fixed commits
-        {} changed commits
-        {} security commits
-        {} build commits
-        {} test commits
-        {} documentation commits
-        {} chore commits
-        {} ci commits
-        {} deprecated commits
-        {} removed commits
-        {} miscellaneous commits",
+        let mut report = format!(
+            "Section: {} contains:",
             if let Some(tag) = &self.tag {
                 tag.to_string()
             } else {
                 "Unreleased".to_string()
-            },
-            self.added_commits.len(),
-            self.fixed_commits.len(),
-            self.changed_commits.len(),
-            self.security_commits.len(),
-            self.build_commits.len(),
-            self.test_commits.len(),
-            self.documentation_commits.len(),
-            self.chore_commits.len(),
-            self.ci_commits.len(),
-            self.deprecated_commits.len(),
-            self.removed_commits.len(),
-            self.misc_commits.len(),
-        )
+            }
+        );
+
+        if !self.added_commits.is_empty() {
+            report.push('\n');
+            report.push_str(&format!("  {} added commits", self.added_commits.len()));
+        }
+
+        if !self.fixed_commits.is_empty() {
+            report.push('\n');
+            report.push_str(&format!("  {} fixed commits", self.fixed_commits.len()));
+        }
+
+        if !self.changed_commits.is_empty() {
+            report.push('\n');
+            report.push_str(&format!("  {} changed commits", self.changed_commits.len()));
+        }
+
+        if !self.security_commits.is_empty() {
+            report.push('\n');
+            report.push_str(&format!(
+                "  {} security commits",
+                self.security_commits.len()
+            ));
+        }
+
+        if !self.build_commits.is_empty() {
+            report.push('\n');
+            report.push_str(&format!("  {} build commits", self.build_commits.len()));
+        }
+
+        if !self.test_commits.is_empty() {
+            report.push('\n');
+            report.push_str(&format!("  {} test commits", self.test_commits.len()));
+        }
+
+        if !self.documentation_commits.is_empty() {
+            report.push('\n');
+            report.push_str(&format!(
+                "  {} documentation commits",
+                self.documentation_commits.len()
+            ));
+        }
+
+        if !self.chore_commits.is_empty() {
+            report.push('\n');
+            report.push_str(&format!("  {} chore commits", self.chore_commits.len()));
+        }
+
+        if !self.ci_commits.is_empty() {
+            report.push('\n');
+            report.push_str(&format!("  {} ci commits", self.ci_commits.len()));
+        }
+
+        if !self.deprecated_commits.is_empty() {
+            report.push('\n');
+            report.push_str(&format!(
+                "  {} deprecated commits",
+                self.deprecated_commits.len()
+            ));
+        }
+
+        if !self.removed_commits.is_empty() {
+            report.push('\n');
+            report.push_str(&format!("  {} removed commits", self.removed_commits.len()));
+        }
+
+        if !self.misc_commits.is_empty() {
+            report.push('\n');
+            report.push_str(&format!(
+                "  {} miscellaneous commits",
+                self.misc_commits.len()
+            ));
+        }
+
+        report
     }
 
     pub(crate) fn version(&self) -> Option<String> {
