@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 💄 style(change_log)-reorder imports for readability(pr [#16])
 - ♻️ refactor(tag)-improve semver extraction logic(pr [#22])
 - ♻️ refactor(change_log)-restructure ChangeLog and builder pattern(pr [#23])
+- ♻️ refactor(change_log)-update walk setup naming(pr [#28])
 
 ### Fixed
 
@@ -67,3 +68,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#25]: https://github.com/jerus-org/gen-changelog/pull/25
 [#26]: https://github.com/jerus-org/gen-changelog/pull/26
 [#27]: https://github.com/jerus-org/gen-changelog/pull/27
+[#28]: https://github.com/jerus-org/gen-changelog/pull/28
