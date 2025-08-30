@@ -84,16 +84,20 @@ impl Section {
         match setup {
             WalkSetup::NoReleases => {
                 revwalk.push_head()?;
-                log::debug!("Walking from the HEAD to the start of time");
+                log::debug!("Walking from the HEAD to the first commit");
             }
             WalkSetup::HeadToRelease(tag) => {
                 revwalk.push_head()?;
                 let reference = tag.to_string();
                 revwalk.hide_ref(&reference)?;
-                log::debug!("Walking from the HEAD to the latest release");
+                log::debug!("Walking from the HEAD to the last release");
             }
-            WalkSetup::FromTagtoTag(_from, _to) => {}
-            WalkSetup::ReleaseToStart(_tag) => {}
+            WalkSetup::FromTagtoTag(_from, _to) => {
+                log::debug!("Walking from the release to release");
+            }
+            WalkSetup::ReleaseToStart(_tag) => {
+                log::debug!("Walking from the first release to first commit");
+            }
         }
 
         for oid in revwalk.flatten() {
