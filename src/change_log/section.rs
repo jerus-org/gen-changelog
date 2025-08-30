@@ -102,9 +102,10 @@ impl Section {
                 // log::debug!("{}", self.report_status());
             }
             WalkSetup::ReleaseToStart(tag) => {
+                revwalk.push(*tag.id())?;
                 log::debug!("Walking from the first release `{tag}` to first commit");
-                // self.get_commits(revwalk, repository);
-                // log::debug!("{}", self.report_status());
+                self.get_commits(revwalk, repository);
+                log::debug!("{}", self.report_status());
             }
         }
 
