@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ enhance ChangeLogBuilder with repository handling(pr [#25])
 - ✨ add repository walk functionality(pr [#26])
 - ✨ implement version tag processing(pr [#27])
+- ✨ enable commit retrieval and status logging(pr [#29])
 
 ### Changed
 
@@ -69,3 +70,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#26]: https://github.com/jerus-org/gen-changelog/pull/26
 [#27]: https://github.com/jerus-org/gen-changelog/pull/27
 [#28]: https://github.com/jerus-org/gen-changelog/pull/28
+[#29]: https://github.com/jerus-org/gen-changelog/pull/29
