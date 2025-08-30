@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ add release_pattern accessor(pr [#21])
 - ✨ add new constructor for Header struct(pr [#24])
 - ✨ enhance ChangeLogBuilder with repository handling(pr [#25])
+- ✨ add repository walk functionality(pr [#26])
 
 ### Changed
 
@@ -63,3 +64,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#23]: https://github.com/jerus-org/gen-changelog/pull/23
 [#24]: https://github.com/jerus-org/gen-changelog/pull/24
 [#25]: https://github.com/jerus-org/gen-changelog/pull/25
+[#26]: https://github.com/jerus-org/gen-changelog/pull/26
