@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ implement version tag processing(pr [#27])
 - ✨ enable commit retrieval and status logging(pr [#29])
 - ✨ enhance release-to-release walking(pr [#30])
+- ✨ enhance section display formatting(pr [#32])
 
 ### Changed
 
@@ -75,3 +76,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#29]: https://github.com/jerus-org/gen-changelog/pull/29
 [#30]: https://github.com/jerus-org/gen-changelog/pull/30
 [#31]: https://github.com/jerus-org/gen-changelog/pull/31
+[#32]: https://github.com/jerus-org/gen-changelog/pull/32
