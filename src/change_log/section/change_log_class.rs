@@ -5,6 +5,8 @@
 //! there is no kind identified. Multiple kinds may be given the same
 //! classification for the purpose of the changelog.
 
+use std::fmt::Display;
+
 #[derive(Debug)]
 pub(crate) enum ChangeLogClass {
     Added,
@@ -38,6 +40,26 @@ impl ChangeLogClass {
             "removed" => ChangeLogClass::Removed,
             "misc" => ChangeLogClass::Misc,
             _ => ChangeLogClass::Unclassified,
+        }
+    }
+}
+
+impl Display for ChangeLogClass {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ChangeLogClass::Added => write!(f, "Added"),
+            ChangeLogClass::Build => write!(f, "Build Changes"),
+            ChangeLogClass::CI => write!(f, "CI Changes"),
+            ChangeLogClass::Changed => write!(f, "Changed"),
+            ChangeLogClass::Fixed => write!(f, "Fixed"),
+            ChangeLogClass::Security => write!(f, "Security Changes"),
+            ChangeLogClass::Documentation => write!(f, "Documentation Changes"),
+            ChangeLogClass::Chore => write!(f, "Chore Changes"),
+            ChangeLogClass::Test => write!(f, "Test Changes"),
+            ChangeLogClass::Deprecated => write!(f, "Deprecated"),
+            ChangeLogClass::Removed => write!(f, "Removed"),
+            ChangeLogClass::Misc => write!(f, "Miscellaneous"),
+            ChangeLogClass::Unclassified => write!(f, "Unknown"),
         }
     }
 }
