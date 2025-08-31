@@ -1,7 +1,10 @@
 mod cc_commit;
 mod change_log_class;
 
-use std::{collections::HashSet, fmt::Display};
+use std::{
+    collections::{HashMap, HashSet},
+    fmt::Display,
+};
 
 use chrono::NaiveDate;
 use git2::{Repository, Revwalk};
@@ -29,6 +32,8 @@ pub(crate) struct Section {
     headings: HashSet<String>,
     description: String,
     yanked: bool,
+    // commits in the section grouped by class
+    commits: HashMap<String, Vec<ConvCommit>>,
     // Added for new features.
     added_commits: Vec<ConvCommit>,
     // Fixed for any bug fixes.
@@ -132,9 +137,23 @@ impl Section {
         self
     }
 
+    fn add_commit_to_hashmap(&mut self, class: &str, commit: ConvCommit) {
+        let key = class.to_string();
+        let mut new_value = if let Some(v) = self.commits.get(class) {
+            v.clone()
+        } else {
+            Vec::new()
+        };
+
+        new_value.push(commit);
+        self.commits.insert(key, new_value);
+    }
+
     pub(crate) fn add_commit(&mut self, summary: Option<&str>, message: Option<&str>) -> &mut Self {
         let conventional_commit = ConvCommit::new(summary, message);
         let class = ChangeLogClass::new(&conventional_commit.kind_string());
+
+        self.add_commit_to_hashmap(&class.to_string(), conventional_commit.clone());
 
         match class {
             ChangeLogClass::Added => self.added_commits.push(conventional_commit),
