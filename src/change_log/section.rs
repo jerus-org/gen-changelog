@@ -62,7 +62,53 @@ pub(crate) struct Section {
 
 impl Display for Section {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        writeln!(f, "nothing to see yet!")
+        let header = if let Some(t) = &self.tag {
+            let version = if t.version().is_some() {
+                t.version().unwrap().to_string()
+            } else {
+                "Unreleased".to_string()
+            };
+
+            let date = if t.date().is_some() {
+                t.date().unwrap().format("%Y-%m-%d").to_string()
+            } else {
+                "".to_string()
+            };
+
+            format!("## [{version}] - {date}")
+        } else {
+            "## [Unreleased]".to_string()
+        };
+
+        let added = self.commits_markdown("added", &self.added_commits);
+        let fixed = self.commits_markdown("fixed", &self.fixed_commits);
+        let changed = self.commits_markdown("changed", &self.changed_commits);
+        let security = self.commits_markdown("security", &self.security_commits);
+        let build = self.commits_markdown("security", &self.build_commits);
+        let test = self.commits_markdown("test", &self.test_commits);
+        let documentation = self.commits_markdown("documentation", &self.documentation_commits);
+        let chore = self.commits_markdown("chore", &self.chore_commits);
+        let ci = self.commits_markdown("ci", &self.ci_commits);
+        let deprecated = self.commits_markdown("deprecated", &self.deprecated_commits);
+        let removed = self.commits_markdown("removed", &self.removed_commits);
+        let misc = self.commits_markdown("misc", &self.misc_commits);
+
+        writeln!(
+            f,
+            "\n{header}\n\n{}{}{}{}{}{}{}{}{}{}{}{}",
+            added.unwrap_or_default(),
+            fixed.unwrap_or_default(),
+            changed.unwrap_or_default(),
+            security.unwrap_or_default(),
+            build.unwrap_or_default(),
+            test.unwrap_or_default(),
+            documentation.unwrap_or_default(),
+            chore.unwrap_or_default(),
+            ci.unwrap_or_default(),
+            deprecated.unwrap_or_default(),
+            removed.unwrap_or_default(),
+            misc.unwrap_or_default(),
+        )
     }
 }
 
