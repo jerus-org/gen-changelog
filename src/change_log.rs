@@ -214,6 +214,7 @@ impl ChangeLogBuilder {
                     let setup = WalkSetup::ReleaseToStart(tag);
                     section.walk_repository(setup, repository, &mut revwalk)?;
                 }
+                self.sections.push(section);
             }
         };
 
