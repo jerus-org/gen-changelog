@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(change_log)-restructure ChangeLog and builder pattern(pr [#23])
 - ♻️ refactor(change_log)-update walk setup naming(pr [#28])
 - ♻️ refactor(section)-enhance commit grouping by class(pr [#31])
+- ♻️ refactor(group)-implement typed builder pattern(pr [#34])
 
 ### Fixed
 
@@ -79,3 +80,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#31]: https://github.com/jerus-org/gen-changelog/pull/31
 [#32]: https://github.com/jerus-org/gen-changelog/pull/32
 [#33]: https://github.com/jerus-org/gen-changelog/pull/33
+[#34]: https://github.com/jerus-org/gen-changelog/pull/34
