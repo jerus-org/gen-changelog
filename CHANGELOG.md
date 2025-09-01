@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ enable commit retrieval and status logging(pr [#29])
 - ✨ enhance release-to-release walking(pr [#30])
 - ✨ enhance section display formatting(pr [#32])
+- ✨ add GroupBuilder for flexible group creation(pr [#33])
 
 ### Changed
 
@@ -77,3 +78,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#30]: https://github.com/jerus-org/gen-changelog/pull/30
 [#31]: https://github.com/jerus-org/gen-changelog/pull/31
 [#32]: https://github.com/jerus-org/gen-changelog/pull/32
+[#33]: https://github.com/jerus-org/gen-changelog/pull/33
