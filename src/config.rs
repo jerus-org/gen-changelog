@@ -1,9 +1,10 @@
 use std::collections::BTreeMap;
 
 mod group;
-mod group_mgmt;
+// mod group_mgmt;
 
-use group_mgmt::GroupMgmt;
+use group::Group;
+// use group_mgmt::GroupMgmt;
 
 /// How many sections to display in the changelog
 ///
@@ -34,15 +35,13 @@ pub enum ReleasePattern {
 /// Configuration settings for the Change Log
 #[derive(Debug)]
 pub struct Config {
-    /// Which collections of conventional commits should be displayed identified
-    /// by the third level heading under which they will appear in the
-    /// changelog.
+    /// Group conventional commits under a heading and set a flag to display the heading in the changelog
     ///
     /// Default settings are:
     /// - added         [to display feat commits]
     /// - fixed         [to display fix commits]
     /// - changed       [to display refactor commits]
-    headings: BTreeMap<u8, String>,
+    groups: BTreeMap<u8, Group>,
     /// How many sections to display in the changelog
     ///
     /// ## Options:
@@ -56,15 +55,22 @@ pub struct Config {
 
 impl Default for Config {
     fn default() -> Self {
-        let mut headings = BTreeMap::new();
-        headings.add_group("added");
-        headings.add_group("fixed");
-        headings.add_group("changed");
+        let mut groups = BTreeMap::new();
+        let added_group = Group::builder();
+        let mut added_group = added_group.set_name("added");
+        added_group.allow_publication();
+        let added_group = added_group.insert_cc_type("fixed").build();
+        groups.insert(1, added_group);
+        // groups.add_group(added_group);
+
+        // headings.add_group("added");
+        // headings.add_group("fixed");
+        // headings.add_group("changed");
 
         let release_pattern = ReleasePattern::Prefix(String::from("v"));
 
         Self {
-            headings,
+            groups,
             display_sections: DisplaySections::default(),
             release_pattern,
         }
@@ -72,28 +78,28 @@ impl Default for Config {
 }
 
 impl Config {
-    /// Return a clone of the current headings config
-    pub fn headings(&self) -> BTreeMap<u8, String> {
-        self.headings.clone()
+    /// Return a clone of the current groups config
+    pub fn groups(&self) -> BTreeMap<u8, Group> {
+        self.groups.clone()
     }
 
-    /// Replace the current headings config with new headings config
-    pub fn set_headings(&mut self, group: &str) -> &mut Self {
-        self.headings.add_group(group);
-        self
-    }
+    // /// Replace the current headings config with new headings config
+    // pub fn set_groups(&mut self, group: &Group) -> &mut Self {
+    //     self.groups.set_group(group);
+    //     self
+    // }
 
-    /// Add Miscellaneous group to headings
-    pub fn add_miscellaneous_heading(&mut self) -> &mut Self {
-        self.headings.add_miscellaneous();
-        self
-    }
+    // /// Add Miscellaneous group to headings
+    // pub fn add_miscellaneous_heading(&mut self) -> &mut Self {
+    //     self.headings.add_miscellaneous();
+    //     self
+    // }
 
-    /// Remove miscellaneous group from headings
-    pub fn remove_miscellaneous_heading(&mut self) -> &mut Self {
-        self.headings.remove_miscellaneous();
-        self
-    }
+    // /// Remove miscellaneous group from headings
+    // pub fn remove_miscellaneous_heading(&mut self) -> &mut Self {
+    //     self.headings.remove_miscellaneous();
+    //     self
+    // }
 
     /// Return a reference to release_pattern
     pub fn release_pattern(&self) -> &ReleasePattern {
