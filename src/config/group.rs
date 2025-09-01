@@ -168,3 +168,55 @@ impl<N> GroupBuilder<N, NoCCType> {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::config::group;
+
+    use super::*;
+
+    #[test]
+    fn build_simple_group() {
+        let mut group_builder = Group::builder();
+        group_builder.allow_publication();
+        let group_builder = group_builder.set_name("test");
+        let group_builder = group_builder.insert_cc_type("value");
+        let group = group_builder.build();
+
+        assert_eq!(group.name, String::from("test"));
+        assert!(group.cc_types.contains("value"));
+    }
+
+    #[test]
+    fn build_multi_value_idividually_group() {
+        let group_builder = Group::builder();
+        assert!(!group_builder.publish);
+        let mut group_builder = group_builder.set_name("test");
+        group_builder.allow_publication();
+        let group_builder = group_builder.insert_cc_type("one");
+        let group_builder = group_builder.insert_cc_type("two");
+        let group = group_builder.build();
+
+        assert_eq!(group.name, String::from("test"));
+        assert!(group.publish());
+        assert!(group.cc_types.contains("one"));
+        assert!(group.cc_types.contains("two"));
+    }
+
+    #[test]
+    fn build_multi_value_list_group() {
+        let group_builder = Group::builder();
+        assert!(!group_builder.publish);
+        let group_builder = group_builder.set_name("test");
+        assert!(!group_builder.publish);
+        let mut group_builder = group_builder.insert_cc_types(&["one", "two", "three"]);
+        group_builder.allow_publication();
+        let group = group_builder.build();
+
+        assert_eq!(group.name, String::from("test"));
+        assert!(group.publish());
+        assert!(group.cc_types.contains("one"));
+        assert!(group.cc_types.contains("two"));
+        assert!(group.cc_types.contains("three"));
+    }
+}
