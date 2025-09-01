@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 
+mod group;
 mod group_mgmt;
 
 use group_mgmt::GroupMgmt;
