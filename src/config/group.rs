@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 
-/// Group defines the attributes for a collection of commits to write under a single header in the changelog file.
-///
+/// Group defines the attributes for a collection of commits to write under a
+/// single header in the changelog file.
 #[derive(Debug, Clone)]
 pub struct Group {
     /// The name of the group used as the third level heading in the change log.
@@ -32,6 +32,34 @@ impl Group {
     pub fn cc_types(&self) -> Vec<&str> {
         self.cc_types.iter().map(|s| s.as_str()).collect()
     }
+
+    pub fn set_publish(&mut self) -> &mut Self {
+        self.publish = true;
+        self
+    }
+
+    pub fn set_no_publish(&mut self) -> &mut Self {
+        self.publish = false;
+        self
+    }
+
+    pub(crate) fn new_with_name_types_and_publish_flag(
+        name: &str,
+        type_list: &[&str],
+        publish: bool,
+    ) -> Group {
+        let mut cc_types = HashSet::new();
+
+        for value in type_list {
+            cc_types.insert(value.to_string());
+        }
+
+        Group {
+            name: name.to_string(),
+            publish,
+            cc_types,
+        }
+    }
 }
 
 pub enum GroupBuilderError {
@@ -51,8 +79,8 @@ pub struct CCType(HashSet<String>);
 #[derive(Debug, Clone)]
 pub struct NoCCType;
 
-/// Group defines the attributes for a collection of commits to write under a single header in the changelog file.
-///
+/// Group defines the attributes for a collection of commits to write under a
+/// single header in the changelog file.
 #[derive(Debug, Clone)]
 pub struct GroupBuilder<N, C> {
     /// The name of the group used as the third level heading in the change log.
