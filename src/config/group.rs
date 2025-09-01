@@ -109,6 +109,18 @@ where
         new_group
     }
 
+    pub(crate) fn insert_cc_types(self, values: &[&str]) -> Self {
+        let mut new_group = self.clone();
+        let mut set = self.cc_types.0;
+
+        for v in values {
+            set.insert(v.to_string());
+        }
+
+        new_group.cc_types = CCType(set);
+        new_group
+    }
+
     pub(crate) fn remove_cc_type(self, value: &str) -> Self {
         let mut new_group = self.clone();
         let mut set = self.cc_types.0;
@@ -132,6 +144,23 @@ impl<N> GroupBuilder<N, NoCCType> {
     {
         let mut set = HashSet::new();
         set.insert(value.to_string());
+        GroupBuilder {
+            name: self.name,
+            publish: self.publish,
+            cc_types: CCType(set),
+        }
+    }
+
+    pub(crate) fn insert_cc_types(self, values: &[&str]) -> GroupBuilder<N, CCType>
+    where
+        N: std::clone::Clone,
+    {
+        let mut set = HashSet::new();
+
+        for v in values {
+            set.insert(v.to_string());
+        }
+
         GroupBuilder {
             name: self.name,
             publish: self.publish,
