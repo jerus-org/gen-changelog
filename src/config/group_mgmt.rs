@@ -1,101 +1,76 @@
-use std::collections::BTreeMap;
+use std::collections::HashMap;
+
+use crate::config::group::Group;
 
 pub(crate) trait GroupMgmt {
-    fn add_group(&mut self, group: &str) -> &mut Self;
-    fn add_miscellaneous(&mut self) -> &mut Self;
-    fn remove_miscellaneous(&mut self) -> &mut Self;
+    fn add_group(&mut self, group: Group) -> &mut Self;
+    fn remove_group(&mut self, key: &str) -> &mut Self;
 }
 
-impl GroupMgmt for BTreeMap<u8, String> {
-    fn add_group(&mut self, group: &str) -> &mut Self {
-        let i = self.len() as u8;
-        if i == u8::MAX {
-            log::warn!("maximum number of groups created ({})", u8::MAX);
-            self
-        } else if self.iter().any(|g| g.1 == &group.to_string()) {
-            self
-        } else {
-            if self.iter().any(|g| g.1 == &"misc".to_string()) {
-                self.insert(i - 1, group.to_string());
-                self.insert(i, "misc".to_string());
-            } else {
-                self.insert(i, group.to_string());
-            }
-
-            self
-        }
+impl GroupMgmt for HashMap<String, Group> {
+    fn add_group(&mut self, group: Group) -> &mut Self {
+        let key = group.name().to_string();
+        let value = group;
+        self.insert(key, value);
+        self
     }
 
-    fn add_miscellaneous(&mut self) -> &mut Self {
-        if self.iter().any(|g| g.1 == "misc") {
-            self
-        } else {
-            self.add_group("misc");
-            self
-        }
-    }
-
-    fn remove_miscellaneous(&mut self) -> &mut Self {
-        if self.iter().any(|g| g.1 == "misc") {
-            let key = self.len() as u8 - 1;
-            self.remove(&key);
-            self
-        } else {
-            self
-        }
+    fn remove_group(&mut self, key: &str) -> &mut Self {
+        self.remove(key);
+        self
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::collections::BTreeMap;
+    use std::collections::HashMap;
+
+    use crate::config::group::Group;
 
     use super::GroupMgmt;
 
-    #[test]
-    fn test_keep_misc_last() {
-        let mut headings = BTreeMap::new();
-        headings.add_group("added");
-        assert!(headings.first_entry().is_some());
-        headings.add_group("misc");
-        assert!(headings.last_entry().is_some());
-        let last = headings.last_entry().unwrap();
-        let last = last.get();
-        assert_eq!(last, &"misc".to_string());
-        headings.add_group("changed");
-        assert!(headings.last_entry().is_some());
-        let last = headings.last_entry().unwrap();
-        let last = last.get();
-        assert_eq!(last, &"misc".to_string());
+    fn create_added_group() -> Group {
+        let gb = Group::builder();
+        let gb = gb.set_name("added");
+        let gb = gb.insert_cc_type("feat");
+        gb.build()
+    }
+
+    fn create_misc_group() -> Group {
+        let gb = Group::builder();
+        let gb = gb.set_name("miscellaneous");
+        let gb = gb.insert_cc_type("misc");
+        gb.build()
     }
 
     #[test]
-    fn test_add_and_remove_miscellaneous() {
-        let mut headings = BTreeMap::new();
-        headings.add_group("added");
-        assert!(headings.first_entry().is_some());
-        headings.add_miscellaneous();
-        assert_eq!(headings.len(), 2);
-        assert!(headings.last_entry().is_some());
-        let last = headings.last_entry().unwrap();
-        let last = last.get();
-        assert_eq!(last, &"misc".to_string());
-        headings.remove_miscellaneous();
-        assert_eq!(headings.len(), 1);
-        assert!(headings.last_entry().is_some());
-        let last = headings.last_entry().unwrap();
-        let last = last.get();
-        assert_ne!(last, &"misc".to_string());
+    fn test_keep_misc_last() {
+        let added_group = create_added_group();
+        let added_key = added_group.name().to_string();
+        let misc_group = create_misc_group();
+        let misc_key = misc_group.name().to_string();
+        let mut groups = HashMap::new();
+        groups.add_group(added_group);
+        assert!(groups.contains_key(&added_key));
+        groups.add_group(misc_group);
+        assert!(groups.contains_key(&misc_key));
     }
 
     #[test]
     fn test_adding_group_idempotence() {
-        let mut headings = BTreeMap::new();
-        headings.add_group("added");
-        assert_eq!(headings.len(), 1);
-        assert!(headings.last_entry().is_some());
-        headings.add_group("added");
-        assert_eq!(headings.len(), 1);
-        assert!(headings.last_entry().is_some());
+        let added_group = create_added_group();
+        let added_key = added_group.name().to_string();
+        let misc_group = create_misc_group();
+        let mut groups = HashMap::new();
+        groups.add_group(added_group.clone());
+        groups.add_group(misc_group);
+        assert_eq!(groups.len(), 2);
+        groups.add_group(added_group.clone());
+        assert_eq!(groups.len(), 2);
+
+        groups.remove_group(&added_key);
+        assert_eq!(groups.len(), 1);
+        groups.add_group(added_group.clone());
+        assert_eq!(groups.len(), 2);
     }
 }
