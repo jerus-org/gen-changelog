@@ -188,7 +188,7 @@ mod tests {
     }
 
     #[test]
-    fn build_multi_value_idividually_group() {
+    fn build_multi_value_individually_group() {
         let group_builder = Group::builder();
         assert!(!group_builder.publish);
         let mut group_builder = group_builder.set_name("test");
