@@ -9,12 +9,11 @@ use git2::Repository;
 use header::Header;
 use lazy_regex::{Lazy, Regex, lazy_regex};
 use link::Link;
-use section::Section;
+use section::{Section, WalkSetup};
 use tag::Tag;
 use thiserror::Error;
 
 use crate::Config;
-use section::WalkSetup;
 
 const DEFAULT_FOOTER: &str = r##""##;
 
