@@ -3,7 +3,7 @@ use std::collections::HashSet;
 /// Group defines the attributes for a collection of commits to write under a single header in the changelog file.
 ///
 #[derive(Debug, Clone)]
-pub(crate) struct Group {
+pub struct Group {
     /// The name of the group used as the third level heading in the change log.
     name: String,
     /// Flag to indicate if the group should be written.
@@ -13,7 +13,7 @@ pub(crate) struct Group {
 }
 
 impl Group {
-    pub(crate) fn builder() -> GroupBuilder<NoName, NoCCType> {
+    pub fn builder() -> GroupBuilder<NoName, NoCCType> {
         GroupBuilder {
             name: NoName,
             publish: false,
@@ -21,40 +21,40 @@ impl Group {
         }
     }
 
-    pub(crate) fn name(&self) -> &str {
+    pub fn name(&self) -> &str {
         &self.name
     }
 
-    pub(crate) fn publish(&self) -> bool {
+    pub fn publish(&self) -> bool {
         self.publish
     }
 
-    pub(crate) fn cc_types(&self) -> Vec<&str> {
+    pub fn cc_types(&self) -> Vec<&str> {
         self.cc_types.iter().map(|s| s.as_str()).collect()
     }
 }
 
-pub(crate) enum GroupBuilderError {
+pub enum GroupBuilderError {
     NoNameSet,
     NoAssociatedTypes,
 }
 
 // states for the `name` field
 #[derive(Debug, Clone)]
-pub(crate) struct Name(String);
+pub struct Name(String);
 #[derive(Debug, Clone)]
-pub(crate) struct NoName;
+pub struct NoName;
 
 // states for the `cc_type` field
 #[derive(Debug, Clone)]
-pub(crate) struct CCType(HashSet<String>);
+pub struct CCType(HashSet<String>);
 #[derive(Debug, Clone)]
-pub(crate) struct NoCCType;
+pub struct NoCCType;
 
 /// Group defines the attributes for a collection of commits to write under a single header in the changelog file.
 ///
 #[derive(Debug, Clone)]
-pub(crate) struct GroupBuilder<N, C> {
+pub struct GroupBuilder<N, C> {
     /// The name of the group used as the third level heading in the change log.
     name: N,
     /// Flag to indicate if the group should be written.
@@ -64,7 +64,7 @@ pub(crate) struct GroupBuilder<N, C> {
 }
 
 impl GroupBuilder<Name, CCType> {
-    pub(crate) fn build(self) -> Group {
+    pub fn build(self) -> Group {
         Group {
             name: self.name.0,
             publish: self.publish,
@@ -74,19 +74,19 @@ impl GroupBuilder<Name, CCType> {
 }
 
 impl<N, C> GroupBuilder<N, C> {
-    pub(crate) fn allow_publication(&mut self) -> &mut Self {
+    pub fn allow_publication(&mut self) -> &mut Self {
         self.publish = true;
         self
     }
 
-    pub(crate) fn prevent_publication(&mut self) -> &mut Self {
+    pub fn prevent_publication(&mut self) -> &mut Self {
         self.publish = false;
         self
     }
 }
 
 impl<C> GroupBuilder<NoName, C> {
-    pub(crate) fn set_name(self, name: &str) -> GroupBuilder<Name, C> {
+    pub fn set_name(self, name: &str) -> GroupBuilder<Name, C> {
         let name = Name(name.to_string());
 
         GroupBuilder {
@@ -101,7 +101,7 @@ impl<N> GroupBuilder<N, CCType>
 where
     N: std::clone::Clone,
 {
-    pub(crate) fn insert_cc_type(self, value: &str) -> Self {
+    pub fn insert_cc_type(self, value: &str) -> Self {
         let mut new_group = self.clone();
         let mut set = self.cc_types.0;
         set.insert(value.to_string());
@@ -109,7 +109,7 @@ where
         new_group
     }
 
-    pub(crate) fn insert_cc_types(self, values: &[&str]) -> Self {
+    pub fn insert_cc_types(self, values: &[&str]) -> Self {
         let mut new_group = self.clone();
         let mut set = self.cc_types.0;
 
@@ -121,7 +121,7 @@ where
         new_group
     }
 
-    pub(crate) fn remove_cc_type(self, value: &str) -> Self {
+    pub fn remove_cc_type(self, value: &str) -> Self {
         let mut new_group = self.clone();
         let mut set = self.cc_types.0;
         if set.len() == 1 {
@@ -138,7 +138,7 @@ where
 }
 
 impl<N> GroupBuilder<N, NoCCType> {
-    pub(crate) fn insert_cc_type(self, value: &str) -> GroupBuilder<N, CCType>
+    pub fn insert_cc_type(self, value: &str) -> GroupBuilder<N, CCType>
     where
         N: std::clone::Clone,
     {
@@ -151,7 +151,7 @@ impl<N> GroupBuilder<N, NoCCType> {
         }
     }
 
-    pub(crate) fn insert_cc_types(self, values: &[&str]) -> GroupBuilder<N, CCType>
+    pub fn insert_cc_types(self, values: &[&str]) -> GroupBuilder<N, CCType>
     where
         N: std::clone::Clone,
     {
@@ -171,8 +171,6 @@ impl<N> GroupBuilder<N, NoCCType> {
 
 #[cfg(test)]
 mod tests {
-    use crate::config::group;
-
     use super::*;
 
     #[test]
