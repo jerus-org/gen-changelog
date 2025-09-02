@@ -1,40 +1,38 @@
 use std::collections::BTreeMap;
 
 pub(crate) trait HeadingMgmt {
-    fn add_heading(&mut self, group: &str) -> &mut Self;
-    fn remove_heading(&mut self, group: &str) -> &mut Self;
-    fn add_miscellaneous(&mut self) -> &mut Self {
-        self
-    }
-    fn remove_miscellaneous(&mut self) -> &mut Self {
-        self
-    }
+    fn add_heading(&mut self, heading: &str) -> &mut Self;
+    fn remove_heading(&mut self, heading: &str) -> &mut Self;
+    fn add_miscellaneous(&mut self) -> &mut Self;
+    fn remove_miscellaneous(&mut self) -> &mut Self;
+    fn contains(&self, heading: &str) -> bool;
 }
 
 impl HeadingMgmt for BTreeMap<u8, String> {
-    fn add_heading(&mut self, group: &str) -> &mut Self {
+    fn add_heading(&mut self, heading: &str) -> &mut Self {
         let i = self.len() as u8 + 1; // order from 1
         if i == u8::MAX {
             log::warn!("maximum number of groups created ({})", u8::MAX);
             self
-        } else if self.iter().any(|g| g.1 == &group.to_string()) {
+        } else if self.iter().any(|g| g.1 == &heading.to_string()) {
             self
         } else {
-            if self.iter().any(|g| g.1 == &"Miscellaneous".to_string()) && group != "Miscellaneous"
+            if self.iter().any(|g| g.1 == &"Miscellaneous".to_string())
+                && heading != "Miscellaneous"
             {
-                self.insert(i - 1, group.to_string());
+                self.insert(i - 1, heading.to_string());
                 self.insert(i, "Miscellaneous".to_string());
             } else {
-                self.insert(i, group.to_string());
+                self.insert(i, heading.to_string());
             }
 
             self
         }
     }
 
-    fn remove_heading(&mut self, group: &str) -> &mut Self {
+    fn remove_heading(&mut self, heading: &str) -> &mut Self {
         let bt = self.clone();
-        let Some(entry) = bt.iter().find(|e| e.1 == group) else {
+        let Some(entry) = bt.iter().find(|e| e.1 == heading) else {
             return self;
         };
         let key = entry.0;
@@ -54,6 +52,10 @@ impl HeadingMgmt for BTreeMap<u8, String> {
 
     fn remove_miscellaneous(&mut self) -> &mut Self {
         self.remove_heading("Miscellaneous")
+    }
+
+    fn contains(&self, heading: &str) -> bool {
+        self.iter().any(|e| e.1 == heading)
     }
 }
 
