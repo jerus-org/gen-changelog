@@ -2,6 +2,7 @@ use std::collections::BTreeMap;
 
 pub(crate) trait HeadingMgmt {
     fn add_heading(&mut self, group: &str) -> &mut Self;
+    fn remove_heading(&mut self, group: &str) -> &mut Self;
     fn add_miscellaneous(&mut self) -> &mut Self {
         self
     }
@@ -31,6 +32,17 @@ impl HeadingMgmt for BTreeMap<u8, String> {
         }
     }
 
+    fn remove_heading(&mut self, group: &str) -> &mut Self {
+        let bt = self.clone();
+        let Some(entry) = bt.iter().find(|e| e.1 == group) else {
+            return self;
+        };
+        let key = entry.0;
+        self.remove(key);
+
+        self
+    }
+
     fn add_miscellaneous(&mut self) -> &mut Self {
         if self.iter().any(|g| g.1 == "Miscellaneous") {
             self
@@ -41,13 +53,7 @@ impl HeadingMgmt for BTreeMap<u8, String> {
     }
 
     fn remove_miscellaneous(&mut self) -> &mut Self {
-        if self.iter().any(|g| g.1 == "Miscellaneous") {
-            let key = self.len() as u8 - 1;
-            self.remove(&key);
-            self
-        } else {
-            self
-        }
+        self.remove_heading("Miscellaneous")
     }
 }
 
