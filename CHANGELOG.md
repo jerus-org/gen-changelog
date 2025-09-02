@@ -52,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(config)-enhance group and heading management(pr [#37])
 - ♻️ refactor(changelog)-enhance section headings management(pr [#42])
 - ♻️ refactor(section)-modify section structure and initialization(pr [#44])
+- ♻️ refactor(change_log)-streamline commit reporting logic(pr [#45])
 
 ### Fixed
 
@@ -101,3 +102,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#42]: https://github.com/jerus-org/gen-changelog/pull/42
 [#43]: https://github.com/jerus-org/gen-changelog/pull/43
 [#44]: https://github.com/jerus-org/gen-changelog/pull/44
+[#45]: https://github.com/jerus-org/gen-changelog/pull/45
