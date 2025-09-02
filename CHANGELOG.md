@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ add GroupBuilder for flexible group creation(pr [#33])
 - ✨ introduce Group struct in group management(pr [#35])
 - ✨ implement heading management feature(pr [#36])
+- ✨ add group management functionality(pr [#38])
 
 ### Changed
 
@@ -87,3 +88,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#35]: https://github.com/jerus-org/gen-changelog/pull/35
 [#36]: https://github.com/jerus-org/gen-changelog/pull/36
 [#37]: https://github.com/jerus-org/gen-changelog/pull/37
+[#38]: https://github.com/jerus-org/gen-changelog/pull/38
