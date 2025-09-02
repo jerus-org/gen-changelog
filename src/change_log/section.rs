@@ -1,8 +1,10 @@
 mod cc_commit;
 mod change_log_class;
 
+use crate::config::heading_mgmt::HeadingMgmt;
+
 use std::{
-    collections::{BTreeMap, HashMap, HashSet},
+    collections::{BTreeMap, HashMap},
     fmt::Display,
 };
 
@@ -23,13 +25,13 @@ pub(crate) enum WalkSetup<'a> {
     ReleaseToStart(&'a Tag),
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Clone)]
 pub(crate) struct Section {
     tag: Option<Tag>,
     title: String,
     version: Option<Version>,
     date: Option<NaiveDate>,
-    headings: HashSet<String>,
+    headings: BTreeMap<u8, String>,
     description: String,
     yanked: bool,
     // commits in the section grouped by class
@@ -113,17 +115,30 @@ impl Display for Section {
 }
 
 impl Section {
-    pub(crate) fn new(tag: Option<Tag>, config_headings: &BTreeMap<u8, String>) -> Self {
-        let mut headings = HashSet::new();
-        for heading in config_headings.iter().map(|item| item.1.to_string()) {
-            headings.insert(heading);
-        }
+    pub(crate) fn new(tag: Option<Tag>, headings: BTreeMap<u8, String>) -> Self {
         log::debug!("Section headings to publish: {headings:?}");
 
         Section {
             tag,
             headings,
-            ..Default::default()
+            title: Default::default(),
+            version: Default::default(),
+            date: Default::default(),
+            description: Default::default(),
+            yanked: Default::default(),
+            commits: Default::default(),
+            added_commits: Default::default(),
+            fixed_commits: Default::default(),
+            changed_commits: Default::default(),
+            security_commits: Default::default(),
+            build_commits: Default::default(),
+            test_commits: Default::default(),
+            documentation_commits: Default::default(),
+            chore_commits: Default::default(),
+            ci_commits: Default::default(),
+            deprecated_commits: Default::default(),
+            removed_commits: Default::default(),
+            misc_commits: Default::default(),
         }
     }
 
