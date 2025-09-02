@@ -38,7 +38,7 @@ impl Group {
         self
     }
 
-    pub fn set_no_publish(&mut self) -> &mut Self {
+    pub fn unset_publish(&mut self) -> &mut Self {
         self.publish = false;
         self
     }
