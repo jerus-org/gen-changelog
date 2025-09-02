@@ -34,6 +34,7 @@ pub(crate) struct Section {
     headings: BTreeMap<u8, String>,
     description: String,
     yanked: bool,
+    summary_flag: bool,
     // commits in the section grouped by class
     commits: HashMap<String, Vec<ConvCommit>>,
     // Added for new features.
@@ -80,6 +81,7 @@ impl Section {
             date: Default::default(),
             description: Default::default(),
             yanked: Default::default(),
+            summary_flag: true,
             commits: Default::default(),
             added_commits: Default::default(),
             fixed_commits: Default::default(),
@@ -107,7 +109,7 @@ impl Section {
                 revwalk.push_head()?;
                 log::debug!("Walking from the HEAD to the first commit");
                 self.get_commits(revwalk, repository);
-                log::debug!("{}", self.report_status());
+                log::debug!("{}", self.report_status(false));
             }
             WalkSetup::HeadToRelease(tag) => {
                 revwalk.push_head()?;
@@ -115,7 +117,7 @@ impl Section {
                 revwalk.hide_ref(&reference)?;
                 log::debug!("Walking from the HEAD to the last release `{tag}`",);
                 self.get_commits(revwalk, repository);
-                log::debug!("{}", self.report_status());
+                log::debug!("{}", self.report_status(false));
             }
             WalkSetup::FromReleaseToRelease(from_tag, to_tag) => {
                 revwalk.push(*from_tag.id())?;
@@ -123,13 +125,13 @@ impl Section {
                 revwalk.hide_ref(&reference)?;
                 log::debug!("Walking from the release `{from_tag}` to release `{to_tag}`");
                 self.get_commits(revwalk, repository);
-                log::debug!("{}", self.report_status());
+                log::debug!("{}", self.report_status(false));
             }
             WalkSetup::ReleaseToStart(tag) => {
                 revwalk.push(*tag.id())?;
                 log::debug!("Walking from the first release `{tag}` to first commit");
                 self.get_commits(revwalk, repository);
-                log::debug!("{}", self.report_status());
+                log::debug!("{}", self.report_status(false));
             }
         }
 
@@ -190,22 +192,39 @@ impl Section {
         self
     }
 
-    pub(crate) fn report_status(&self) -> String {
-        let mut report = format!(
-            "Section: {} contains:",
-            if let Some(tag) = &self.tag {
-                tag.to_string()
-            } else {
-                "Unreleased".to_string()
+    pub(crate) fn report_status(&self, summary: bool) -> String {
+        if summary {
+            let mut report = String::from("Summary: ");
+            let mut comma_flag = false;
+            for (h, c) in self.commits.iter() {
+                if h == "Unknown" {
+                    continue;
+                }
+                if comma_flag {
+                    report.push_str(", ")
+                };
+                report.push_str(&format!("{}[{}]", h, c.len()));
+                comma_flag = true;
             }
-        );
-
-        for (h, c) in self.commits.iter() {
             report.push('\n');
-            report.push_str(&format!("  {} commits under {} heading", c.len(), h));
-        }
+            report.push('\n');
+            report
+        } else {
+            let mut report = format!(
+                "Section: {} contains:",
+                if let Some(tag) = &self.tag {
+                    tag.to_string()
+                } else {
+                    "Unreleased".to_string()
+                }
+            );
 
-        report
+            for (h, c) in self.commits.iter() {
+                report.push('\n');
+                report.push_str(&format!("  {} commits under {} heading", c.len(), h));
+            }
+            report
+        }
     }
 
     pub(crate) fn version(&self) -> Option<String> {
@@ -233,8 +252,16 @@ impl Section {
             "## [Unreleased]".to_string()
         };
 
-        let mut contains_commits = false;
         let mut section_string = String::new();
+        let mut contains_commits = false;
+
+        if self.summary_flag {
+            contains_commits = true;
+            section_string.push_str(&header);
+            section_string.push('\n');
+            section_string.push('\n');
+            section_string.push_str(&self.report_status(true));
+        }
 
         for heading in self.headings.values() {
             log::trace!("Heading `{heading}` flag `{contains_commits}` string `{section_string}`");
