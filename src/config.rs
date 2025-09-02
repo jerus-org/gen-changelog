@@ -2,7 +2,7 @@ use std::collections::{BTreeMap, HashMap};
 
 mod group;
 mod group_mgmt;
-mod heading_mgmt;
+pub(crate) mod heading_mgmt;
 
 use group::Group;
 use group_mgmt::GroupMgmt;
