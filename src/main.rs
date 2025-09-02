@@ -15,8 +15,7 @@ fn main() {
     log::debug!("base config to build on: {config:?}");
 
     config.publish_group("Security");
-    config.publish_group("Chore");
-    config.publish_group("Miscellaneous");
+    // config.publish_group("Chore");
 
     let mut change_log_builder = ChangeLog::builder();
     let change_log = change_log_builder
