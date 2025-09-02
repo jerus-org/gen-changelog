@@ -118,6 +118,16 @@ impl Config {
         self
     }
 
+    /// Set a group not to be published in the changelog.
+    ///
+    /// The flag is updated in the group record and the heading is added to the
+    /// next available slot on the headings list.
+    pub fn unpublish_group(&mut self, group_name: &str) -> &mut Self {
+        self.groups.unset_to_publish(group_name);
+        self.headings.remove_heading(group_name);
+        self
+    }
+
     /// Add a group to the group collection.
     ///
     /// The group name is added to the headings in the next available position if publish flag is set.
