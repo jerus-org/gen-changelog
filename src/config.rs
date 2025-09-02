@@ -118,6 +118,19 @@ impl Config {
         self
     }
 
+    /// Add a group to the group collection.
+    ///
+    /// The group name is added to the headings in the next available position if publish flag is set.
+    pub fn add_group(&mut self, group: Group) -> &mut Self {
+        if group.publish() {
+            let name = group.name().to_string();
+            self.headings.add_group(&name);
+        }
+
+        self.groups.add_group(group);
+        self
+    }
+
     /// Return a reference to release_pattern
     pub fn release_pattern(&self) -> &ReleasePattern {
         &self.release_pattern
