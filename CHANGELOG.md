@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(section)-enhance commit grouping by class(pr [#31])
 - ♻️ refactor(group)-implement typed builder pattern(pr [#34])
 - ♻️ refactor(config)-enhance group and heading management(pr [#37])
+- ♻️ refactor(changelog)-enhance section headings management(pr [#42])
 
 ### Fixed
 
@@ -95,3 +96,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#39]: https://github.com/jerus-org/gen-changelog/pull/39
 [#40]: https://github.com/jerus-org/gen-changelog/pull/40
 [#41]: https://github.com/jerus-org/gen-changelog/pull/41
+[#42]: https://github.com/jerus-org/gen-changelog/pull/42
