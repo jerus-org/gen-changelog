@@ -93,7 +93,7 @@ impl Default for Config {
         let mut headings = BTreeMap::new();
         for group in publish_groups {
             let heading = group.name();
-            headings.add_group(heading);
+            headings.add_heading(heading);
         }
 
         let release_pattern = ReleasePattern::Prefix(String::from("v"));
@@ -114,7 +114,7 @@ impl Config {
     /// next available slot on the headings list.
     pub fn publish_group(&mut self, group_name: &str) -> &mut Self {
         self.groups.set_to_publish(group_name);
-        self.headings.add_group(group_name);
+        self.headings.add_heading(group_name);
         self
     }
 
@@ -124,7 +124,7 @@ impl Config {
     pub fn add_group(&mut self, group: Group) -> &mut Self {
         if group.publish() {
             let name = group.name().to_string();
-            self.headings.add_group(&name);
+            self.headings.add_heading(&name);
         }
 
         self.groups.add_group(group);
