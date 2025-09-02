@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use gen_changelog::ChangeLog;
+use gen_changelog::{ChangeLog, Config};
 use git2::Repository;
 
 fn main() {
@@ -10,9 +10,17 @@ fn main() {
     let repo_dir = PathBuf::new().join(".");
     let repository = Repository::open(&repo_dir)
         .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
-    let mut change_log_builder = ChangeLog::builder();
 
+    let mut config = Config::default();
+    log::debug!("base config to build on: {config:?}");
+
+    config.publish_group("Security");
+    config.publish_group("Chore");
+    config.publish_group("Miscellaneous");
+
+    let mut change_log_builder = ChangeLog::builder();
     let change_log = change_log_builder
+        .with_config(config)
         .with_repository(&repository)
         .unwrap()
         .build();
