@@ -103,6 +103,7 @@ impl ChangeLogBuilder {
     /// Replace default config with custom config
     pub fn with_config(&mut self, config: Config) -> &mut Self {
         self.config = config;
+        log::debug!("current config: {:?}", self.config);
         self
     }
 
@@ -181,7 +182,7 @@ impl ChangeLogBuilder {
         let mut revwalk = repository.revwalk()?;
         revwalk.set_sorting(git2::Sort::TIME)?;
 
-        let mut current_section = Section::new(None);
+        let mut current_section = Section::new(None, self.config.headings());
 
         // Case where no release has been made - no version tags
         if version_tags.is_empty() {
@@ -200,7 +201,7 @@ impl ChangeLogBuilder {
                     break;
                 };
 
-                let mut section = Section::new(Some(tag.clone()));
+                let mut section = Section::new(Some(tag.clone()), self.config.headings());
 
                 let next_tag = peekable_tags.peek();
 
