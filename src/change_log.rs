@@ -15,8 +15,6 @@ use thiserror::Error;
 
 use crate::Config;
 
-const DEFAULT_FOOTER: &str = r##""##;
-
 pub static REMOTE: Lazy<Regex> = lazy_regex!(
     r"^((https://github\.com/)|(git@github.com:))(?P<owner>[a-z\-|A-Z]+)/(?P<repo>[a-z\-_A-Z]+)\.git$$"
 );
