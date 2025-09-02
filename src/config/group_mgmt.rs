@@ -6,6 +6,7 @@ pub(crate) trait GroupMgmt {
     fn add_group(&mut self, group: Group) -> &mut Self;
     fn remove_group(&mut self, key: &str) -> &mut Self;
     fn set_to_publish(&mut self, group_name: &str) -> &mut Self;
+    fn unset_to_publish(&mut self, group_name: &str) -> &mut Self;
 }
 
 impl GroupMgmt for HashMap<String, Group> {
@@ -24,6 +25,16 @@ impl GroupMgmt for HashMap<String, Group> {
     fn set_to_publish(&mut self, group_name: &str) -> &mut Self {
         if let Some(group) = self.get_mut(group_name) {
             group.set_publish();
+        } else {
+            log::warn!("group to publish was not found")
+        };
+
+        self
+    }
+
+    fn unset_to_publish(&mut self, group_name: &str) -> &mut Self {
+        if let Some(group) = self.get_mut(group_name) {
+            group.unset_publish();
         } else {
             log::warn!("group to publish was not found")
         };
