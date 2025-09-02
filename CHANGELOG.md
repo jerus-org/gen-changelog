@@ -56,6 +56,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 🐛 config: correct typo in module import(pr [#18])
 - 🐛 change_log: correct changelog section placement(pr [#41])
+- 🐛 config: correct heading index initialization(pr [#43])
 
 [#3]: https://github.com/jerus-org/gen-changelog/pull/3
 [#4]: https://github.com/jerus-org/gen-changelog/pull/4
@@ -97,3 +98,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#40]: https://github.com/jerus-org/gen-changelog/pull/40
 [#41]: https://github.com/jerus-org/gen-changelog/pull/41
 [#42]: https://github.com/jerus-org/gen-changelog/pull/42
+[#43]: https://github.com/jerus-org/gen-changelog/pull/43
