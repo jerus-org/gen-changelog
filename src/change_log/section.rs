@@ -2,7 +2,7 @@ mod cc_commit;
 mod change_log_class;
 
 use std::{
-    collections::{HashMap, HashSet},
+    collections::{BTreeMap, HashMap, HashSet},
     fmt::Display,
 };
 
@@ -80,18 +80,18 @@ impl Display for Section {
             "## [Unreleased]".to_string()
         };
 
-        let added = self.commits_markdown("added", &self.added_commits);
-        let fixed = self.commits_markdown("fixed", &self.fixed_commits);
-        let changed = self.commits_markdown("changed", &self.changed_commits);
-        let security = self.commits_markdown("security", &self.security_commits);
-        let build = self.commits_markdown("security", &self.build_commits);
-        let test = self.commits_markdown("test", &self.test_commits);
-        let documentation = self.commits_markdown("documentation", &self.documentation_commits);
-        let chore = self.commits_markdown("chore", &self.chore_commits);
-        let ci = self.commits_markdown("ci", &self.ci_commits);
-        let deprecated = self.commits_markdown("deprecated", &self.deprecated_commits);
-        let removed = self.commits_markdown("removed", &self.removed_commits);
-        let misc = self.commits_markdown("misc", &self.misc_commits);
+        let added = self.commits_markdown("Added", &self.added_commits);
+        let fixed = self.commits_markdown("Fixed", &self.fixed_commits);
+        let changed = self.commits_markdown("Changed", &self.changed_commits);
+        let security = self.commits_markdown("Security", &self.security_commits);
+        let build = self.commits_markdown("Security", &self.build_commits);
+        let test = self.commits_markdown("Test", &self.test_commits);
+        let documentation = self.commits_markdown("Documentation", &self.documentation_commits);
+        let chore = self.commits_markdown("Chore", &self.chore_commits);
+        let ci = self.commits_markdown("Continuous Integration", &self.ci_commits);
+        let deprecated = self.commits_markdown("Deprecated", &self.deprecated_commits);
+        let removed = self.commits_markdown("Removed", &self.removed_commits);
+        let misc = self.commits_markdown("Miscellaneous", &self.misc_commits);
 
         writeln!(
             f,
@@ -113,11 +113,12 @@ impl Display for Section {
 }
 
 impl Section {
-    pub(crate) fn new(tag: Option<Tag>) -> Self {
+    pub(crate) fn new(tag: Option<Tag>, config_headings: &BTreeMap<u8, String>) -> Self {
         let mut headings = HashSet::new();
-        headings.insert(String::from("added"));
-        headings.insert(String::from("fixed"));
-        headings.insert(String::from("changed"));
+        for heading in config_headings.iter().map(|item| item.1.to_string()) {
+            headings.insert(heading);
+        }
+        log::debug!("Section headings to publish: {headings:?}");
 
         Section {
             tag,
