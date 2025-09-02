@@ -92,10 +92,10 @@ impl Default for Config {
         log::debug!("{} groups to publish in change log", publish_groups.len());
 
         let mut headings = BTreeMap::new();
-        for group in publish_groups {
-            let heading = group.name();
-            headings.add_heading(heading);
-        }
+        headings.add_heading("Added");
+        headings.add_heading("Fixed");
+        headings.add_heading("Changed");
+
         log::debug!("default headings to publish {headings:?}");
 
         let release_pattern = ReleasePattern::Prefix(String::from("v"));
