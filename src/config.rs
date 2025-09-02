@@ -81,6 +81,7 @@ impl Default for Config {
             let group = Group::new_with_name_types_and_publish_flag(g.0, g.1, g.2);
             groups.add_group(group);
         }
+        log::debug!("default groups {groups:?}");
 
         let publish_groups: Vec<&Group> = groups
             .iter()
@@ -95,15 +96,24 @@ impl Default for Config {
             let heading = group.name();
             headings.add_heading(heading);
         }
+        log::debug!("default headings to publish {headings:?}");
 
         let release_pattern = ReleasePattern::Prefix(String::from("v"));
 
         Self {
-            groups: HashMap::new(),
-            headings: BTreeMap::new(),
+            groups,
+            headings,
             display_sections: DisplaySections::default(),
             release_pattern,
         }
+    }
+}
+
+impl Config {
+    /// Returns a reference to the btree storing the ordered list headings to
+    /// publish in the change log.
+    pub fn headings(&self) -> &BTreeMap<u8, String> {
+        &self.headings
     }
 }
 
@@ -115,6 +125,7 @@ impl Config {
     pub fn publish_group(&mut self, group_name: &str) -> &mut Self {
         self.groups.set_to_publish(group_name);
         self.headings.add_heading(group_name);
+        log::debug!("headings to publish: `{:?}`", self.headings);
         self
     }
 
@@ -130,7 +141,8 @@ impl Config {
 
     /// Add a group to the group collection.
     ///
-    /// The group name is added to the headings in the next available position if publish flag is set.
+    /// The group name is added to the headings in the next available position
+    /// if publish flag is set.
     pub fn add_group(&mut self, group: Group) -> &mut Self {
         if group.publish() {
             let name = group.name().to_string();
