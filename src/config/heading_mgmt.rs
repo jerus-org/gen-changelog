@@ -13,7 +13,7 @@ pub(crate) trait HeadingMgmt {
 
 impl HeadingMgmt for BTreeMap<u8, String> {
     fn add_heading(&mut self, group: &str) -> &mut Self {
-        let i = self.len() as u8;
+        let i = self.len() as u8 + 1; // order from 1
         if i == u8::MAX {
             log::warn!("maximum number of groups created ({})", u8::MAX);
             self
