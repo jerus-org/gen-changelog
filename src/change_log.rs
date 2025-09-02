@@ -51,7 +51,7 @@ impl Display for ChangeLog {
             .map(|s| s.to_string())
             .collect::<String>();
         let links = self.links.iter().map(|s| s.to_string()).collect::<String>();
-        writeln!(f, "{}{}{}", self.header, sections, links)
+        writeln!(f, "{}\n{}{}", self.header, sections, links)
     }
 }
 
