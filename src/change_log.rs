@@ -182,7 +182,7 @@ impl ChangeLogBuilder {
         let mut revwalk = repository.revwalk()?;
         revwalk.set_sorting(git2::Sort::TIME)?;
 
-        let mut current_section = Section::new(None, self.config.headings());
+        let mut current_section = Section::new(None, self.config.headings().clone());
 
         // Case where no release has been made - no version tags
         if version_tags.is_empty() {
@@ -201,7 +201,7 @@ impl ChangeLogBuilder {
                     break;
                 };
 
-                let mut section = Section::new(Some(tag.clone()), self.config.headings());
+                let mut section = Section::new(Some(tag.clone()), self.config.headings().clone());
 
                 let next_tag = peekable_tags.peek();
 
