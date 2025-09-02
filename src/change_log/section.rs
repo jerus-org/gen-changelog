@@ -3,10 +3,7 @@ mod change_log_class;
 
 use crate::config::heading_mgmt::HeadingMgmt;
 
-use std::{
-    collections::{BTreeMap, HashMap},
-    fmt::Display,
-};
+use std::{collections::BTreeMap, fmt::Display};
 
 use chrono::NaiveDate;
 use git2::{Repository, Revwalk};
@@ -36,7 +33,7 @@ pub(crate) struct Section {
     yanked: bool,
     summary_flag: bool,
     // commits in the section grouped by class
-    commits: HashMap<String, Vec<ConvCommit>>,
+    commits: BTreeMap<String, Vec<ConvCommit>>,
     // Added for new features.
     added_commits: Vec<ConvCommit>,
     // Fixed for any bug fixes.
