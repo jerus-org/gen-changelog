@@ -34,30 +34,6 @@ pub(crate) struct Section {
     summary_flag: bool,
     // commits in the section grouped by class
     commits: BTreeMap<String, Vec<ConvCommit>>,
-    // Added for new features.
-    added_commits: Vec<ConvCommit>,
-    // Fixed for any bug fixes.
-    fixed_commits: Vec<ConvCommit>,
-    // Changed for changes in existing functionality.
-    changed_commits: Vec<ConvCommit>,
-    // Security in case of vulnerabilities.
-    security_commits: Vec<ConvCommit>,
-    // Build changes .
-    build_commits: Vec<ConvCommit>,
-    // Test commits for changes to testing code
-    test_commits: Vec<ConvCommit>,
-    // Documentation for updates to code documentation and readme
-    documentation_commits: Vec<ConvCommit>,
-    // Chores commits
-    chore_commits: Vec<ConvCommit>,
-    // CI commits
-    ci_commits: Vec<ConvCommit>,
-    // Deprecated for soon-to-be removed features.
-    deprecated_commits: Vec<ConvCommit>,
-    // Removed for now removed features.
-    removed_commits: Vec<ConvCommit>,
-    // Miscellaneous commits not fitting any previous classification.
-    misc_commits: Vec<ConvCommit>,
 }
 
 impl Display for Section {
@@ -80,18 +56,6 @@ impl Section {
             yanked: Default::default(),
             summary_flag: true,
             commits: Default::default(),
-            added_commits: Default::default(),
-            fixed_commits: Default::default(),
-            changed_commits: Default::default(),
-            security_commits: Default::default(),
-            build_commits: Default::default(),
-            test_commits: Default::default(),
-            documentation_commits: Default::default(),
-            chore_commits: Default::default(),
-            ci_commits: Default::default(),
-            deprecated_commits: Default::default(),
-            removed_commits: Default::default(),
-            misc_commits: Default::default(),
         }
     }
 
@@ -169,22 +133,6 @@ impl Section {
         let class = ChangeLogClass::new(&conventional_commit.kind_string());
 
         self.add_commit_to_hashmap(&class.to_string(), conventional_commit.clone());
-
-        match class {
-            ChangeLogClass::Added => self.added_commits.push(conventional_commit),
-            ChangeLogClass::Fixed => self.fixed_commits.push(conventional_commit),
-            ChangeLogClass::Changed => self.changed_commits.push(conventional_commit),
-            ChangeLogClass::Security => self.security_commits.push(conventional_commit),
-            ChangeLogClass::Build => self.build_commits.push(conventional_commit),
-            ChangeLogClass::Test => self.test_commits.push(conventional_commit),
-            ChangeLogClass::Documentation => self.documentation_commits.push(conventional_commit),
-            ChangeLogClass::Chore => self.chore_commits.push(conventional_commit),
-            ChangeLogClass::CI => self.ci_commits.push(conventional_commit),
-            ChangeLogClass::Deprecated => self.deprecated_commits.push(conventional_commit),
-            ChangeLogClass::Removed => self.removed_commits.push(conventional_commit),
-            ChangeLogClass::Misc => self.misc_commits.push(conventional_commit),
-            ChangeLogClass::Unclassified => self.misc_commits.push(conventional_commit),
-        }
 
         self
     }
