@@ -186,14 +186,14 @@ impl ChangeLogBuilder {
         // Case where no release has been made - no version tags
         if version_tags.is_empty() {
             current_section.walk_repository(WalkSetup::NoReleases, repository, &mut revwalk)?;
+            self.sections.push(current_section);
         } else {
+            // get the unreleased
             let setup = WalkSetup::HeadToRelease(version_tags.first().unwrap());
             current_section.walk_repository(setup, repository, &mut revwalk)?;
-        }
+            self.sections.push(current_section);
 
-        self.sections.push(current_section);
-
-        if !version_tags.is_empty() {
+            // get the releases
             let mut peekable_tags = version_tags.iter().peekable();
             loop {
                 let Some(tag) = peekable_tags.next() else {
