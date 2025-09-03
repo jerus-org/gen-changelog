@@ -12,7 +12,7 @@ fn main() {
         .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
 
     let mut config = Config::default();
-    log::debug!("base config to build on: {config:?}");
+    log::trace!("base config to build on: {config:?}");
 
     config.publish_group("Security");
     // config.publish_group("Chore");
