@@ -32,6 +32,9 @@ pub enum ChangeLogError {
     /// Error from the git2 crate
     #[error("Git2 says: {0}")]
     Git2Error(#[from] git2::Error),
+    /// Error from the std io
+    #[error("io error: {0}")]
+    IOError(#[from] std::io::Error),
     // /// Error from the regex crate
     // #[error("Regex says: {0}")]
     // RegexError(#[from] regex::Error),
@@ -48,6 +51,12 @@ impl ChangeLog {
     /// create new ChangeLog struct
     pub fn builder() -> ChangeLogBuilder {
         ChangeLogBuilder::new()
+    }
+
+    /// Write the changelog to the root directory
+    pub fn save(&self) -> Result<(), ChangeLogError> {
+        std::fs::write("CHANGELOG.md", self.to_string().as_str())?;
+        Ok(())
     }
 }
 
