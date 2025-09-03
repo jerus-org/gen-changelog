@@ -1,15 +1,18 @@
 mod cc_commit;
 mod section_header;
 
-use crate::{
-    change_log::section::section_header::SectionHeader, config::heading_mgmt::HeadingMgmt,
-};
-
 use std::{collections::BTreeMap, fmt::Display};
 
 use git2::{Repository, Revwalk};
 
-use crate::change_log::{ChangeLogError, section::cc_commit::ConvCommit, tag::Tag};
+use crate::{
+    change_log::{
+        ChangeLogError,
+        section::{cc_commit::ConvCommit, section_header::SectionHeader},
+        tag::Tag,
+    },
+    config::heading_mgmt::HeadingMgmt,
+};
 
 pub(crate) enum WalkSetup<'a> {
     NoReleases,
