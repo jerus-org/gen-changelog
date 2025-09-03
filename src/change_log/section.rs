@@ -1,6 +1,6 @@
 mod cc_commit;
 
-use crate::config::heading_mgmt::HeadingMgmt;
+use crate::{change_log::link::Link, config::heading_mgmt::HeadingMgmt};
 
 use std::{collections::BTreeMap, fmt::Display};
 
@@ -28,8 +28,9 @@ pub(crate) struct Section {
     yanked: bool,
     summary_flag: bool,
     groups_mapping: BTreeMap<String, String>,
-    // commits in the section grouped by class
+    // commits in the section by group
     commits: BTreeMap<String, Vec<ConvCommit>>,
+    link: Link,
 }
 
 impl Display for Section {
@@ -57,6 +58,7 @@ impl Section {
             summary_flag: true,
             groups_mapping: group_mapping.to_owned(),
             commits: Default::default(),
+            link: Link::default(),
         }
     }
 
