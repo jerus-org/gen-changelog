@@ -148,7 +148,7 @@ impl Section {
                 }
                 if comma_flag {
                     report.push_str(", ")
-                };
+                }
                 report.push_str(&format!("{}[{}]", h, c.len()));
                 comma_flag = true;
             }
@@ -179,25 +179,27 @@ impl Section {
         Some(vs)
     }
 
-    pub(crate) fn section_markdown(&self) -> String {
-        let header = if let Some(t) = &self.tag {
-            let version = if t.version().is_some() {
-                t.version().unwrap().to_string()
+    pub(crate) fn get_section_header(&self) -> String {
+        if let Some(t) = &self.tag {
+            let version = if let Some(version) = t.version() {
+                version.to_string()
             } else {
-                "Unreleased".to_string()
+                String::from("Unreleased")
             };
 
-            let date = if t.date().is_some() {
-                t.date().unwrap().format("%Y-%m-%d").to_string()
+            let date = if let Some(d) = t.date() {
+                d.format("%Y-%m-%d").to_string()
             } else {
-                "".to_string()
+                String::new()
             };
 
             format!("## [{version}] - {date}")
         } else {
             "## [Unreleased]".to_string()
-        };
-
+        }
+    }
+    pub(crate) fn section_markdown(&self) -> String {
+        let header = self.get_section_header();
         let mut section_string = String::new();
         let mut contains_commits = false;
 
