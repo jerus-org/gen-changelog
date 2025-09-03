@@ -62,6 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(cc_commit)-remove unused title_as_string function(pr [#50])
 - ♻️ refactor(changelog)-update section initialization(pr [#53])
 - ♻️ refactor(change_log)-enhance section struct with link support(pr [#54])
+- ♻️ refactor(main)-clean up log and config usage(pr [#56])
 
 ### Fixed
 
@@ -121,3 +122,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#53]: https://github.com/jerus-org/gen-changelog/pull/53
 [#54]: https://github.com/jerus-org/gen-changelog/pull/54
 [#55]: https://github.com/jerus-org/gen-changelog/pull/55
+[#56]: https://github.com/jerus-org/gen-changelog/pull/56
