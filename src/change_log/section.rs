@@ -245,7 +245,7 @@ impl Section {
                 "### {heading}\n\n{}\n",
                 commits
                     .iter()
-                    .map(|c| format!(" - {}\n", c.title_as_string()))
+                    .map(|c| format!(" - {c}\n"))
                     .collect::<String>()
             ))
         }
