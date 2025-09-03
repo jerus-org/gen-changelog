@@ -127,34 +127,44 @@ impl Section {
         self.commits.insert(key, new_value);
     }
 
-    pub(crate) fn add_commit(&mut self, summary: Option<&str>, message: Option<&str>) -> &mut Self {
-        let conventional_commit = ConvCommit::new(summary, message);
-        if let Some(k) = conventional_commit.kind() {
-            let group = match k.to_lowercase().as_str() {
-                "chore" => {
-                    if let Some(s) = conventional_commit.scope() {
-                        if s.as_str() == "deps" {
-                            "Security".to_string()
-                        } else {
-                            "Chore".to_string()
-                        }
+    fn add_conventional_commit(&mut self, commit: &ConvCommit, kind: &str) {
+        let group = match kind.to_lowercase().as_str() {
+            "chore" => {
+                if let Some(s) = commit.scope() {
+                    if s.as_str() == "deps" {
+                        "Security".to_string()
                     } else {
                         "Chore".to_string()
                     }
+                } else {
+                    "Chore".to_string()
                 }
-                _ => {
-                    if let Some(g) = self.groups_mapping.get(&k) {
-                        g.clone()
-                    } else {
-                        "Unknown".to_string()
-                    }
+            }
+            _ => {
+                if let Some(g) = self.groups_mapping.get(kind) {
+                    g.clone()
+                } else {
+                    "Unknown".to_string()
                 }
-            };
+            }
+        };
 
-            self.add_commit_to_hashmap(&group, conventional_commit.clone());
+        self.add_commit_to_hashmap(&group, commit.clone());
+    }
+
+    fn add_non_conventional_commit(&mut self, commit: &ConvCommit) {
+        let group = "Unknown".to_string();
+
+        self.add_commit_to_hashmap(&group, commit.clone());
+    }
+
+    pub(crate) fn add_commit(&mut self, summary: Option<&str>, message: Option<&str>) {
+        let conventional_commit = ConvCommit::new(summary, message);
+        if let Some(k) = conventional_commit.kind() {
+            self.add_conventional_commit(&conventional_commit, &k);
+        } else {
+            self.add_non_conventional_commit(&conventional_commit);
         }
-
-        self
     }
 
     pub(crate) fn report_status(&self, summary: bool) -> String {
