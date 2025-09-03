@@ -55,6 +55,8 @@ pub struct Config {
     /// Group conventional commits under a heading and set a flag to display the
     /// heading in the changelog
     groups: HashMap<String, Group>,
+    /// Group mappings from the convention commit types collected in the group to the group name.  
+    groups_mapping: BTreeMap<String, String>,
     /// Headings to display in the changelog
     ///
     /// Default settings are:
@@ -76,12 +78,17 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         let mut groups = HashMap::new();
+        let mut groups_mapping = BTreeMap::new();
 
         for g in DEFAULT_GROUPS {
             let group = Group::new_with_name_types_and_publish_flag(g.0, g.1, g.2);
             groups.add_group(group);
+            for key in g.1 {
+                groups_mapping.insert(key.to_string(), g.0.to_string());
+            }
         }
         log::debug!("default groups {groups:?}");
+        log::debug!("default groups mapping: {groups_mapping:?}");
 
         let publish_groups: Vec<&Group> = groups
             .iter()
@@ -102,6 +109,7 @@ impl Default for Config {
 
         Self {
             groups,
+            groups_mapping,
             headings,
             display_sections: DisplaySections::default(),
             release_pattern,
@@ -114,6 +122,11 @@ impl Config {
     /// publish in the change log.
     pub fn headings(&self) -> &BTreeMap<u8, String> {
         &self.headings
+    }
+
+    /// Returns a reference to the btree storing the groups.
+    pub fn groups_mapping(&self) -> &BTreeMap<String, String> {
+        &self.groups_mapping
     }
 }
 
