@@ -41,7 +41,7 @@ impl Section {
         headings: &BTreeMap<u8, String>,
         group_mapping: &BTreeMap<String, String>,
     ) -> Self {
-        log::debug!("Section headings to publish: {headings:?}");
+        log::trace!("Section headings to publish: {headings:?}");
 
         let header = SectionHeader::from(&tag);
 
@@ -57,38 +57,38 @@ impl Section {
 
     pub(crate) fn walk_repository(
         &mut self,
-        setup: WalkSetup,
+        setup: &WalkSetup,
         repository: &Repository,
         revwalk: &mut Revwalk,
     ) -> Result<&mut Self, ChangeLogError> {
         match setup {
             WalkSetup::NoReleases => {
                 revwalk.push_head()?;
-                log::debug!("Walking from the HEAD to the first commit");
+                log::trace!("Walking from the HEAD to the first commit");
                 self.get_commits(revwalk, repository);
-                log::debug!("{}", self.report_status(false));
+                log::trace!("{}", self.report_status(false));
             }
             WalkSetup::HeadToRelease(tag) => {
                 revwalk.push_head()?;
                 let reference = tag.to_string();
                 revwalk.hide_ref(&reference)?;
-                log::debug!("Walking from the HEAD to the last release `{tag}`",);
+                log::trace!("Walking from the HEAD to the last release `{tag}`",);
                 self.get_commits(revwalk, repository);
-                log::debug!("{}", self.report_status(false));
+                log::trace!("{}", self.report_status(false));
             }
             WalkSetup::FromReleaseToRelease(from_tag, to_tag) => {
                 revwalk.push(*from_tag.id())?;
                 let reference = to_tag.to_string();
                 revwalk.hide_ref(&reference)?;
-                log::debug!("Walking from the release `{from_tag}` to release `{to_tag}`");
+                log::trace!("Walking from the release `{from_tag}` to release `{to_tag}`");
                 self.get_commits(revwalk, repository);
-                log::debug!("{}", self.report_status(false));
+                log::trace!("{}", self.report_status(false));
             }
             WalkSetup::ReleaseToStart(tag) => {
                 revwalk.push(*tag.id())?;
-                log::debug!("Walking from the first release `{tag}` to first commit");
+                log::trace!("Walking from the first release `{tag}` to first commit");
                 self.get_commits(revwalk, repository);
-                log::debug!("{}", self.report_status(false));
+                log::trace!("{}", self.report_status(false));
             }
         }
 
@@ -251,7 +251,7 @@ impl Section {
         if section_string.is_empty() {
             log::warn!("Section is empty");
         } else {
-            log::debug!("constructed section markdown: {section_string}");
+            log::trace!("constructed section markdown: {section_string}");
         }
 
         section_string
