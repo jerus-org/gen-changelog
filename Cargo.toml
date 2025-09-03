@@ -37,6 +37,7 @@ rstest = "0.26.1"
 
 [lints.clippy]
 uninlined-format-args = "warn"
+unnecessary_semicolon = "warn"
 
 [lints.rust]
 dead-code = "allow" # allow temporarily while developing initial code
