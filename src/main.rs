@@ -25,6 +25,7 @@ fn main() {
         .build();
 
     println!("{change_log}");
+    let _ = change_log.save();
 }
 
 fn get_logging(level: log::LevelFilter) -> env_logger::Builder {
