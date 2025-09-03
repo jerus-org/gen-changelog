@@ -214,7 +214,7 @@ impl ChangeLogBuilder {
                 }
                 self.sections.push(section);
             }
-        };
+        }
 
         Ok(self)
     }
