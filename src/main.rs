@@ -15,7 +15,6 @@ fn main() {
     log::trace!("base config to build on: {config:?}");
 
     config.publish_group("Security");
-    // config.publish_group("Chore");
 
     let mut change_log_builder = ChangeLog::builder();
     let change_log = change_log_builder
@@ -24,7 +23,6 @@ fn main() {
         .unwrap()
         .build();
 
-    println!("{change_log}");
     let _ = change_log.save();
 }
 
