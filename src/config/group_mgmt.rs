@@ -27,7 +27,7 @@ impl GroupMgmt for HashMap<String, Group> {
             group.set_publish();
         } else {
             log::warn!("group to publish was not found")
-        };
+        }
 
         self
     }
@@ -37,7 +37,7 @@ impl GroupMgmt for HashMap<String, Group> {
             group.unset_publish();
         } else {
             log::warn!("group to publish was not found")
-        };
+        }
 
         self
     }
