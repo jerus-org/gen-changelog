@@ -5,8 +5,8 @@ use crate::change_log::tag::Tag;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct SectionHeader(String);
 
-impl From<Option<Tag>> for SectionHeader {
-    fn from(value: Option<Tag>) -> Self {
+impl From<&Option<Tag>> for SectionHeader {
+    fn from(value: &Option<Tag>) -> Self {
         let header = if let Some(t) = value {
             let version = if let Some(version) = t.version() {
                 version.to_string()
