@@ -144,7 +144,7 @@ impl Section {
                 }
                 _ => {
                     if let Some(g) = self.groups_mapping.get(&k) {
-                        g.to_string()
+                        g.clone()
                     } else {
                         "Unknown".to_string()
                     }
