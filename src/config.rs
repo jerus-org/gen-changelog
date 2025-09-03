@@ -87,8 +87,8 @@ impl Default for Config {
                 groups_mapping.insert(key.to_string(), g.0.to_string());
             }
         }
-        log::debug!("default groups {groups:?}");
-        log::debug!("default groups mapping: {groups_mapping:?}");
+        log::trace!("default groups {groups:?}");
+        log::trace!("default groups mapping: {groups_mapping:?}");
 
         let publish_groups: Vec<&Group> = groups
             .iter()
@@ -96,14 +96,14 @@ impl Default for Config {
             .map(|item| item.1)
             .collect();
 
-        log::debug!("{} groups to publish in change log", publish_groups.len());
+        log::trace!("{} groups to publish in change log", publish_groups.len());
 
         let mut headings = BTreeMap::new();
         headings.add_heading("Added");
         headings.add_heading("Fixed");
         headings.add_heading("Changed");
 
-        log::debug!("default headings to publish {headings:?}");
+        log::trace!("default headings to publish {headings:?}");
 
         let release_pattern = ReleasePattern::Prefix(String::from("v"));
 
@@ -138,7 +138,7 @@ impl Config {
     pub fn publish_group(&mut self, group_name: &str) -> &mut Self {
         self.groups.set_to_publish(group_name);
         self.headings.add_heading(group_name);
-        log::debug!("headings to publish: `{:?}`", self.headings);
+        log::trace!("headings to publish: `{:?}`", self.headings);
         self
     }
 
