@@ -130,9 +130,10 @@ impl Section {
 
     pub(crate) fn add_commit(&mut self, summary: Option<&str>, message: Option<&str>) -> &mut Self {
         let conventional_commit = ConvCommit::new(summary, message);
-        let class = ChangeLogClass::new(&conventional_commit.kind_string());
-
-        self.add_commit_to_hashmap(&class.to_string(), conventional_commit.clone());
+        if let Some(k) = conventional_commit.kind_string() {
+            let class = ChangeLogClass::new(&k);
+            self.add_commit_to_hashmap(&class.to_string(), conventional_commit.clone());
+        }
 
         self
     }
