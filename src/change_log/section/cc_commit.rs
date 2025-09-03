@@ -81,8 +81,12 @@ impl ConvCommit {
         self.kind.is_some()
     }
 
-    pub(crate) fn kind_string(&self) -> Option<String> {
+    pub(crate) fn kind(&self) -> Option<String> {
         self.kind.clone()
+    }
+
+    pub(crate) fn scope(&self) -> Option<String> {
+        self.scope.clone()
     }
 }
 
