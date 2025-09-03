@@ -55,7 +55,8 @@ pub struct Config {
     /// Group conventional commits under a heading and set a flag to display the
     /// heading in the changelog
     groups: HashMap<String, Group>,
-    /// Group mappings from the convention commit types collected in the group to the group name.  
+    /// Group mappings from the convention commit types collected in the group
+    /// to the group name.
     groups_mapping: BTreeMap<String, String>,
     /// Headings to display in the changelog
     ///
