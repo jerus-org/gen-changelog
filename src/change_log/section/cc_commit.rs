@@ -84,19 +84,6 @@ impl ConvCommit {
     pub(crate) fn kind_string(&self) -> Option<String> {
         self.kind.clone()
     }
-
-    pub(crate) fn title_as_string(&self) -> String {
-        format!(
-            "{}{}{}{}: {}",
-            self.emoji.clone().unwrap_or_default(),
-            self.kind.clone().unwrap_or_default(),
-            self.scope
-                .as_ref()
-                .map_or("".to_string(), |s| format!("({s})")),
-            if self.breaking { "!" } else { "" },
-            self.title,
-        )
-    }
 }
 
 impl std::fmt::Display for ConvCommit {
