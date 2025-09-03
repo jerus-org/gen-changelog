@@ -43,9 +43,11 @@ impl Section {
     ) -> Self {
         log::debug!("Section headings to publish: {headings:?}");
 
+        let header = SectionHeader::from(&tag);
+
         Section {
             tag,
-            header: Default::default(),
+            header,
             headings: headings.to_owned(),
             summary_flag: true,
             groups_mapping: group_mapping.to_owned(),
