@@ -4,9 +4,7 @@ use crate::{change_log::link::Link, config::heading_mgmt::HeadingMgmt};
 
 use std::{collections::BTreeMap, fmt::Display};
 
-use chrono::NaiveDate;
 use git2::{Repository, Revwalk};
-use semver::Version;
 
 use crate::change_log::{ChangeLogError, section::cc_commit::ConvCommit, tag::Tag};
 
@@ -20,17 +18,12 @@ pub(crate) enum WalkSetup<'a> {
 #[derive(Debug, Clone)]
 pub(crate) struct Section {
     tag: Option<Tag>,
-    title: String,
-    version: Option<Version>,
-    date: Option<NaiveDate>,
+    link: Link,
     headings: BTreeMap<u8, String>,
-    description: String,
-    yanked: bool,
     summary_flag: bool,
     groups_mapping: BTreeMap<String, String>,
     // commits in the section by group
     commits: BTreeMap<String, Vec<ConvCommit>>,
-    link: Link,
 }
 
 impl Display for Section {
@@ -50,11 +43,6 @@ impl Section {
         Section {
             tag,
             headings: headings.to_owned(),
-            title: Default::default(),
-            version: Default::default(),
-            date: Default::default(),
-            description: Default::default(),
-            yanked: Default::default(),
             summary_flag: true,
             groups_mapping: group_mapping.to_owned(),
             commits: Default::default(),
@@ -201,7 +189,11 @@ impl Section {
 
         Some(vs)
     }
+}
 
+// Markdown generation to support the fmt output
+
+impl Section {
     pub(crate) fn get_section_header(&self) -> String {
         if let Some(t) = &self.tag {
             let version = if let Some(version) = t.version() {
