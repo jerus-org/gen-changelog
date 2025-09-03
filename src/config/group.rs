@@ -159,7 +159,7 @@ where
 
         if !set.remove(value) {
             log::warn!("Attempt to remove {value} unsuccessful as it was not in the set");
-        };
+        }
         new_group.cc_types = CCType(set);
         new_group
     }
