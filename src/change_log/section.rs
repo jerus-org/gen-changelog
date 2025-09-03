@@ -1,6 +1,9 @@
 mod cc_commit;
+mod section_header;
 
-use crate::{change_log::link::Link, config::heading_mgmt::HeadingMgmt};
+use crate::{
+    change_log::section::section_header::SectionHeader, config::heading_mgmt::HeadingMgmt,
+};
 
 use std::{collections::BTreeMap, fmt::Display};
 
@@ -18,7 +21,7 @@ pub(crate) enum WalkSetup<'a> {
 #[derive(Debug, Clone)]
 pub(crate) struct Section {
     tag: Option<Tag>,
-    link: Link,
+    header: SectionHeader,
     headings: BTreeMap<u8, String>,
     summary_flag: bool,
     groups_mapping: BTreeMap<String, String>,
@@ -42,11 +45,11 @@ impl Section {
 
         Section {
             tag,
+            header: Default::default(),
             headings: headings.to_owned(),
             summary_flag: true,
             groups_mapping: group_mapping.to_owned(),
             commits: Default::default(),
-            link: Link::default(),
         }
     }
 
@@ -213,14 +216,14 @@ impl Section {
             "## [Unreleased]".to_string()
         }
     }
+
     pub(crate) fn section_markdown(&self) -> String {
-        let header = self.get_section_header();
         let mut section_string = String::new();
         let mut contains_commits = false;
 
         if self.summary_flag {
             contains_commits = true;
-            section_string.push_str(&header);
+            section_string.push_str(&self.header.to_string());
             section_string.push('\n');
             section_string.push('\n');
             section_string.push_str(&self.report_status(true));
@@ -231,7 +234,7 @@ impl Section {
             if let Some(commits) = self.commits.get(heading) {
                 if !contains_commits {
                     contains_commits = true;
-                    section_string.push_str(&header);
+                    section_string.push_str(&self.header.to_string());
                     section_string.push('\n');
                     section_string.push('\n');
                 }
