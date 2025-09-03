@@ -21,6 +21,14 @@ pub static REMOTE: Lazy<Regex> = lazy_regex!(
 
 #[derive(Debug, Error)]
 pub enum ChangeLogError {
+    #[error("url not found")]
+    UrlNotFound,
+    #[error("capture groups not found")]
+    CapturesNotFound,
+    #[error("owner capture group not found")]
+    OwnerNotFound,
+    #[error("repo capture group not found")]
+    RepoNotFound,
     /// Error from the git2 crate
     #[error("Git2 says: {0}")]
     Git2Error(#[from] git2::Error),
@@ -80,8 +88,6 @@ impl Debug for ChangeLogBuilder {
 impl ChangeLogBuilder {
     /// create new ChangeLogBuilder struct
     pub(crate) fn new() -> ChangeLogBuilder {
-        // let (owner, repo) = ChangeLogBuilder::get_remote_details(repository)?;
-
         ChangeLogBuilder {
             owner: String::default(),
             repo: String::default(),
@@ -103,33 +109,147 @@ impl ChangeLogBuilder {
     /// Replace default config with custom config
     pub fn with_config(&mut self, config: Config) -> &mut Self {
         self.config = config;
-        log::debug!("current config: {:?}", self.config);
+        log::trace!("current config: {:?}", self.config);
+        self
+    }
+    /// set header
+    pub fn with_header(&mut self, title: &str, paragraphs: &[&str]) -> &mut Self {
+        self.header = Header::new(title, paragraphs);
         self
     }
 
-    fn get_remote_details(repository: &Repository) -> Result<(String, String), ChangeLogError> {
+    /// Add sections  and links to the change log
+    pub fn with_repository(
+        &mut self,
+        repository: &Repository,
+    ) -> Result<&mut Self, ChangeLogError> {
+        self.get_remote_details(repository)?;
+
+        let version_tags = self.get_version_tags(repository)?;
+
+        let mut revwalk = repository.revwalk()?;
+        revwalk.set_sorting(git2::Sort::TIME)?;
+
+        let mut current_section =
+            Section::new(None, self.config.headings(), self.config.groups_mapping());
+
+        // Case where no release has been made - no version tags
+        if version_tags.is_empty() {
+            let setup = WalkSetup::NoReleases;
+            current_section.walk_repository(&setup, repository, &mut revwalk)?;
+            self.sections.push(current_section);
+            self.set_link(&setup);
+        } else {
+            // get the unreleased
+            let setup = WalkSetup::HeadToRelease(version_tags.first().unwrap());
+            current_section.walk_repository(&setup, repository, &mut revwalk)?;
+            self.sections.push(current_section);
+            self.set_link(&setup);
+
+            // get the releases
+            let mut peekable_tags = version_tags.iter().peekable();
+            loop {
+                let Some(tag) = peekable_tags.next() else {
+                    break;
+                };
+
+                let mut section = Section::new(
+                    Some(tag.clone()),
+                    self.config.headings(),
+                    self.config.groups_mapping(),
+                );
+
+                let next_tag = peekable_tags.peek();
+
+                if let Some(next_tag) = next_tag {
+                    let setup = WalkSetup::FromReleaseToRelease(tag, next_tag);
+                    section.walk_repository(&setup, repository, &mut revwalk)?;
+                    self.set_link(&setup);
+                } else {
+                    let setup = WalkSetup::ReleaseToStart(tag);
+                    section.walk_repository(&setup, repository, &mut revwalk)?;
+                    self.set_link(&setup);
+                }
+                self.sections.push(section);
+            }
+        }
+
+        Ok(self)
+    }
+}
+
+impl ChangeLogBuilder {
+    fn get_remote_details(&mut self, repository: &Repository) -> Result<(), ChangeLogError> {
         let config = repository.config()?;
         let url = config.get_entry("remote.origin.url")?;
         let Some(haystack) = url.value() else {
-            return Ok((String::new(), String::new()));
+            return Err(ChangeLogError::UrlNotFound);
         };
 
         let captures = REMOTE.captures(haystack);
 
         let Some(caps) = captures else {
-            return Ok((String::new(), String::new()));
+            return Err(ChangeLogError::CapturesNotFound);
         };
 
-        let owner = caps.name("owner").map_or("", |m| m.as_str()).to_string();
-        let repo = caps.name("repo").map_or("", |m| m.as_str()).to_string();
+        let Some(owner) = caps.name("owner") else {
+            return Err(ChangeLogError::OwnerNotFound);
+        };
+        let Some(repo) = caps.name("repo") else {
+            return Err(ChangeLogError::RepoNotFound);
+        };
 
-        Ok((owner, repo))
+        self.owner = owner.as_str().to_string();
+        self.repo = repo.as_str().to_string();
+
+        Ok(())
     }
 
-    /// set header
-    pub fn with_header(&mut self, title: &str, paragraphs: &[&str]) -> &mut Self {
-        self.header = Header::new(title, paragraphs);
-        self
+    fn set_link(&mut self, setup: &WalkSetup) {
+        match setup {
+            WalkSetup::NoReleases => {
+                let url = format!(
+                    "https://github.com/{}/{}/commits/main/",
+                    self.owner, self.repo
+                );
+
+                let link = Link::new("Unreleased", &url).unwrap();
+                self.links.push(link)
+            }
+
+            WalkSetup::HeadToRelease(tag) => {
+                let tag_version = tag.version().unwrap().to_string();
+                let url = format!(
+                    "https://github.com/{}/{}/compare/v{}...HEAD",
+                    self.owner, self.repo, tag_version
+                );
+                let link = Link::new("Unreleased", &url).unwrap();
+                log::debug!("Head to release link: {link}");
+                self.links.push(link)
+            }
+
+            WalkSetup::FromReleaseToRelease(tag, next_tag) => {
+                let tag_version = tag.version().unwrap().to_string();
+                let next_tag_version = next_tag.version().unwrap().to_string();
+                let url = format!(
+                    "https://github.com/{}/{}/compare/v{}...v{}",
+                    self.owner, self.repo, next_tag_version, tag_version
+                );
+
+                let link = Link::new(&tag_version, &url).unwrap();
+                self.links.push(link)
+            }
+            WalkSetup::ReleaseToStart(tag) => {
+                let tag_version = tag.version().unwrap().to_string();
+                let url = format!(
+                    "https://github.com/{}/{}/releases/tag/v{}",
+                    self.owner, self.repo, tag_version
+                );
+
+                let link = Link::new(&tag_version, &url).unwrap();
+                self.links.push(link)
+            }
+        }
     }
 
     fn get_version_tags(&self, repository: &Repository) -> Result<Vec<Tag>, ChangeLogError> {
@@ -160,8 +280,8 @@ impl ChangeLogBuilder {
         version_tags.retain(|t| t.is_version_tag());
         version_tags.sort_by_key(|k| k.version().unwrap().clone());
         version_tags.reverse();
-        log::debug!("Identified {} version tags.", version_tags.len());
-        log::debug!(
+        log::trace!("Identified {} version tags.", version_tags.len());
+        log::trace!(
             "Tags:`{}`",
             tags.iter()
                 .map(|t| t.name().to_string())
@@ -170,57 +290,5 @@ impl ChangeLogBuilder {
         );
 
         Ok(version_tags)
-    }
-
-    /// Add sections  and links to the change log
-    pub fn with_repository(
-        &mut self,
-        repository: &Repository,
-    ) -> Result<&mut Self, ChangeLogError> {
-        let version_tags = self.get_version_tags(repository)?;
-
-        let mut revwalk = repository.revwalk()?;
-        revwalk.set_sorting(git2::Sort::TIME)?;
-
-        let mut current_section =
-            Section::new(None, self.config.headings(), self.config.groups_mapping());
-
-        // Case where no release has been made - no version tags
-        if version_tags.is_empty() {
-            current_section.walk_repository(WalkSetup::NoReleases, repository, &mut revwalk)?;
-            self.sections.push(current_section);
-        } else {
-            // get the unreleased
-            let setup = WalkSetup::HeadToRelease(version_tags.first().unwrap());
-            current_section.walk_repository(setup, repository, &mut revwalk)?;
-            self.sections.push(current_section);
-
-            // get the releases
-            let mut peekable_tags = version_tags.iter().peekable();
-            loop {
-                let Some(tag) = peekable_tags.next() else {
-                    break;
-                };
-
-                let mut section = Section::new(
-                    Some(tag.clone()),
-                    self.config.headings(),
-                    self.config.groups_mapping(),
-                );
-
-                let next_tag = peekable_tags.peek();
-
-                if let Some(next_tag) = next_tag {
-                    let setup = WalkSetup::FromReleaseToRelease(tag, next_tag);
-                    section.walk_repository(setup, repository, &mut revwalk)?;
-                } else {
-                    let setup = WalkSetup::ReleaseToStart(tag);
-                    section.walk_repository(setup, repository, &mut revwalk)?;
-                }
-                self.sections.push(section);
-            }
-        }
-
-        Ok(self)
     }
 }
