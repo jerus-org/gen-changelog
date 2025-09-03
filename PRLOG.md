@@ -57,6 +57,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(cc_commit)-change return type of kind_string method(pr [#47])
 - Add-update_pcu-parameter-to-config(pr [#48])
 - ♻️ refactor(change_log)-improve section header handling(pr [#49])
+- ♻️ refactor(cc_commit)-remove unused title_as_string function(pr [#50])
 
 ### Fixed
 
@@ -111,3 +112,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#47]: https://github.com/jerus-org/gen-changelog/pull/47
 [#48]: https://github.com/jerus-org/gen-changelog/pull/48
 [#49]: https://github.com/jerus-org/gen-changelog/pull/49
+[#50]: https://github.com/jerus-org/gen-changelog/pull/50
