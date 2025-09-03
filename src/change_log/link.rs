@@ -16,6 +16,15 @@ pub(crate) struct Link {
     url: Url,
 }
 
+impl Default for Link {
+    fn default() -> Self {
+        Self {
+            anchor: Default::default(),
+            url: Url::parse("https://example.com").unwrap(),
+        }
+    }
+}
+
 impl Display for Link {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         writeln!(f, "[{}]: {}", self.anchor, self.url)
