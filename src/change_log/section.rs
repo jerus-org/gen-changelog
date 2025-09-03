@@ -1,5 +1,4 @@
 mod cc_commit;
-mod change_log_class;
 
 use crate::config::heading_mgmt::HeadingMgmt;
 
@@ -9,11 +8,7 @@ use chrono::NaiveDate;
 use git2::{Repository, Revwalk};
 use semver::Version;
 
-use crate::change_log::{
-    ChangeLogError,
-    section::{cc_commit::ConvCommit, change_log_class::ChangeLogClass},
-    tag::Tag,
-};
+use crate::change_log::{ChangeLogError, section::cc_commit::ConvCommit, tag::Tag};
 
 pub(crate) enum WalkSetup<'a> {
     NoReleases,
@@ -32,6 +27,7 @@ pub(crate) struct Section {
     description: String,
     yanked: bool,
     summary_flag: bool,
+    groups_mapping: BTreeMap<String, String>,
     // commits in the section grouped by class
     commits: BTreeMap<String, Vec<ConvCommit>>,
 }
@@ -43,18 +39,23 @@ impl Display for Section {
 }
 
 impl Section {
-    pub(crate) fn new(tag: Option<Tag>, headings: BTreeMap<u8, String>) -> Self {
+    pub(crate) fn new(
+        tag: Option<Tag>,
+        headings: &BTreeMap<u8, String>,
+        group_mapping: &BTreeMap<String, String>,
+    ) -> Self {
         log::debug!("Section headings to publish: {headings:?}");
 
         Section {
             tag,
-            headings,
+            headings: headings.to_owned(),
             title: Default::default(),
             version: Default::default(),
             date: Default::default(),
             description: Default::default(),
             yanked: Default::default(),
             summary_flag: true,
+            groups_mapping: group_mapping.to_owned(),
             commits: Default::default(),
         }
     }
@@ -130,9 +131,29 @@ impl Section {
 
     pub(crate) fn add_commit(&mut self, summary: Option<&str>, message: Option<&str>) -> &mut Self {
         let conventional_commit = ConvCommit::new(summary, message);
-        if let Some(k) = conventional_commit.kind_string() {
-            let class = ChangeLogClass::new(&k);
-            self.add_commit_to_hashmap(&class.to_string(), conventional_commit.clone());
+        if let Some(k) = conventional_commit.kind() {
+            let group = match k.to_lowercase().as_str() {
+                "chore" => {
+                    if let Some(s) = conventional_commit.scope() {
+                        if s.as_str() == "deps" {
+                            "Security".to_string()
+                        } else {
+                            "Chore".to_string()
+                        }
+                    } else {
+                        "Chore".to_string()
+                    }
+                }
+                _ => {
+                    if let Some(g) = self.groups_mapping.get(&k) {
+                        g.to_string()
+                    } else {
+                        "Unknown".to_string()
+                    }
+                }
+            };
+
+            self.add_commit_to_hashmap(&group, conventional_commit.clone());
         }
 
         self
