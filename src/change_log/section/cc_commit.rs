@@ -81,8 +81,8 @@ impl ConvCommit {
         self.kind.is_some()
     }
 
-    pub(crate) fn kind_string(&self) -> String {
-        self.kind.clone().unwrap_or_default()
+    pub(crate) fn kind_string(&self) -> Option<String> {
+        self.kind.clone()
     }
 
     pub(crate) fn title_as_string(&self) -> String {
