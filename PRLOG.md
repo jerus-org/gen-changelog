@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ add remove_heading method to HeadingMgmt(pr [#39])
 - ✨ add unpublish_group method for changelog(pr [#40])
 - ✨ add groups mapping for conventional commits(pr [#52])
+- ✨ add save method for changelog(pr [#55])
 
 ### Changed
 
@@ -119,3 +120,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#52]: https://github.com/jerus-org/gen-changelog/pull/52
 [#53]: https://github.com/jerus-org/gen-changelog/pull/53
 [#54]: https://github.com/jerus-org/gen-changelog/pull/54
+[#55]: https://github.com/jerus-org/gen-changelog/pull/55
