@@ -248,6 +248,106 @@ jobs:
                   - CHANGELOG.md
                 root: /tmp/workspace
 
+  build_commit_and_push:
+    description: |
+      Build the software and push updates to the remote repository.
+    executor: rust-env
+    parameters:
+      changelog_updated:
+        default: false
+        description: Flag to expected updated changelog in workspace
+        type: boolean
+      install_me:
+        default: false
+        description: Install the current crate as a binary
+        type: boolean
+      install_me_path:
+        default: .
+        description: The path to the crate to install
+        type: string
+      min_rust_version:
+        description: The minimum version of the rust compiler to use
+        type: string
+      pcu_commit_message:
+        default: "chore: test push"
+        description: The commit message to use for the pcu test push
+        type: string
+      pcu_no_push:
+        default: false
+        description: Whether or not prevent final push of commit
+        type: boolean
+      pcu_semver:
+        default: false
+        description: Whether or not to push a semver version
+        type: boolean
+      pcu_verbosity:
+        default: "-vv"
+        description: The verbosity of the pcu command
+        type: string
+      ssh_fingerprint:
+        description: |
+          The fingerprint of the ssh key to use
+        type: string
+      update_pcu:
+        default: false
+        description: Update pcu to the latest code from the git repo
+        type: boolean
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - <<parameters.ssh_fingerprint>>
+      - run:
+          command: |
+            ssh-add -l
+            ssh-add -d ~/.ssh/id_rsa.pub
+            ssh-add -l
+          name: Remove original SSH key from agent
+      - toolkit/gpg_key
+      - toolkit/git_config
+      - when:
+          condition: << parameters.update_pcu >>
+          steps:
+            - toolkit/install_latest_pcu
+      - when:
+          condition: << parameters.install_me >>
+          name: Install pcu from main branch on GitHub
+          steps:
+            - toolkit/install_me:
+                path_to_crate: << parameters.install_me_path >>
+      - when:
+          condition: << parameters.changelog_updated >>
+          steps:
+            - run:
+                command: |
+                  set -ex
+
+                  mkdir -p /tmp/workspace
+                name: Create workspace in tmp
+            - attach_workspace:
+                at: /tmp/workspace
+            - run:
+                command: |
+                  set -ex
+
+                  ls /tmp/workspace
+                  cp /tmp/workspace/CHANGELOG.md .
+                name: Copy changelog from workspace to current directory
+      - run:
+          command: |
+            pcu --version
+          name: pcu version
+      - toolkit/cargo_build:
+          cargo_package: gen-bsky
+      - toolkit/commit_cmd:
+          pcu_commit_message: << parameters.pcu_commit_message >>
+          pcu_semver: << parameters.pcu_semver >>
+          pcu_verbosity: << parameters.pcu_verbosity >>
+      - toolkit/push_cmd:
+          pcu_no_push: << parameters.pcu_no_push >>
+          pcu_semver: << parameters.pcu_semver >>
+          pcu_verbosity: << parameters.pcu_verbosity >>
+
 workflows:
   check_last_commit:
     when:
@@ -302,7 +402,24 @@ workflows:
           min_rust_version: << pipeline.parameters.min-rust-version >>
           update_pcu: true
           install_me: true
+          pcu_push: false
 
+      - build_commit_and_push:
+          ssh_fingerprint: << pipeline.parameters.fingerprint >>
+          min_rust_version: << pipeline.parameters.min-rust-version >>
+          filters:
+            branches:
+              ignore:
+                - main
+          context:
+            - release
+            - bot-check
+            - pcu-app
+          requires:
+            - update_logs
+          pcu_verbosity: "-vvvv"
+          changelog_updated: true
+          pcu_commit_message: "chore: update pr and change logs and add generated files"
   on_success:
     when:
       and:
