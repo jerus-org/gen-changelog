@@ -27,22 +27,6 @@ executors:
   rust-env:
     docker:
       - image: jerusdp/ci-rust:<<pipeline.parameters.min-rust-version>>
-commands:
-  install_me:
-    description: >
-      Makes a post request to https://circleci.com/api/v2/pipeline/continue to
-      continue a setup workflow.
-    parameters:
-      path_to_crate:
-        default: .
-        description: The path to the crate to install
-        type: string
-    steps:
-      - run:
-          command: |
-            set -exo pipefail
-            cargo install --release --force --path << parameters.path_to_crate >>
-          name: Install crate from current repository
 
 jobs:
   update_logs:
@@ -191,7 +175,7 @@ jobs:
           condition: << parameters.install_me >>
           name: Install pcu from main branch on GitHub
           steps:
-            - install_me:
+            - toolkit/install_me:
                 path_to_crate: << parameters.install_me_path >>
       - run:
           command: |
@@ -209,9 +193,9 @@ jobs:
           command: |
             set -ex
 
-            ls -l 
+            ls -l *LOG.md
             gen-changelog
-            ls -l
+            ls -l *LOG.md
       - when:
           condition:
             equal:
