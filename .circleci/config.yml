@@ -23,6 +23,230 @@ parameters:
 orbs:
   toolkit: jerus-org/circleci-toolkit@2.12.1
 
+executors:
+  rust-env:
+    docker:
+      - image: jerusdp/ci-rust:<<pipeline.parameters.min-rust-version>>
+jobs:
+  update_logs:
+    description: |
+      Update the changelog based on the pull request
+    executor:
+      name: rust-env
+    parameters:
+      blog_directory:
+        default: content/blog
+        description: The directory to use for the blog
+        type: string
+      bluesky:
+        default: false
+        description: Whether or not to run the bluesky command
+        type: boolean
+      bluesky_command:
+        default: draft
+        description: The command to run for bluesky
+        enum:
+          - draft
+          - post
+        type: enum
+      gpg_key:
+        default: BOT_GPG_KEY
+        description: The base64 encoded GPG key
+        type: env_var_name
+      gpg_trust:
+        default: BOT_TRUST
+        description: The trust associated with the GPG key
+        type: env_var_name
+      install_me:
+        default: false
+        description: Install the current crate as a binary
+        type: boolean
+      install_me_path:
+        default: .
+        description: The path to the crate to install
+        type: string
+      label_option:
+        default: false
+        description: Apply a label to the oldest open PR created by the specified author
+        type: boolean
+      min_rust_version:
+        description: The minimum version of the rust compiler to use
+        type: string
+      pcu_allow_no_pull_request:
+        default: ""
+        description: >-
+          Optional flag to allows successful exit if no pull request in CI
+          environment
+        enum:
+          - ""
+          - "--allow-no-pull-request"
+        type: enum
+      pcu_allow_push_fail:
+        default: ""
+        description: Optional flag to allow the push to fail
+        enum:
+          - ""
+          - "--allow-push-fail"
+        type: enum
+      pcu_author:
+        default: ""
+        description: Custom pull request author.
+        type: string
+      pcu_colour:
+        default: ""
+        description: Custom pull request colour.
+        type: string
+      pcu_desc:
+        default: ""
+        description: Custom pull request description.
+        type: string
+      pcu_halt_signal:
+        default: halt
+        description: The verbosity of the pcu command
+        type: string
+      pcu_label:
+        default: ""
+        description: Custom pull request label.
+        type: string
+      pcu_push:
+        default: true
+        description: Optional flag to push the commit to the remote repository
+        type: boolean
+      pcu_verbosity:
+        default: "-vv"
+        description: The verbosity of the pcu command
+        type: string
+      remove_ssh_key:
+        default: true
+        description: Remove the original SSH key from the agent
+        type: boolean
+      sign_key:
+        default: BOT_SIGN_KEY
+        description: The GPG key id associated with the GPG key
+        type: env_var_name
+      ssh_fingerprint:
+        description: |
+          The fingerprint of the ssh key to use
+        type: string
+      update_log_option:
+        default: pipeline
+        description: >-
+          The option to halt or continue with new pipeline when a change log does
+          not need to be updated
+        enum:
+          - halt
+          - pipeline
+        type: enum
+      update_pcu:
+        default: false
+        description: Update pcu to the latest code from the git repo
+        type: boolean
+      user_email:
+        default: BOT_USER_EMAIL
+        description: The user email associated with the GPG key
+        type: env_var_name
+      user_name:
+        default: BOT_USER_NAME
+        description: The user name associated with the GPG key
+        type: env_var_name
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - <<parameters.ssh_fingerprint>>
+      - when:
+          condition: << parameters.remove_ssh_key >>
+          steps:
+            - run:
+                command: |
+                  ssh-add -l
+                  ssh-add -d ~/.ssh/id_rsa.pub
+                  ssh-add -l
+                name: Remove original SSH key from agent
+      - toolkit/gpg_key
+      - toolkit/git_config
+      - when:
+          condition: << parameters.update_pcu >>
+          name: Install pcu from main branch on GitHub
+          steps:
+            - toolkit/install_latest_pcu
+      - when:
+          condition: << parameters.install_me >>
+          name: Install pcu from main branch on GitHub
+          steps:
+            - toolkit/install_me:
+                path_to_crate: << parameters.install_me_path >>
+      - run:
+          command: |
+            pcu --version
+          name: pcu version
+      - when:
+          condition: << parameters.bluesky >>
+          steps:
+            - toolkit/bsky:
+                blog_directory: << parameters.blog_directory >>
+                command: << parameters.bluesky_command >>
+                pcu_verbosity: << parameters.pcu_verbosity >>
+      - run:
+          name: remake change
+          command: |
+            set -ex
+
+            ls -l 
+            gen-changelog
+            ls -l
+      - when:
+          condition:
+            equal:
+              - halt
+              - << parameters.update_log_option >>
+          steps:
+            - toolkit/update_log:
+                pcu_allow_no_pull_request: <<parameters.pcu_allow_no_pull_request>>
+                pcu_allow_push_fail: <<parameters.pcu_allow_push_fail>>
+                pcu_halt_signal: <<parameters.pcu_halt_signal>>
+                pcu_verbosity: <<parameters.pcu_verbosity>>
+
+      - when:
+          condition:
+            equal:
+              - true
+              - << parameters.label_option >>
+          steps:
+            - toolkit/label_pr:
+                pcu_author: <<parameters.pcu_author>>
+                pcu_colour: <<parameters.pcu_colour>>
+                pcu_desc: <<parameters.pcu_desc>>
+                pcu_label: <<parameters.pcu_label>>
+                pcu_verbosity: <<parameters.pcu_verbosity>>
+      - when:
+          condition:
+            equal:
+              - pipeline
+              - << parameters.update_log_option >>
+          steps:
+            - toolkit/pipeline_pcu_check:
+                pcu_halt_signal: <<parameters.pcu_halt_signal>>
+                pcu_push: <<parameters.pcu_push>>
+                pcu_verbosity: <<parameters.pcu_verbosity>>
+      - when:
+          condition:
+            not: << parameters.pcu_push >>
+          steps:
+            - run:
+                command: |
+                  set -ex
+
+                  mkdir -p /tmp/workspace
+                  cp PRLOG.md /tmp/workspace/PRLOG.md
+                  cp CHANGELOG.md /tmp/workspace/CHANGELOG.md
+                name: Save PRLOG.md and CHANGELOG.md to workspace
+            - persist_to_workspace:
+                paths:
+                  - PRLOG.md
+                  - CHANGELOG.md
+                root: /tmp/workspace
+
 workflows:
   check_last_commit:
     when:
@@ -64,7 +288,7 @@ workflows:
           min_rust_version: << pipeline.parameters.min-rust-version >>
       - toolkit/security:
           context: SonarCloud
-      - toolkit/update_changelog:
+      - update_logs:
           requires:
             - toolkit/required_builds
             - toolkit/test_doc_build
@@ -76,6 +300,7 @@ workflows:
           ssh_fingerprint: << pipeline.parameters.fingerprint >>
           min_rust_version: << pipeline.parameters.min-rust-version >>
           update_pcu: true
+          install_me: true
 
   on_success:
     when:
