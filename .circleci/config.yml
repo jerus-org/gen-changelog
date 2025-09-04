@@ -332,13 +332,12 @@ jobs:
 
                   ls /tmp/workspace
                   cp /tmp/workspace/CHANGELOG.md .
-                name: Copy changelog from workspace to current directory
+                  cp /tmp/workspace/PRLOG.md .
+                name: Copy logs from workspace to current directory
       - run:
           command: |
             pcu --version
           name: pcu version
-      - toolkit/cargo_build:
-          cargo_package: gen-bsky
       - toolkit/commit_cmd:
           pcu_commit_message: << parameters.pcu_commit_message >>
           pcu_semver: << parameters.pcu_semver >>
