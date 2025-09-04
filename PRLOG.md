@@ -63,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(changelog)-update section initialization(pr [#53])
 - ♻️ refactor(change_log)-enhance section struct with link support(pr [#54])
 - ♻️ refactor(main)-clean up log and config usage(pr [#56])
+- 🔧 chore(config)-add library and binary definitions to Cargo.toml(pr [#57])
 
 ### Fixed
 
@@ -123,3 +124,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#54]: https://github.com/jerus-org/gen-changelog/pull/54
 [#55]: https://github.com/jerus-org/gen-changelog/pull/55
 [#56]: https://github.com/jerus-org/gen-changelog/pull/56
+[#57]: https://github.com/jerus-org/gen-changelog/pull/57
