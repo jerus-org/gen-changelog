@@ -41,3 +41,11 @@ unnecessary_semicolon = "warn"
 
 [lints.rust]
 dead-code = "allow" # allow temporarily while developing initial code
+
+[lib]
+name = "gen_changelog"
+path = "src/lib.rs"
+
+[[bin]]
+name = "gen-changelog"
+path = "src/main.rs"
