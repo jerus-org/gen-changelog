@@ -51,9 +51,10 @@ fn make_readme() {
 }
 
 fn backup(file: &str) -> Result<u64, std::io::Error> {
-    let timestamp = chrono::Utc::now().timestamp();
-    let ts = base62::encode(timestamp as u64);
+    let file = PathBuf::new().join(file);
 
-    let backup_file = format!("{file}-{ts}");
+    let mut backup_file = file.clone();
+    backup_file.set_extension("bak");
+
     fs::copy(file, backup_file)
 }
