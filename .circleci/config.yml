@@ -28,6 +28,77 @@ executors:
     docker:
       - image: jerusdp/ci-rust:<<pipeline.parameters.min-rust-version>>
 
+commands:
+  make_cargo_smart_release:
+    description: |
+      This makes a release using cargo release
+    parameters:
+      echo:
+        default: false
+        description: If true, the bash environment will be set to echo the commands
+        type: boolean
+      first_release:
+        default: false
+        description: |
+          Request that a first release (v0.1.0) be created
+        type: boolean
+      no_push:
+        default: false
+        description: Whether or not cargo release should push the changes
+        type: boolean
+      package:
+        default: ""
+        description: Package to release and/or publish
+        type: string
+      publish:
+        default: true
+        description: If true, the release will be published.
+        type: boolean
+      specific_version:
+        default: false
+        description: >
+          Make a specific release, if true version must be set to the specific
+          version number
+        type: boolean
+      verbosity:
+        default: "-vv"
+        description: Verbosity for cargo release
+        type: string
+      version:
+        default: ""
+        description: |
+          Specific version number to release
+        type: string
+    steps:
+      - run:
+          command: |
+            if [ << parameters.echo >> == true ] ; then
+              set -exo pipefail
+            else
+              set -eo pipefail
+            fi
+
+            bump=$(nextsv -q require -f CHANGELOG.md feature)
+
+            if [ "$bump" == "" ]; then
+              bump="bump"
+            fi
+
+            echo "Bump set to ${bump}"
+
+            if [ "${bump}" == "none" ] ; then
+              echo "No version to release"
+            else 
+              cargo smart-release \
+                --execute \
+                --update-crates-index \
+                --dry-run-cargo-publish \
+                --no-changelog \
+                --allow-dirty \
+                --bump $bump
+            fi
+          name: Find next level and make smart release
+
 jobs:
   update_logs:
     description: |
@@ -189,7 +260,7 @@ jobs:
                 command: << parameters.bluesky_command >>
                 pcu_verbosity: << parameters.pcu_verbosity >>
       - run:
-          name: remake change
+          name: remake change log
           command: |
             set -ex
 
@@ -347,6 +418,198 @@ jobs:
           pcu_semver: << parameters.pcu_semver >>
           pcu_verbosity: << parameters.pcu_verbosity >>
 
+  make_smart_release:
+    description: |
+      Assess the level using nextsv and make a release using cargo release
+    executor:
+      name: rust-env
+    parameters:
+      blog_directory:
+        default: content/blog
+        description: The directory to use for the blog
+        type: string
+      bluesky_command:
+        default: draft
+        description: The command to run for bluesky
+        enum:
+          - draft
+          - post
+        type: enum
+      echo:
+        default: false
+        description: If true, the bash environment will be set to echo the commands
+        type: boolean
+      first_release:
+        default: false
+        description: |
+          Request that a first release (v0.1.0) be created
+        type: boolean
+      min_rust_version:
+        type: string
+      package:
+        default: ""
+        description: The package to publish
+        type: string
+      pcu_commit_message:
+        default: "chore: test push"
+        description: The commit message to use for the pcu test push
+        type: string
+      pcu_no_push:
+        default: false
+        description: Whether or not prevent final push of commit
+        type: boolean
+      pcu_prefix:
+        default: v
+        description: The verbosity of the pcu command
+        type: string
+      pcu_semver:
+        default: false
+        description: Whether or not set the semver version flag
+        type: boolean
+      pcu_update_changelog:
+        default: false
+        description: To update the changelog when making the github release
+        type: boolean
+      pcu_verbosity:
+        default: "-vv"
+        description: The verbosity of the pcu command
+        type: string
+      pcu_workspace:
+        default: false
+        description: Whether or not to set the workspace flag of the pcu command
+        type: boolean
+      publish:
+        default: true
+        description: |
+          Publish the release
+        type: boolean
+      remove_ssh_key:
+        default: true
+        description: Remove the original SSH key from the agent
+        type: boolean
+      specific_version:
+        default: false
+        description: >
+          Make a specific release, if true version must be set to the specific
+          version number
+        type: boolean
+      ssh_fingerprint:
+        type: string
+      verbosity:
+        default: "-vv"
+        description: Verbosity for cargo release
+        type: string
+      version:
+        default: ""
+        description: |
+          Specific version number to release
+        type: string
+      when_bluesky:
+        default: false
+        description: Whether or not to run the bluesky command
+        type: boolean
+      when_get_version:
+        default: true
+        description: Get the next version number
+        type: boolean
+      when_pcu_push:
+        default: false
+        description: To use the pcu push command
+        type: boolean
+      when_update_pcu:
+        default: false
+        description: |
+          Update pcu to the latest version based on the main branch on Github
+        type: boolean
+      when_use_workspace:
+        default: false
+        description: Get version from the workspace
+        type: boolean
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - << parameters.ssh_fingerprint >>
+      - when:
+          condition: << parameters.remove_ssh_key >>
+          steps:
+            - run:
+                command: |
+                  ssh-add -l
+                  ssh-add -d ~/.ssh/id_rsa.pub
+                  ssh-add -l
+                name: Remove original SSH key from agent
+      - toolkit/gpg_key
+      - toolkit/git_config
+      - when:
+          condition: << parameters.when_use_workspace >>
+          steps:
+            - attach_workspace:
+                at: /tmp/workspace
+            - run:
+                command: |
+                  semver=$(cat /tmp/workspace/next-version)
+                  echo "export SEMVER=$semver" >> "$BASH_ENV"
+                name: Get version and set SEMVER in bash environment
+      - when:
+          condition:
+            and:
+              - not: << parameters.when_use_workspace >>
+              - << parameters.when_get_version >>
+          steps:
+            - toolkit/get_next_version:
+                package: << parameters.package >>
+                verbosity: << parameters.pcu_verbosity >>
+                version: << parameters.version >>
+            - run:
+                command: |
+                  semver=$NEXT_VERSION
+                  echo "export SEMVER=$semver" >> "$BASH_ENV"
+                name: Set SEMVER in bash environment
+      - when:
+          condition: << parameters.when_update_pcu >>
+          steps:
+            - toolkit/install_latest_pcu
+      - when:
+          condition:
+            and:
+              - not: << parameters.when_pcu_push >>
+          steps:
+            - make_cargo_smart_release:
+                echo: << parameters.echo >>
+                package: << parameters.package >>
+                publish: << parameters.publish >>
+                specific_version: << parameters.specific_version >>
+                verbosity: << parameters.verbosity >>
+                version: << parameters.version >>
+      - when:
+          condition:
+            and:
+              - << parameters.when_pcu_push >>
+          steps:
+            - make_cargo_smart_release:
+                echo: << parameters.echo >>
+                no_push: true
+                package: << parameters.package >>
+                publish: << parameters.publish >>
+                specific_version: << parameters.specific_version >>
+                verbosity: << parameters.verbosity >>
+                version: << parameters.version >>
+      - when:
+          condition: << parameters.when_pcu_push >>
+          steps:
+            - toolkit/push_cmd:
+                pcu_no_push: << parameters.pcu_no_push >>
+                pcu_semver: << parameters.pcu_semver >>
+                pcu_verbosity: << parameters.pcu_verbosity >>
+      - when:
+          condition: << parameters.when_bluesky >>
+          steps:
+            - toolkit/bsky:
+                blog_directory: << parameters.blog_directory >>
+                command: << parameters.bluesky_command >>
+                pcu_verbosity: << parameters.pcu_verbosity >>
+
 workflows:
   check_last_commit:
     when:
@@ -442,35 +705,9 @@ workflows:
         - not: << pipeline.parameters.success-flag >>
         - not: << pipeline.parameters.validation-flag >>
     jobs:
-      - toolkit/save_next_version:
-          min_rust_version: << pipeline.parameters.min-rust-version >>
-          package: nextsv
-          install_me: true
-          path_to_crate: "./crates/nextsv"
-
-      - toolkit/make_release:
-          requires:
-            - toolkit/save_next_version
-          pre-steps:
-            - attach_workspace:
-                at: /tmp/workspace
-            - run:
-                name: Set SEMVER based on next-version file
-                command: |
-                  set +ex
-                  export SEMVER=$(cat /tmp/workspace/next-version)
-                  echo $SEMVER
-                  echo "export SEMVER=$SEMVER" >> "$BASH_ENV"
+      - make_smart_release:
           context:
             - release
             - bot-check
           ssh_fingerprint: << pipeline.parameters.fingerprint >>
           min_rust_version: << pipeline.parameters.min-rust-version >>
-          package: nextsv
-          when_use_workspace: false
-
-      - toolkit/no_release:
-          min_rust_version: << pipeline.parameters.min-rust-version >>
-          requires:
-            - toolkit/save_next_version:
-                - failed
