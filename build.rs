@@ -3,11 +3,14 @@ use std::{
     path::PathBuf,
 };
 
+const VERSION: &str = r"(?P<version>\d+\.\d+\.\d+)";
+
 fn main() {
     println!("cargo::rerun-if-changed=docs/readme/head.md");
     println!("cargo::rerun-if-changed=docs/lib.md");
     println!("cargo::rerun-if-changed=docs/main.md");
     println!("cargo::rerun-if-changed=docs/readme/tail.md");
+    println!("cargo::rerun-if-changed=Cargo.toml");
     println!("cargo::rerun-if-changed=build.rs");
 
     println!(
@@ -18,7 +21,19 @@ fn main() {
             .as_secs()
     );
 
+    update_version();
     make_readme();
+}
+
+fn update_version() {
+    let lib_doc_file = std::path::PathBuf::new().join("docs").join("lib.md");
+    let lib_doc = std::fs::read_to_string(&lib_doc_file).unwrap();
+
+    let current_version = env!("CARGO_PKG_VERSION");
+
+    let lib_doc = lazy_regex::regex_replace_all!(r#"\d+\.\d+\.\d+"#i, &lib_doc, current_version);
+
+    std::fs::write(lib_doc_file, lib_doc.to_string()).expect("failed to update lib.md");
 }
 
 // Assemble the readfile from three components:
