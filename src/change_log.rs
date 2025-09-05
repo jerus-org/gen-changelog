@@ -13,7 +13,7 @@ use section::{Section, WalkSetup};
 use tag::Tag;
 use thiserror::Error;
 
-use crate::Config;
+use crate::ChangeLogConfig;
 
 pub static REMOTE: Lazy<Regex> = lazy_regex!(
     r"^((https://github\.com/)|(git@github.com:))(?P<owner>[a-z\-|A-Z]+)/(?P<repo>[a-z\-_A-Z]+)\.git$$"
@@ -79,7 +79,7 @@ pub struct ChangeLogBuilder {
     header: Header,
     sections: Vec<Section>,
     links: Vec<Link>,
-    config: Config,
+    config: ChangeLogConfig,
 }
 
 impl Debug for ChangeLogBuilder {
@@ -103,7 +103,7 @@ impl ChangeLogBuilder {
             header: Header::default(),
             links: Vec::new(),
             sections: Vec::default(),
-            config: Config::default(),
+            config: ChangeLogConfig::default(),
         }
     }
 
@@ -116,7 +116,7 @@ impl ChangeLogBuilder {
     }
 
     /// Replace default config with custom config
-    pub fn with_config(&mut self, config: Config) -> &mut Self {
+    pub fn with_config(&mut self, config: ChangeLogConfig) -> &mut Self {
         self.config = config;
         log::trace!("current config: {:?}", self.config);
         self

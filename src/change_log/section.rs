@@ -11,7 +11,7 @@ use crate::{
         section::{cc_commit::ConvCommit, section_header::SectionHeader},
         tag::Tag,
     },
-    config::heading_mgmt::HeadingMgmt,
+    change_log_config::heading_mgmt::HeadingMgmt,
 };
 
 pub(crate) enum WalkSetup<'a> {

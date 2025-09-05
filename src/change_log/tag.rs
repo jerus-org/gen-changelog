@@ -6,7 +6,7 @@ use lazy_regex::{Lazy, Regex, lazy_regex};
 use semver::Version;
 use thiserror::Error;
 
-use crate::config::ReleasePattern;
+use crate::change_log_config::ReleasePattern;
 
 pub static PREFIX: Lazy<Regex> = lazy_regex!(
     r#"(?P<prefix>\w+)(?P<semver>(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<pre>-[a-z\.A-Z0-9]+)?(?P<build>\+[0-9A-Za-z-\.]+)?)"#

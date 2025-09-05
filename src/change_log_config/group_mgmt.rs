@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use crate::config::group::Group;
+use crate::change_log_config::group::Group;
 
 pub(crate) trait GroupMgmt {
     fn add_group(&mut self, group: Group) -> &mut Self;
@@ -48,7 +48,7 @@ mod tests {
     use std::collections::HashMap;
 
     use super::GroupMgmt;
-    use crate::config::group::Group;
+    use crate::change_log_config::group::Group;
 
     fn create_added_group() -> Group {
         let gb = Group::builder();
