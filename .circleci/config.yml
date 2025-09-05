@@ -73,9 +73,9 @@ commands:
       - run:
           command: |
             if [ << parameters.echo >> == true ] ; then
-              set -exo pipefail
+              set -ex
             else
-              set -eo pipefail
+              set -e
             fi
 
             bump=$(nextsv -q require -f CHANGELOG.md feature)
