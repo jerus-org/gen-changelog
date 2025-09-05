@@ -26,10 +26,6 @@ fn main() {
 // 2. library-doc from docs/lib.md
 // 3. readme-tail from docs/readme/tail.md
 fn make_readme() {
-    // Backup the README.md
-    let bytes = backup("README.md").expect("unable to create backup copy of README.md");
-    println!("Wrote `{bytes}` bytes to backup README.md");
-
     // remove README.md
     fs::remove_file("README.md").expect("failed to remove README.md");
 
@@ -48,13 +44,4 @@ fn make_readme() {
     let buffer = readme.as_bytes();
 
     fs::write("README.md", buffer).expect("could not write new README.md");
-}
-
-fn backup(file: &str) -> Result<u64, std::io::Error> {
-    let file = PathBuf::new().join(file);
-
-    let mut backup_file = file.clone();
-    backup_file.set_extension("bak");
-
-    fs::copy(file, backup_file)
 }
