@@ -16,6 +16,7 @@ include = [
     "README.md",
     "LICENSE-MIT",
     "LICENSE-APACHE",
+    "docs",
 ]
 
 [dependencies]
