@@ -552,21 +552,6 @@ jobs:
                   echo "export SEMVER=$semver" >> "$BASH_ENV"
                 name: Get version and set SEMVER in bash environment
       - when:
-          condition:
-            and:
-              - not: << parameters.when_use_workspace >>
-              - << parameters.when_get_version >>
-          steps:
-            - toolkit/get_next_version:
-                package: << parameters.package >>
-                verbosity: << parameters.pcu_verbosity >>
-                version: << parameters.version >>
-            - run:
-                command: |
-                  semver=$NEXT_VERSION
-                  echo "export SEMVER=$semver" >> "$BASH_ENV"
-                name: Set SEMVER in bash environment
-      - when:
           condition: << parameters.when_update_pcu >>
           steps:
             - toolkit/install_latest_pcu
