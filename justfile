@@ -7,6 +7,7 @@ default:
 
 alias t := test
 alias c := check
+bump := "patch"
 
 # run all tests, clippy, including journey tests, try building docs
 test: clippy check doc unit-tests
@@ -46,8 +47,8 @@ cov:
 
 # Smart release dry run
 sr-dry:
-    cargo smart-release -u --dry-run-cargo-publish --allow-fully-generated-changelogs --changelog-without commit-details
+    cargo smart-release --update-crates-index --dry-run-cargo-publish --no-changelog --allow-dirty -b {{bump}}
 
 # Execute smart release
 sr:
-    cargo smart-release -u --allow-fully-generated-changelogs --changelog-without commit-details --execute
+    cargo smart-release --execute --update-crates-index --dry-run-cargo-publish --no-changelog --allow-dirty -b {{bump}}
