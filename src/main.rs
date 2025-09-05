@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use gen_changelog::{ChangeLog, Config};
+use gen_changelog::{ChangeLog, ChangeLogConfig};
 use git2::Repository;
 
 fn main() {
@@ -11,7 +11,7 @@ fn main() {
     let repository = Repository::open(&repo_dir)
         .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
 
-    let mut config = Config::default();
+    let mut config = ChangeLogConfig::default();
     log::trace!("base config to build on: {config:?}");
 
     config.publish_group("Security");

@@ -51,7 +51,7 @@ pub enum ReleasePattern {
 
 /// Configuration settings for the Change Log
 #[derive(Debug)]
-pub struct Config {
+pub struct ChangeLogConfig {
     /// Group conventional commits under a heading and set a flag to display the
     /// heading in the changelog
     groups: HashMap<String, Group>,
@@ -76,7 +76,7 @@ pub struct Config {
     release_pattern: ReleasePattern,
 }
 
-impl Default for Config {
+impl Default for ChangeLogConfig {
     fn default() -> Self {
         let mut groups = HashMap::new();
         let mut groups_mapping = BTreeMap::new();
@@ -118,7 +118,7 @@ impl Default for Config {
     }
 }
 
-impl Config {
+impl ChangeLogConfig {
     /// Returns a reference to the btree storing the ordered list headings to
     /// publish in the change log.
     pub fn headings(&self) -> &BTreeMap<u8, String> {
@@ -131,7 +131,7 @@ impl Config {
     }
 }
 
-impl Config {
+impl ChangeLogConfig {
     /// Set a group to be published in the changelog.
     ///
     /// The flag is updated in the group record and the heading is added to the

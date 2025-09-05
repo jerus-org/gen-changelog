@@ -5,7 +5,7 @@
 #![doc = include_str!("../docs/lib.md")]
 
 mod change_log;
-mod config;
+mod change_log_config;
 
 pub use change_log::ChangeLog;
-pub use config::Config;
+pub use change_log_config::ChangeLogConfig;
