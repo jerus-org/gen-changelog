@@ -69,6 +69,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(config)-rename config to changelogconfig(pr [#60])
 - update library documentation with usage instructions(pr [#61])
 - 👷 ci(circleci)-remove redundant SEMVER setting logic(pr [#62])
+- 👷 ci(circleci)-update shell options in echo command(pr [#63])
 
 ### Fixed
 
@@ -135,3 +136,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#60]: https://github.com/jerus-org/gen-changelog/pull/60
 [#61]: https://github.com/jerus-org/gen-changelog/pull/61
 [#62]: https://github.com/jerus-org/gen-changelog/pull/62
+[#63]: https://github.com/jerus-org/gen-changelog/pull/63
