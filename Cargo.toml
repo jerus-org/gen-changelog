@@ -1,6 +1,7 @@
 [package]
 name = "gen-changelog"
 description = """Generate a change log based on the git commits compatible
+authors = ["Jeremiah Russell <jrussell@jerus.ie>"]
 with keep-a-changelog and using conventional commits to categorise commits."""
 version = "0.0.0"
 edition = "2024"
@@ -46,3 +47,6 @@ path = "src/lib.rs"
 [[bin]]
 name = "gen-changelog"
 path = "src/main.rs"
+
+[build-dependencies]
+lazy-regex = "3.4.1"
