@@ -1,4 +1,4 @@
-version: 2.1
+version: 2.1 
 
 parameters:
   fingerprint:
@@ -584,6 +584,11 @@ jobs:
                 specific_version: << parameters.specific_version >>
                 verbosity: << parameters.verbosity >>
                 version: << parameters.version >>
+      - run:
+          name: install smart release
+          command: |
+              cargo install cargo-smart-release
+
       - when:
           condition:
             and:
@@ -679,6 +684,11 @@ jobs:
                 name: Remove original SSH key from agent
       - toolkit/gpg_key
       - toolkit/git_config
+      - run:
+          name: install smart release
+          command: |
+              cargo install cargo-smart-release
+
       - make_cargo_smart_release:
           echo: << parameters.echo >>
           initial_bump: << parameters.initial_bump >>
