@@ -93,12 +93,16 @@ commands:
             case << parameters.initial_bump >> in 
               none)
                 bump=$(nextsv -q require -f CHANGELOG.md feature)
+                ;;
               minor)
                 bump="minor"
+                ;;
               major)
                 bump="major"
+                ;;
               *)
                 bump="patch"
+                ;;
             esac
 
             echo "Bump set to ${bump}"
