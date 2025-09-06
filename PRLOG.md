@@ -74,6 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 👷 ci(circleci)-add branch filter for update_logs job(pr [#65])
 - 👷 ci(circleci)-fix case statement for version bump(pr [#66])
 - ci-add install smart release to release jobs(pr [#67])
+- Update-cargo-release(pr [#68])
 
 ### Fixed
 
@@ -145,3 +146,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#65]: https://github.com/jerus-org/gen-changelog/pull/65
 [#66]: https://github.com/jerus-org/gen-changelog/pull/66
 [#67]: https://github.com/jerus-org/gen-changelog/pull/67
+[#68]: https://github.com/jerus-org/gen-changelog/pull/68
