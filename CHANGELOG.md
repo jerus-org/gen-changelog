@@ -7,7 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ## [Unreleased]
 
-Summary: Added[62], Build[6], Changed[59], Chore[84], Continuous Integration[14], Documentation[12], Fixed[12], Testing[1]
+Summary: Added[62], Build[6], Changed[59], Chore[85], Continuous Integration[15], Documentation[12], Fixed[12], Testing[1]
 
 ### Added
 
@@ -45,28 +45,28 @@ Summary: Added[62], Build[6], Changed[59], Chore[84], Continuous Integration[14]
  - ✨ feat(cc_commit): add clone trait to ConvCommit struct
  - ✨ feat(change_log): implement Display trait for Section
  - ✨ feat(link): add clone trait to link struct
+ - ✨ feat(tag): introduce tag builder pattern
  - ✨ feat(change_log): enhance tag processing with version and date
  - ✨ feat(config): add release_pattern accessor
- - ✨ feat(tag): introduce tag builder pattern
  - ✨ feat(config): add release pattern configuration
  - ✨ feat(config): add display sections configuration
  - ✨ feat(config): add new configuration settings for change log
- - ✨ feat(change_log): add config support to ChangeLog
  - ✨ feat(lib): add config module
  - ✨ feat(config): add group management trait
+ - ✨ feat(change_log): add config support to ChangeLog
  - ✨ feat(config): add group struct for changelog organization
  - ✨ feat(change_log): add link module for URL handling
  - ✨ feat(changelog): add header struct for changelog format
  - ✨ feat(logging): add logging functionality to main
  - ✨ feat(change_log): enhance ChangeLog with remote details extraction
- - ✨ feat(change_log): add changelog classification enum
+ - ✨ feat(lib): add change log module
  - ✨ feat(tag): add initial tag struct for semantic versioning
  - ✨ feat(change_log): add MarkdownLink struct
- - ✨ feat(changelog): add initial changelog module
- - ✨ feat(lib): add change log module
- - ✨ feat(changelog): add conventional commit parser
- - ✨ feat(change_log): add section struct for changelog management
  - ✨ feat(main): integrate changelog generation
+ - ✨ feat(changelog): add conventional commit parser
+ - ✨ feat(change_log): add changelog classification enum
+ - ✨ feat(changelog): add initial changelog module
+ - ✨ feat(change_log): add section struct for changelog management
  - ✨ feat(library): add initial library setup
  - ✨ feat(build): enhance README generation process
  - ✨ feat(vscode): add custom dictionary for ltex
@@ -105,9 +105,9 @@ Summary: Added[62], Build[6], Changed[59], Chore[84], Continuous Integration[14]
  - ♻️ refactor(section): simplify section struct in changelog
  - ♻️ refactor(change_log): enhance section struct with link
  - ♻️ refactor(change_log): enhance section struct with link support
+ - ♻️ refactor(changelog): update section initialization
  - ♻️ refactor(change_log): improve commit formatting in section
  - ♻️ refactor(section): enhance commit grouping logic
- - ♻️ refactor(changelog): update section initialization
  - ♻️ refactor(cc_commit): remove unused title_as_string method
  - ♻️ refactor(section): simplify commit formatting logic
  - ♻️ refactor(change_log): remove print method from ChangeLogBuilder
@@ -127,9 +127,9 @@ Summary: Added[62], Build[6], Changed[59], Chore[84], Continuous Integration[14]
  - ♻️ refactor(change_log): remove unused constant
  - ♻️ refactor(change_log): optimize module imports
  - ♻️ refactor(config): enhance group and heading management
+ - ♻️ refactor(config): update visibility of structs and methods
  - ♻️ refactor(group): implement typed builder pattern
  - ♻️ refactor(config): update config structure and naming
- - ♻️ refactor(config): update visibility of structs and methods
  - ♻️ refactor(config): organize modules in config.rs
  - ♻️ refactor(section): enhance commit grouping by class
  - ♻️ refactor(section): enhance report_status method
@@ -138,10 +138,10 @@ Summary: Added[62], Build[6], Changed[59], Chore[84], Continuous Integration[14]
  - ♻️ refactor(change_log): simplify tag handling and section creation
  - ♻️ refactor(main): enhance changelog builder initialization
  - ♻️ refactor(header): derive clone for header struct
- - ♻️ refactor(main): enhance changelog creation and output
  - ♻️ refactor(change_log): restructure ChangeLog and builder pattern
- - ♻️ refactor(tag): improve semver extraction logic
+ - ♻️ refactor(main): enhance changelog creation and output
  - ♻️ refactor(tag): simplify semver setting process
+ - ♻️ refactor(tag): improve semver extraction logic
  - ♻️ refactor(change_log): update link and footer handling
  - ♻️ refactor(change_log): use Header struct for header management
  - ♻️ refactor(main): improve repository handling in changelog generation
