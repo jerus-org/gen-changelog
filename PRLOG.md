@@ -71,6 +71,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 👷 ci(circleci)-remove redundant SEMVER setting logic(pr [#62])
 - 👷 ci(circleci)-update shell options in echo command(pr [#63])
 - 👷 ci(config)-update CircleCI config for enhanced release management(pr [#64])
+- 👷 ci(circleci)-add branch filter for update_logs job(pr [#65])
 
 ### Fixed
 
@@ -139,3 +140,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#62]: https://github.com/jerus-org/gen-changelog/pull/62
 [#63]: https://github.com/jerus-org/gen-changelog/pull/63
 [#64]: https://github.com/jerus-org/gen-changelog/pull/64
+[#65]: https://github.com/jerus-org/gen-changelog/pull/65
