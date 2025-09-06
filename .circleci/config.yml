@@ -727,6 +727,10 @@ workflows:
       - toolkit/security:
           context: SonarCloud
       - update_logs:
+          filters:
+            branches:
+              ignore:
+                - main
           requires:
             - toolkit/required_builds
             - toolkit/test_doc_build
