@@ -1,24 +1,24 @@
 version: 2.1
 
 parameters:
-  min-rust-version:
-    type: string
-    default: "1.85"
   fingerprint:
     type: string
     default: SHA256:OkxsH8Z6Iim6WDJBaII9eTT9aaO1f3eDc6IpsgYYPVg
-  validation-flag:
-    type: boolean
-    default: false
-    description: "If true, the validation pipeline will be executed."
-  success-flag:
-    type: boolean
-    default: false
-    description: "If true, the success pipeline will be executed."
+  min-rust-version:
+    type: string
+    default: "1.85"
   release-flag:
     type: boolean
     default: false
     description: "If true, the release workflow will be executed."
+  success-flag:
+    type: boolean
+    default: false
+    description: "If true, the success pipeline will be executed."
+  validation-flag:
+    type: boolean
+    default: false
+    description: "If true, the validation pipeline will be executed."
 
 orbs:
   toolkit: jerus-org/circleci-toolkit@2.12.1
@@ -42,6 +42,18 @@ commands:
         description: |
           Request that a first release (v0.1.0) be created
         type: boolean
+      initial_bump:
+        default: none
+        description: |
+          "If set the initial bump value to use. If not set the bump
+          will be calculated by examining the commits made since the
+          last version was generated."
+        type: enum
+        enum:
+          - none
+          - patch
+          - minor
+          - major
       no_push:
         default: false
         description: Whether or not cargo release should push the changes
@@ -73,30 +85,31 @@ commands:
       - run:
           command: |
             if [ << parameters.echo >> == true ] ; then
-              set -ex
+              set -exo pipefail
             else
-              set -e
+              set -eo pipefail
             fi
 
-            bump=$(nextsv -q require -f CHANGELOG.md feature)
-
-            if [ "$bump" == "" ]; then
-              bump="bump"
-            fi
+            case << parameters.initial_bump >> in 
+              none)
+                bump=$(nextsv -q require -f CHANGELOG.md feature)
+              minor)
+                bump="minor"
+              major)
+                bump="major"
+              *)
+                bump="patch"
+            esac
 
             echo "Bump set to ${bump}"
 
-            if [ "${bump}" == "none" ] ; then
-              echo "No version to release"
-            else 
-              cargo smart-release \
+            cargo smart-release \
                 --execute \
                 --update-crates-index \
                 --dry-run-cargo-publish \
                 --no-changelog \
                 --allow-dirty \
                 --bump $bump
-            fi
           name: Find next level and make smart release
 
 jobs:
@@ -595,6 +608,83 @@ jobs:
                 command: << parameters.bluesky_command >>
                 pcu_verbosity: << parameters.pcu_verbosity >>
 
+  make_first_smart_release:
+    description: |
+      Make a first smart release on a repo that has no version tag; 
+      it would fail to identify a next release version.
+    executor:
+      name: rust-env
+    parameters:
+      echo:
+        default: false
+        description: If true, the bash environment will be set to echo the commands
+        type: boolean
+      initial_bump:
+        default: patch
+        description: The initial bump level to create the first tagged release
+        type: enum
+        enum:
+          - patch
+          - minor
+          - major
+      min_rust_version:
+        type: string
+      package:
+        default: ""
+        description: The package to publish
+        type: string
+      publish:
+        default: true
+        description: |
+          Publish the release
+        type: boolean
+      specific_version:
+        default: false
+        description: >
+          Make a specific release, if true version must be set to the specific
+          version number
+        type: boolean
+      ssh_fingerprint:
+        type: string
+      verbosity:
+        default: "-vv"
+        description: Verbosity for cargo release
+        type: string
+      version:
+        default: ""
+        description: |
+          Specific version number to release
+        type: string
+      when_remove_ssh_key:
+        default: true
+        description: Remove the original SSH key from the agent
+        type: boolean
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - << parameters.ssh_fingerprint >>
+      - when:
+          condition: << parameters.when_remove_ssh_key >>
+          steps:
+            - run:
+                command: |
+                  ssh-add -l
+                  ssh-add -d ~/.ssh/id_rsa.pub
+                  ssh-add -l
+                name: Remove original SSH key from agent
+      - toolkit/gpg_key
+      - toolkit/git_config
+      - make_cargo_smart_release:
+          echo: << parameters.echo >>
+          initial_bump: << parameters.initial_bump >>
+          no_push: true
+          package: << parameters.package >>
+          publish: << parameters.publish >>
+          specific_version: << parameters.specific_version >>
+          verbosity: << parameters.verbosity >>
+          version: << parameters.version >>
+
 workflows:
   check_last_commit:
     when:
@@ -696,3 +786,14 @@ workflows:
             - bot-check
           ssh_fingerprint: << pipeline.parameters.fingerprint >>
           min_rust_version: << pipeline.parameters.min-rust-version >>
+
+      - make_first_smart_release:
+          requires:
+            - make_smart_release:
+                - failed
+          context:
+            - release
+            - bot-check
+          ssh_fingerprint: << pipeline.parameters.fingerprint >>
+          min_rust_version: << pipeline.parameters.min-rust-version >>
+          initial_bump: patch
