@@ -76,6 +76,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ci-add install smart release to release jobs(pr [#67])
 - Update-cargo-release(pr [#68])
 - 👷 ci(circleci)-update CircleCI config for improved build process(pr [#69])
+- 👷 ci(circleci)-integrate GitHub CLI using official orb(pr [#70])
 
 ### Fixed
 
@@ -149,3 +150,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#67]: https://github.com/jerus-org/gen-changelog/pull/67
 [#68]: https://github.com/jerus-org/gen-changelog/pull/68
 [#69]: https://github.com/jerus-org/gen-changelog/pull/69
+[#70]: https://github.com/jerus-org/gen-changelog/pull/70
