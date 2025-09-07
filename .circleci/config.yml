@@ -22,6 +22,7 @@ parameters:
 
 orbs:
   toolkit: jerus-org/circleci-toolkit@2.12.1
+  gh: circleci/github-cli@2.7.1
 
 executors:
   rust-env:
@@ -552,25 +553,7 @@ jobs:
           command: |
             cargo install cargo-smart-release
             echo cargo smart-release --version
-      - run:
-          name: install github cli
-          command: |
-            if [ << parameters.echo >> == true ] ; then
-              set -exo pipefail
-            else
-              set -eo pipefail
-            fi
-
-            (type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) \
-                  && sudo mkdir -p -m 755 /etc/apt/keyrings \
-                  && out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
-                  && cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
-                  && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
-                  && sudo mkdir -p -m 755 /etc/apt/sources.list.d \
-                  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-                  && sudo apt update \
-                  && sudo apt install gh -y
-
+      - gh/install
       - when:
           condition:
             and:
@@ -682,26 +665,7 @@ jobs:
           name: install smart release
           command: |
             cargo install cargo-smart-release
-
-      - run:
-          name: install github cli
-          command: |
-            if [ << parameters.echo >> == true ] ; then
-              set -exo pipefail
-            else
-              set -eo pipefail
-            fi
-
-            (type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) \
-                  && sudo mkdir -p -m 755 /etc/apt/keyrings \
-                  && out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
-                  && cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
-                  && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
-                  && sudo mkdir -p -m 755 /etc/apt/sources.list.d \
-                  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
-                  && sudo apt update \
-                  && sudo apt install gh -y
-
+      - gh/install
       - make_cargo_smart_release:
           echo: << parameters.echo >>
           initial_bump: << parameters.initial_bump >>
