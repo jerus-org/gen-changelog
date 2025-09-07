@@ -1,4 +1,4 @@
-version: 2.1 
+version: 2.1
 
 parameters:
   fingerprint:
@@ -110,6 +110,7 @@ commands:
             cargo smart-release \
                 --execute \
                 --update-crates-index \
+                --no-bump-on-demand \
                 --no-changelog \
                 --allow-dirty \
                 --bump $bump
@@ -455,45 +456,24 @@ jobs:
         default: false
         description: If true, the bash environment will be set to echo the commands
         type: boolean
-      first_release:
-        default: false
-        description: |
-          Request that a first release (v0.1.0) be created
-        type: boolean
       min_rust_version:
         type: string
       package:
         default: ""
         description: The package to publish
         type: string
-      pcu_commit_message:
-        default: "chore: test push"
-        description: The commit message to use for the pcu test push
-        type: string
       pcu_no_push:
         default: false
         description: Whether or not prevent final push of commit
         type: boolean
-      pcu_prefix:
-        default: v
-        description: The verbosity of the pcu command
-        type: string
       pcu_semver:
         default: false
         description: Whether or not set the semver version flag
-        type: boolean
-      pcu_update_changelog:
-        default: false
-        description: To update the changelog when making the github release
         type: boolean
       pcu_verbosity:
         default: "-vv"
         description: The verbosity of the pcu command
         type: string
-      pcu_workspace:
-        default: false
-        description: Whether or not to set the workspace flag of the pcu command
-        type: boolean
       publish:
         default: true
         description: |
@@ -523,10 +503,6 @@ jobs:
       when_bluesky:
         default: false
         description: Whether or not to run the bluesky command
-        type: boolean
-      when_get_version:
-        default: true
-        description: Get the next version number
         type: boolean
       when_pcu_push:
         default: false
@@ -574,9 +550,27 @@ jobs:
       - run:
           name: install smart release
           command: |
-              cargo install cargo-smart-release
-              echo cargo smart-release --version 
-            
+            cargo install cargo-smart-release
+            echo cargo smart-release --version
+      - run:
+          name: install github cli
+          command: |
+            if [ << parameters.echo >> == true ] ; then
+              set -exo pipefail
+            else
+              set -eo pipefail
+            fi
+
+            (type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) \
+                  && sudo mkdir -p -m 755 /etc/apt/keyrings \
+                  && out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+                  && cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
+                  && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+                  && sudo mkdir -p -m 755 /etc/apt/sources.list.d \
+                  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+                  && sudo apt update \
+                  && sudo apt install gh -y
+
       - when:
           condition:
             and:
@@ -687,7 +681,26 @@ jobs:
       - run:
           name: install smart release
           command: |
-              cargo install cargo-smart-release
+            cargo install cargo-smart-release
+
+      - run:
+          name: install github cli
+          command: |
+            if [ << parameters.echo >> == true ] ; then
+              set -exo pipefail
+            else
+              set -eo pipefail
+            fi
+
+            (type -p wget >/dev/null || (sudo apt update && sudo apt install wget -y)) \
+                  && sudo mkdir -p -m 755 /etc/apt/keyrings \
+                  && out=$(mktemp) && wget -nv -O$out https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+                  && cat $out | sudo tee /etc/apt/keyrings/githubcli-archive-keyring.gpg > /dev/null \
+                  && sudo chmod go+r /etc/apt/keyrings/githubcli-archive-keyring.gpg \
+                  && sudo mkdir -p -m 755 /etc/apt/sources.list.d \
+                  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+                  && sudo apt update \
+                  && sudo apt install gh -y
 
       - make_cargo_smart_release:
           echo: << parameters.echo >>
