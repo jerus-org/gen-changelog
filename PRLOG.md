@@ -79,6 +79,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 👷 ci(circleci)-integrate GitHub CLI using official orb(pr [#70])
 - 🔧 chore(ci)-remove unused GitHub CLI orb from CircleCI config(pr [#71])
 - 👷 ci(circleci)-remove no_push option from cargo release steps(pr [#72])
+- Remove-unused-build-script(pr [#73])
 
 ### Fixed
 
@@ -155,3 +156,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#70]: https://github.com/jerus-org/gen-changelog/pull/70
 [#71]: https://github.com/jerus-org/gen-changelog/pull/71
 [#72]: https://github.com/jerus-org/gen-changelog/pull/72
+[#73]: https://github.com/jerus-org/gen-changelog/pull/73
