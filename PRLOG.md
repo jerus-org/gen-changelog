@@ -81,6 +81,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 👷 ci(circleci)-remove no_push option from cargo release steps(pr [#72])
 - Remove-unused-build-script(pr [#73])
 - 💄 style(Cargo)-reorder authors in Cargo.toml(pr [#74])
+- Add-release-configuration-file-to-switch-to-cargo-release(pr [#75])
 
 ### Fixed
 
@@ -159,3 +160,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#72]: https://github.com/jerus-org/gen-changelog/pull/72
 [#73]: https://github.com/jerus-org/gen-changelog/pull/73
 [#74]: https://github.com/jerus-org/gen-changelog/pull/74
+[#75]: https://github.com/jerus-org/gen-changelog/pull/75
