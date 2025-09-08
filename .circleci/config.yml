@@ -571,7 +571,6 @@ jobs:
           steps:
             - make_cargo_smart_release:
                 echo: << parameters.echo >>
-                no_push: true
                 package: << parameters.package >>
                 publish: << parameters.publish >>
                 specific_version: << parameters.specific_version >>
@@ -666,7 +665,6 @@ jobs:
       - make_cargo_smart_release:
           echo: << parameters.echo >>
           initial_bump: << parameters.initial_bump >>
-          no_push: true
           package: << parameters.package >>
           publish: << parameters.publish >>
           specific_version: << parameters.specific_version >>
