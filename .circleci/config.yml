@@ -102,7 +102,7 @@ commands:
                 ;;
             esac
 
-            cargo release version $BUMP \
+            cargo release version $bump \
                 --execute
             cargo release replace \
                 --execute
