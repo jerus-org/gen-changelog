@@ -22,7 +22,6 @@ parameters:
 
 orbs:
   toolkit: jerus-org/circleci-toolkit@2.12.1
-  gh: circleci/github-cli@2.7.1
 
 executors:
   rust-env:
@@ -553,7 +552,6 @@ jobs:
           command: |
             cargo install cargo-smart-release
             echo cargo smart-release --version
-      - gh/install
       - when:
           condition:
             and:
@@ -665,7 +663,6 @@ jobs:
           name: install smart release
           command: |
             cargo install cargo-smart-release
-      - gh/install
       - make_cargo_smart_release:
           echo: << parameters.echo >>
           initial_bump: << parameters.initial_bump >>
