@@ -712,7 +712,7 @@ workflows:
           min_rust_version: << pipeline.parameters.min-rust-version >>
       - toolkit/security:
           context: SonarCloud
-      - update_logs:
+      - toolkit/update_changelog:
           filters:
             branches:
               ignore:
@@ -728,25 +728,7 @@ workflows:
           ssh_fingerprint: << pipeline.parameters.fingerprint >>
           min_rust_version: << pipeline.parameters.min-rust-version >>
           update_pcu: true
-          install_me: true
-          pcu_push: false
 
-      - build_commit_and_push:
-          ssh_fingerprint: << pipeline.parameters.fingerprint >>
-          min_rust_version: << pipeline.parameters.min-rust-version >>
-          filters:
-            branches:
-              ignore:
-                - main
-          context:
-            - release
-            - bot-check
-            - pcu-app
-          requires:
-            - update_logs
-          pcu_verbosity: "-vvvv"
-          changelog_updated: true
-          pcu_commit_message: "chore: update pr and change logs and add generated files"
   on_success:
     when:
       and:
@@ -776,6 +758,22 @@ workflows:
             - bot-check
           ssh_fingerprint: << pipeline.parameters.fingerprint >>
           min_rust_version: << pipeline.parameters.min-rust-version >>
+
+      - update_logs:
+          filters:
+            branches:
+              ignore:
+                - main
+          requires:
+            - make_smart_release
+          context:
+            - release
+            - bot-check
+          ssh_fingerprint: << pipeline.parameters.fingerprint >>
+          min_rust_version: << pipeline.parameters.min-rust-version >>
+          update_pcu: true
+          install_me: true
+          pcu_push: false
 
       - make_first_smart_release:
           requires:
