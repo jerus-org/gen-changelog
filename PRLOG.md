@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- 💄 style(Cargo)-reorder authors in Cargo.toml(pr [#74])
+- Add-release-configuration-file-to-switch-to-cargo-release(pr [#75])
+
+## [0.0.1] - 2025-09-08
+
 ### Added
 
 - ✨ add initial changelog module(pr [#8])
