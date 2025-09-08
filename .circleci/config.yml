@@ -85,11 +85,7 @@ commands:
       - run:
           name: Set the bump level for the changes
           command: |
-            if [ << parameters.echo >> == true ] ; then
-              set -exo pipefail
-            else
-              set -eo pipefail
-            fi
+            set -exo pipefail
 
             case << parameters.initial_bump >> in 
               none)
@@ -106,111 +102,21 @@ commands:
                 ;;
             esac
 
-            echo "Bump set to ${bump}"
-
-            echo "export BUMP=${bump}" >> "$BASH_ENV"
-      - run:
-          name: Bump create version to the next version number
-          command: |
-            if [ << parameters.echo >> == true ] ; then
-              set -exo pipefail
-            else
-              set -eo pipefail
-            fi
-
             cargo release version $BUMP \
                 --execute
-      - run:
-          name: Perform pre-release replacements
-          command: |
-            if [ << parameters.echo >> == true ] ; then
-              set -exo pipefail
-            else
-              set -eo pipefail
-            fi
-
             cargo release replace \
                 --execute
-
-      - run:
-          name: Run pre-release hooks
-          command: |
-            if [ << parameters.echo >> == true ] ; then
-              set -exo pipefail
-            else
-              set -eo pipefail
-            fi
-
             cargo release hook \
                 --execute
-      - run:
-          name: Commit the specified packages
-          command: |
-            if [ << parameters.echo >> == true ] ; then
-              set -exo pipefail
-            else
-              set -eo pipefail
-            fi
-
             cargo release commit \
                 --execute
-
-      - run:
-          name: Publish the specified packages
-          command: |
-            if [ << parameters.echo >> == true ] ; then
-              set -exo pipefail
-            else
-              set -eo pipefail
-            fi
-
-
             cargo release publish \
                 --execute
-
-      - run:
-          name: Tag the released commits
-          command: |
-            if [ << parameters.echo >> == true ] ; then
-              set -exo pipefail
-            else
-              set -eo pipefail
-            fi
-
             cargo release tag \
                 --execute
-      - run:
-          name: Remake the change log
-          command: |
-            if [ << parameters.echo >> == true ] ; then
-              set -exo pipefail
-            else
-              set -eo pipefail
-            fi
-
             gen-changelog
-
-      - run:
-          name: Commit the specified packages
-          command: |
-            if [ << parameters.echo >> == true ] ; then
-              set -exo pipefail
-            else
-              set -eo pipefail
-            fi
-
             cargo release commit \
                 --execute
-
-      - run:
-          name: Push tags/commits to remote
-          command: |
-            if [ << parameters.echo >> == true ] ; then
-              set -exo pipefail
-            else
-              set -eo pipefail
-            fi
-
             cargo release push \
                 --execute
 
