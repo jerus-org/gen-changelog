@@ -1,9 +1,9 @@
 [package]
 name = "gen-changelog"
 description = """Generate a change log based on the git commits compatible
-authors = ["Jeremiah Russell <jrussell@jerus.ie>"]
 with keep-a-changelog and using conventional commits to categorise commits."""
 version = "0.0.1"
+authors = ["Jeremiah Russell <jrussell@jerus.ie>"]
 edition = "2024"
 rust-version = "1.85"
 keywords = ["keep-a-changelog", "conventional-commits", "changelog"]
