@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - 💄 style(Cargo)-reorder authors in Cargo.toml(pr [#74])
 - 👷 ci(circleci)-update cargo release and changelog process(pr [#75])
+- 👷 ci(circleci)-add bump version variable to cargo release command(pr [#76])
 
 ## [0.0.1] - 2025-09-08
 
@@ -169,5 +170,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#74]: https://github.com/jerus-org/gen-changelog/pull/74
 [#75]: https://github.com/jerus-org/gen-changelog/pull/75
 [#75]: https://github.com/jerus-org/gen-changelog/pull/75
+[#76]: https://github.com/jerus-org/gen-changelog/pull/76
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.1...HEAD
 [0.0.1]: https://github.com/jerus-org/gen-changelog/releases/tag/v0.0.1
