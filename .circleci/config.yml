@@ -118,7 +118,7 @@ commands:
               set -eo pipefail
             fi
 
-            cargo release version \
+            cargo release version $BUMP \
                 --execute
       - run:
           name: Perform pre-release replacements
