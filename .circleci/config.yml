@@ -102,40 +102,11 @@ commands:
                 ;;
             esac
 
-            cargo release version \
+            cargo release \
                 << parameters.verbosity >> \
                 --execute \
                 --no-confirm \
-                 $bump 
-            cargo release replace \
-                << parameters.verbosity >> \
-                --execute \
-                --no-confirm 
-            cargo release hook \
-                << parameters.verbosity >> \
-                --no-confirm \
-                --execute
-            cargo release commit \
-                << parameters.verbosity >> \
-                --no-confirm \
-                --execute
-            cargo release publish \
-                << parameters.verbosity >> \
-                --no-confirm \
-                --execute
-            cargo release tag \
-                << parameters.verbosity >> \
-                --no-confirm \
-                --execute
-            gen-changelog
-            cargo release commit \
-                << parameters.verbosity >> \
-                --no-confirm \
-                --execute
-            cargo release push \
-                << parameters.verbosity >> \
-                --no-confirm \
-                --execute
+                 $bump
 
 jobs:
   make_release_and_update_changelog:
