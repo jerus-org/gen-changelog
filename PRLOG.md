@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Bump-version-to-0.0.5(pr [#85])
+
 ## [0.0.5] - 2025-09-09
 
 ### Changed
@@ -204,6 +208,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#82]: https://github.com/jerus-org/gen-changelog/pull/82
 [#83]: https://github.com/jerus-org/gen-changelog/pull/83
 [#84]: https://github.com/jerus-org/gen-changelog/pull/84
+[#85]: https://github.com/jerus-org/gen-changelog/pull/85
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...HEAD
 [0.0.5]: https://github.com/jerus-org/gen-changelog/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/jerus-org/gen-changelog/compare/v0.0.3...v0.0.4
