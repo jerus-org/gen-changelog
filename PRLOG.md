@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 👷 ci(circleci)-add bump version variable to cargo release command(pr [#76])
 - 👷 ci(circleci)-simplify pipefail setting in commands(pr [#77])
 - 👷 ci(circleci)-fix variable casing in release command(pr [#78])
+- 👷 ci(circleci)-enhance cargo release commands with verbosity(pr [#79])
 
 ## [0.0.1] - 2025-09-08
 
@@ -175,5 +176,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#76]: https://github.com/jerus-org/gen-changelog/pull/76
 [#77]: https://github.com/jerus-org/gen-changelog/pull/77
 [#78]: https://github.com/jerus-org/gen-changelog/pull/78
+[#79]: https://github.com/jerus-org/gen-changelog/pull/79
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.1...HEAD
 [0.0.1]: https://github.com/jerus-org/gen-changelog/releases/tag/v0.0.1
