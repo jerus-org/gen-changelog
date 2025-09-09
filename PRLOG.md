@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- 👷 ci(circleci)-add gen-changelog installation step(pr [#81])
+
 ## [0.0.2] - 2025-09-09
 
 ### Changed
@@ -181,5 +185,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#78]: https://github.com/jerus-org/gen-changelog/pull/78
 [#79]: https://github.com/jerus-org/gen-changelog/pull/79
 [#80]: https://github.com/jerus-org/gen-changelog/pull/80
-[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.1...HEAD
+[#81]: https://github.com/jerus-org/gen-changelog/pull/81
+[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.2...HEAD
+[0.0.2]: https://github.com/jerus-org/gen-changelog/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/jerus-org/gen-changelog/releases/tag/v0.0.1
