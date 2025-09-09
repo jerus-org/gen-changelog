@@ -106,10 +106,7 @@ commands:
                 << parameters.verbosity >> \
                 --execute \
                 --no-confirm \
-                --no-push \
                  $bump
-            gen-changelog
-            git push --tag
 
 jobs:
   make_release_and_update_changelog:
