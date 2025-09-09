@@ -17,6 +17,7 @@ include = [
     "README.md",
     "LICENSE-MIT",
     "LICENSE-APACHE",
+    "CHANGELOG.md",
     "docs",
 ]
 
