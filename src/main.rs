@@ -1,6 +1,6 @@
 use std::path::PathBuf;
 
-use clap::Parser;
+use clap::{Parser, Subcommand};
 use gen_changelog::{ChangeLog, ChangeLogConfig};
 use git2::Repository;
 
@@ -9,7 +9,22 @@ use git2::Repository;
 struct Cli {
     #[clap(flatten)]
     logging: clap_verbosity_flag::Verbosity,
+    /// The next version number for unreleased changes
+    #[arg(short, long)]
+    next_version: Option<String>,
+    #[command(subcommand)]
+    command: Commands,
 }
+
+#[derive(Subcommand, Debug)]
+enum Commands {
+    /// Configuration management
+    #[clap(name = "crate")]
+    Configuration(ConfigCli),
+}
+
+#[derive(Parser, Debug)]
+struct ConfigCli {}
 
 fn main() {
     let args = Cli::parse();
