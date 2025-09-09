@@ -2,7 +2,7 @@
 name = "gen-changelog"
 description = """Generate a change log based on the git commits compatible
 with keep-a-changelog and using conventional commits to categorise commits."""
-version = "0.0.3"
+version = "0.0.4"
 authors = ["Jeremiah Russell <jrussell@jerus.ie>"]
 edition = "2024"
 rust-version = "1.85"
