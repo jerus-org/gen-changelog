@@ -1,0 +1,1 @@
+{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qgen-changelog is a release tool that generates changelogs in the Keep a Changelog format.\\E$"}
