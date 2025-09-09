@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Bump-version-to-0.0.5(pr [#85])
 - 🔧 chore(Cargo)-include changelog in package distribution(pr [#86])
+- 👷 ci(circleci)-update release command configuration(pr [#87])
 
 ## [0.0.5] - 2025-09-09
 
@@ -211,6 +212,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#84]: https://github.com/jerus-org/gen-changelog/pull/84
 [#85]: https://github.com/jerus-org/gen-changelog/pull/85
 [#86]: https://github.com/jerus-org/gen-changelog/pull/86
+[#87]: https://github.com/jerus-org/gen-changelog/pull/87
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...HEAD
 [0.0.5]: https://github.com/jerus-org/gen-changelog/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/jerus-org/gen-changelog/compare/v0.0.3...v0.0.4
