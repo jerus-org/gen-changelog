@@ -106,7 +106,7 @@ commands:
                 << parameters.verbosity >> \
                 --execute \
                 --no-confirm \
-                --no-push
+                --no-push \
                  $bump
             gen-changelog
             git push --tag
