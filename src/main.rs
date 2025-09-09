@@ -1,10 +1,20 @@
 use std::path::PathBuf;
 
+use clap::Parser;
 use gen_changelog::{ChangeLog, ChangeLogConfig};
 use git2::Repository;
 
+#[derive(Parser, Debug)]
+#[clap(author, version, about, long_about = None)]
+struct Cli {
+    #[clap(flatten)]
+    logging: clap_verbosity_flag::Verbosity,
+}
+
 fn main() {
-    let mut logging = get_logging(log::LevelFilter::Debug);
+    let args = Cli::parse();
+
+    let mut logging = get_logging(args.logging.log_level_filter());
     logging.init();
 
     let repo_dir = PathBuf::new().join(".");
