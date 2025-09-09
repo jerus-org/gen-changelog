@@ -242,6 +242,10 @@ jobs:
           condition: << parameters.when_update_pcu >>
           steps:
             - toolkit/install_latest_pcu
+      - run:
+          name: install gen-changelog (me)
+          command: |
+            cargo install --path .
       - when:
           condition:
             and:
