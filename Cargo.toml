@@ -48,6 +48,3 @@ path = "src/lib.rs"
 [[bin]]
 name = "gen-changelog"
 path = "src/main.rs"
-
-[build-dependencies]
-lazy-regex = "3.4.1"
