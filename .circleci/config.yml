@@ -102,22 +102,39 @@ commands:
                 ;;
             esac
 
-            cargo release version $bump \
-                --execute
+            cargo release version \
+                << parameters.verbosity >> \
+                --execute \
+                --no-confirm \
+                 $bump 
             cargo release replace \
-                --execute
+                << parameters.verbosity >> \
+                --execute \
+                --no-confirm 
             cargo release hook \
+                << parameters.verbosity >> \
+                --no-confirm \
                 --execute
             cargo release commit \
+                << parameters.verbosity >> \
+                --no-confirm \
                 --execute
             cargo release publish \
+                << parameters.verbosity >> \
+                --no-confirm \
                 --execute
             cargo release tag \
+                << parameters.verbosity >> \
+                --no-confirm \
                 --execute
             gen-changelog
             cargo release commit \
+                << parameters.verbosity >> \
+                --no-confirm \
                 --execute
             cargo release push \
+                << parameters.verbosity >> \
+                --no-confirm \
                 --execute
 
 jobs:
