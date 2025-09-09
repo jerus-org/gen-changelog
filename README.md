@@ -46,7 +46,7 @@ or by configuring the dependencies in `Cargo.toml`
 
 ```toml
 [dependencies]
-gen-changelog = "0.0.5"
+gen-changelog = "0.0.6"
 ```
 
 ## Gen-changelog executable documentation 

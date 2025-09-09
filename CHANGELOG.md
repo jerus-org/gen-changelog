@@ -7,7 +7,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
 
 ## [Unreleased]
 
-Summary: Chore[4], Continuous Integration[1]
+Summary: Build[1], Chore[8], Continuous Integration[1], Documentation[2]
+
+## [0.0.5] - 2025-09-09
+
+Summary: Chore[4], Continuous Integration[2]
+
+## [0.0.4] - 2025-09-09
+
+Summary: Chore[5], Continuous Integration[1]
 
 ## [0.0.3] - 2025-09-09
 
@@ -167,7 +175,9 @@ Summary: Added[62], Build[6], Changed[59], Chore[96], Continuous Integration[21]
 
 Summary: 
 
-[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.3...HEAD
+[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...HEAD
+[0.0.5]: https://github.com/jerus-org/gen-changelog/compare/v0.0.4...v0.0.5
+[0.0.4]: https://github.com/jerus-org/gen-changelog/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/jerus-org/gen-changelog/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/jerus-org/gen-changelog/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/jerus-org/gen-changelog/compare/v0.0.0...v0.0.1
