@@ -81,7 +81,11 @@ fn run(args: Cli) -> Result<(), gen_changelog::Error> {
 
         println!("{config:#?}");
 
-        let change_log = default_changelog_build(&repository, config);
+        let mut change_log = default_changelog_build(&repository, config);
+
+        if let Some(next_version) = args.next_version {
+            change_log = change_log.set_next_version(&next_version);
+        }
 
         // let _ = change_log.save();
         println!("{change_log}");
