@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - 📝 docs(readme)-update readme with new splash image and features(pr [#90])
+- ♻️ refactor(main)-improve command parsing and execution(pr [#92])
 
 ## [0.0.6] - 2025-09-09
 
@@ -229,6 +230,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#89]: https://github.com/jerus-org/gen-changelog/pull/89
 [#90]: https://github.com/jerus-org/gen-changelog/pull/90
 [#91]: https://github.com/jerus-org/gen-changelog/pull/91
+[#92]: https://github.com/jerus-org/gen-changelog/pull/92
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...HEAD
 [0.0.6]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/jerus-org/gen-changelog/compare/v0.0.4...v0.0.5
