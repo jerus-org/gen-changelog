@@ -1,8 +1,12 @@
 use std::collections::HashSet;
 
+use serde::{Deserialize, Serialize};
+
 /// Group defines the attributes for a collection of commits to write under a
 /// single header in the changelog file.
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, default)]
+#[serde(rename_all = "kebab-case")]
 pub struct Group {
     /// The name of the group used as the third level heading in the change log.
     name: String,
