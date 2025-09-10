@@ -3,7 +3,10 @@ mod link;
 mod section;
 mod tag;
 
-use std::fmt::{Debug, Display};
+use std::{
+    cmp::min,
+    fmt::{Debug, Display},
+};
 
 use git2::Repository;
 use header::Header;
@@ -111,6 +114,12 @@ impl ChangeLogBuilder {
 
         let version_tags = self.get_version_tags(repository)?;
 
+        let section_limit = match self.config.display_sections() {
+            crate::DisplaySections::All => version_tags.len() + 1,
+            crate::DisplaySections::One => 1,
+            crate::DisplaySections::Custom(n) => min(version_tags.len() + 1, *n),
+        };
+
         let mut revwalk = repository.revwalk()?;
         revwalk.set_sorting(git2::Sort::TIME)?;
 
@@ -131,8 +140,12 @@ impl ChangeLogBuilder {
             self.set_link(&setup);
 
             // get the releases
+            let mut section_count = 1;
             let mut peekable_tags = version_tags.iter().peekable();
             loop {
+                if section_count >= section_limit {
+                    break;
+                }
                 let Some(tag) = peekable_tags.next() else {
                     break;
                 };
@@ -155,6 +168,7 @@ impl ChangeLogBuilder {
                     self.set_link(&setup);
                 }
                 self.sections.push(section);
+                section_count += 1;
             }
         }
 
