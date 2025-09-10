@@ -22,16 +22,27 @@ pub static REMOTE: Lazy<Regex> = lazy_regex!(
 );
 
 /// ChangeLog main struct
+#[derive(Debug, Clone)]
 pub struct ChangeLog {
     header: Header,
     sections: Vec<Section>,
     links: Vec<Link>,
+    next_version: Option<String>,
 }
 
 impl ChangeLog {
     /// create new ChangeLog struct
     pub fn builder() -> ChangeLogBuilder {
         ChangeLogBuilder::new()
+    }
+
+    /// Set the next_version title to use as the title for the Unreleased section
+    pub fn set_next_version(&self, next_version: &str) -> ChangeLog {
+        let mut updated = self.clone();
+
+        updated.next_version = Some(next_version.to_string());
+
+        updated
     }
 
     /// Write the changelog to the root directory
@@ -88,11 +99,13 @@ impl ChangeLogBuilder {
         }
     }
 
+    /// build a ChangeLog struct from the ChangeLogBuilder
     pub fn build(&self) -> ChangeLog {
         ChangeLog {
             header: self.header.clone(),
             sections: self.sections.clone(),
             links: self.links.clone(),
+            next_version: None,
         }
     }
 
