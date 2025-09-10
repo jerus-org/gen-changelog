@@ -40,6 +40,9 @@ pub enum ChangeLogError {
     /// Error from the std io
     #[error("io error: {0}")]
     IOError(#[from] std::io::Error),
+    /// Error from the toml serializer
+    #[error("toml serializer error: {0}")]
+    TomlSerError(#[from] toml::ser::Error),
     // /// Error from the regex crate
     // #[error("Regex says: {0}")]
     // RegexError(#[from] regex::Error),
