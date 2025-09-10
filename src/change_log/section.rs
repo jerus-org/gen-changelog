@@ -7,7 +7,7 @@ use git2::{Repository, Revwalk};
 
 use crate::{
     change_log::{
-        ChangeLogError,
+        Error,
         section::{cc_commit::ConvCommit, section_header::SectionHeader},
         tag::Tag,
     },
@@ -63,7 +63,7 @@ impl Section {
         setup: &WalkSetup,
         repository: &Repository,
         revwalk: &mut Revwalk,
-    ) -> Result<&mut Self, ChangeLogError> {
+    ) -> Result<&mut Self, Error> {
         match setup {
             WalkSetup::NoReleases => {
                 revwalk.push_head()?;
