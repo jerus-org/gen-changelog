@@ -2,11 +2,17 @@ use std::collections::{BTreeMap, HashMap};
 
 mod group;
 mod group_mgmt;
+mod heading_serde;
+mod test_config_serialization;
+
 pub(crate) mod heading_mgmt;
 
 use group::Group;
 use group_mgmt::GroupMgmt;
 use heading_mgmt::HeadingMgmt;
+use serde::{Deserialize, Serialize};
+
+use crate::change_log::ChangeLogError;
 
 const DEFAULT_GROUPS: [(&str, &[&str; 2], bool); 12] = [
     ("Added", &["feat", "feat"], true),
@@ -22,6 +28,7 @@ const DEFAULT_GROUPS: [(&str, &[&str; 2], bool); 12] = [
     ("Removed", &["removed", "removed"], false),
     ("Miscellaneous", &["misc", "misc"], false),
 ];
+const DEFAULT_CONFIG_FILE: &str = "gen-changelog.toml";
 
 /// How many sections to display in the changelog
 ///
@@ -30,7 +37,9 @@ const DEFAULT_GROUPS: [(&str, &[&str; 2], bool); 12] = [
 /// - One           [display the most recent section - last release or
 ///   unreleased]
 /// - Custom(num)   [a custom number of sections]
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "kebab-case")]
 pub enum DisplaySections {
     #[default]
     All,
@@ -43,14 +52,18 @@ pub enum DisplaySections {
 /// Examples of valid patterns are:
 /// - v0.2.4
 /// - gen-changelog-v0.1.9
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+#[serde(rename_all = "kebab-case")]
 pub enum ReleasePattern {
     Prefix(String),
     PackagePrefix(String),
 }
 
 /// Configuration settings for the Change Log
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, default)]
+#[serde(rename_all = "kebab-case")]
 pub struct ChangeLogConfig {
     /// Group conventional commits under a heading and set a flag to display the
     /// heading in the changelog
@@ -64,6 +77,7 @@ pub struct ChangeLogConfig {
     /// - added         [to display feat commits]
     /// - fixed         [to display fix commits]
     /// - changed       [to display refactor commits]
+    #[serde(with = "heading_serde")]
     headings: BTreeMap<u8, String>,
     /// How many sections to display in the changelog
     ///
@@ -128,6 +142,13 @@ impl ChangeLogConfig {
     /// Returns a reference to the btree storing the groups.
     pub fn groups_mapping(&self) -> &BTreeMap<String, String> {
         &self.groups_mapping
+    }
+
+    /// Save the config file.
+    pub fn save(&self) -> Result<(), ChangeLogError> {
+        let toml_string = toml::to_string_pretty(self)?;
+        std::fs::write(DEFAULT_CONFIG_FILE, toml_string)?;
+        Ok(())
     }
 }
 
