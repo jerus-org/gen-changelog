@@ -2,7 +2,7 @@ use std::error::Error;
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
-use gen_changelog::{ChangeLog, ChangeLogConfig, ChangeLogError, DisplaySections};
+use gen_changelog::{ChangeLog, ChangeLogConfig, DisplaySections, Error as GcError};
 use git2::Repository;
 
 #[derive(Parser, Debug)]
@@ -31,7 +31,7 @@ struct ConfigCli {
 }
 
 impl ConfigCli {
-    fn run(&self) -> Result<(), ChangeLogError> {
+    fn run(&self) -> Result<(), GcError> {
         let mut config = ChangeLogConfig::default();
         config.set_display_sections(DisplaySections::Custom(3));
         if self.save {
@@ -63,7 +63,7 @@ fn main() {
     }
 }
 
-fn run(args: Cli) -> Result<(), ChangeLogError> {
+fn run(args: Cli) -> Result<(), GcError> {
     if let Some(cmds) = args.command {
         match cmds {
             Commands::Configuration(config_cli) => config_cli.run()?,
