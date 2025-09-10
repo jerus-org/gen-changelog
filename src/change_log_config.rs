@@ -1,4 +1,8 @@
-use std::collections::{BTreeMap, HashMap};
+use std::{
+    collections::{BTreeMap, HashMap},
+    fs::read_to_string,
+    path::PathBuf,
+};
 
 mod group;
 mod group_mgmt;
@@ -136,6 +140,21 @@ impl Default for ChangeLogConfig {
 }
 
 impl ChangeLogConfig {
+    /// construct a config struct from the default config file if it exists. Return the default config struct if the file did not exist.
+    pub fn from_file_or_default() -> Result<Self, Error> {
+        let file = PathBuf::new().join(DEFAULT_CONFIG_FILE);
+        if file.exists() && file.is_file() {
+            Ok(ChangeLogConfig::from_file(file)?)
+        } else {
+            Ok(ChangeLogConfig::default())
+        }
+    }
+
+    /// construct a config struct from the file in the specified path
+    fn from_file(path: PathBuf) -> Result<Self, Error> {
+        let file = read_to_string(path)?;
+        Ok(toml::from_str::<ChangeLogConfig>(&file)?)
+    }
     /// Returns a reference to the btree storing the ordered list headings to
     /// publish in the change log.
     pub fn headings(&self) -> &BTreeMap<u8, String> {
