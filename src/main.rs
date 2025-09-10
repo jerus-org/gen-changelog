@@ -25,7 +25,21 @@ enum Commands {
 }
 
 #[derive(Parser, Debug)]
-struct ConfigCli {}
+struct ConfigCli {
+    #[arg(short, long)]
+    save: bool,
+}
+
+impl ConfigCli {
+    fn run(&self) -> Result<(), ChangeLogError> {
+        let _config = ChangeLogConfig::default();
+        if self.save {
+            // config.save()?;
+            println!("Save the default changelog configuration.")
+        }
+        Ok(())
+    }
+}
 
 fn main() {
     let args = Cli::parse();
@@ -48,26 +62,37 @@ fn main() {
     }
 }
 
-fn run(_args: Cli) -> Result<(), ChangeLogError> {
-    let repo_dir = PathBuf::new().join(".");
-    let repository = Repository::open(&repo_dir)
-        .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
+fn run(args: Cli) -> Result<(), ChangeLogError> {
+    if let Some(cmds) = args.command {
+        match cmds {
+            Commands::Configuration(config_cli) => config_cli.run()?,
+        }
+    } else {
+        let repo_dir = PathBuf::new().join(".");
+        let repository = Repository::open(&repo_dir)
+            .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
 
-    let mut config = ChangeLogConfig::default();
-    log::trace!("base config to build on: {config:?}");
+        let mut config = ChangeLogConfig::default();
+        log::trace!("base config to build on: {config:?}");
 
-    config.publish_group("Security");
+        config.publish_group("Security");
 
-    let mut change_log_builder = ChangeLog::builder();
-    let change_log = change_log_builder
-        .with_config(config)
-        .with_repository(&repository)
-        .unwrap()
-        .build();
+        let change_log = default_changelog_build(&repository, config);
 
-    // let _ = change_log.save();
-    println!("{change_log}");
+        // let _ = change_log.save();
+        println!("{change_log}");
+    }
     Ok(())
+}
+
+fn default_changelog_build(repository: &Repository, config: ChangeLogConfig) -> ChangeLog {
+    let mut change_log_builder = ChangeLog::builder();
+
+    change_log_builder
+        .with_config(config)
+        .with_repository(repository)
+        .unwrap()
+        .build()
 }
 
 fn get_logging(level: log::LevelFilter) -> env_logger::Builder {
