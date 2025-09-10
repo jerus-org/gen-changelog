@@ -19,15 +19,20 @@ pub static REMOTE: Lazy<Regex> = lazy_regex!(
     r"^((https://github\.com/)|(git@github.com:))(?P<owner>[a-z\-|A-Z]+)/(?P<repo>[a-z\-_A-Z]+)\.git$$"
 );
 
+/// Error messages for the gen-changelog crate
 #[derive(Debug, Error)]
 pub enum ChangeLogError {
+    /// url not found
     #[error("url not found")]
     UrlNotFound,
+    /// capture groups not found
     #[error("capture groups not found")]
     CapturesNotFound,
-    #[error("owner capture group not found")]
+    /// owner not found in capture group
+    #[error("owner not found in capture group")]
     OwnerNotFound,
-    #[error("repo capture group not found")]
+    /// repo not found in capture group
+    #[error("repo not found in capture group")]
     RepoNotFound,
     /// Error from the git2 crate
     #[error("Git2 says: {0}")]
