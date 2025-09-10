@@ -12,7 +12,7 @@ use group_mgmt::GroupMgmt;
 use heading_mgmt::HeadingMgmt;
 use serde::{Deserialize, Serialize};
 
-use crate::change_log::ChangeLogError;
+use crate::Error;
 
 const DEFAULT_GROUPS: [(&str, &[&str; 2], bool); 12] = [
     ("Added", &["feat", "feat"], true),
@@ -148,7 +148,7 @@ impl ChangeLogConfig {
     }
 
     /// Save the config file.
-    pub fn save(&self) -> Result<(), ChangeLogError> {
+    pub fn save(&self) -> Result<(), Error> {
         let toml_string = toml::to_string_pretty(self)?;
         std::fs::write(DEFAULT_CONFIG_FILE, toml_string)?;
         Ok(())
