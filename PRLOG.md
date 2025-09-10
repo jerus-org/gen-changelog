@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ enhance changelog config with serde support(pr [#93])
 - ✨ export DisplaySections from change_log_config(pr [#94])
 - ✨ add custom error handling with thiserror(pr [#95])
+- ✨ add file-based config initialization(pr [#97])
 
 ### Changed
 
@@ -239,6 +240,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#94]: https://github.com/jerus-org/gen-changelog/pull/94
 [#95]: https://github.com/jerus-org/gen-changelog/pull/95
 [#96]: https://github.com/jerus-org/gen-changelog/pull/96
+[#97]: https://github.com/jerus-org/gen-changelog/pull/97
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...HEAD
 [0.0.6]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/jerus-org/gen-changelog/compare/v0.0.4...v0.0.5
