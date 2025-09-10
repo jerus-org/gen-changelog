@@ -2,7 +2,7 @@ use std::error::Error;
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
-use gen_changelog::{ChangeLog, ChangeLogConfig, ChangeLogError};
+use gen_changelog::{ChangeLog, ChangeLogConfig, ChangeLogError, DisplaySections};
 use git2::Repository;
 
 #[derive(Parser, Debug)]
@@ -32,10 +32,11 @@ struct ConfigCli {
 
 impl ConfigCli {
     fn run(&self) -> Result<(), ChangeLogError> {
-        let _config = ChangeLogConfig::default();
+        let mut config = ChangeLogConfig::default();
+        config.set_display_sections(DisplaySections::Custom(3));
         if self.save {
-            // config.save()?;
-            println!("Save the default changelog configuration.")
+            log::info!("Saving the default changelog configuration.");
+            config.save()?;
         }
         Ok(())
     }
@@ -76,6 +77,7 @@ fn run(args: Cli) -> Result<(), ChangeLogError> {
         log::trace!("base config to build on: {config:?}");
 
         config.publish_group("Security");
+        config.set_display_sections(DisplaySections::Custom(3));
 
         let change_log = default_changelog_build(&repository, config);
 
