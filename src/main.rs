@@ -1,7 +1,8 @@
+use std::error::Error;
 use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
-use gen_changelog::{ChangeLog, ChangeLogConfig};
+use gen_changelog::{ChangeLog, ChangeLogConfig, ChangeLogError};
 use git2::Repository;
 
 #[derive(Parser, Debug)]
@@ -13,13 +14,13 @@ struct Cli {
     #[arg(short, long)]
     next_version: Option<String>,
     #[command(subcommand)]
-    command: Commands,
+    command: Option<Commands>,
 }
 
 #[derive(Subcommand, Debug)]
 enum Commands {
     /// Configuration management
-    #[clap(name = "crate")]
+    #[clap(name = "config")]
     Configuration(ConfigCli),
 }
 
@@ -32,6 +33,22 @@ fn main() {
     let mut logging = get_logging(args.logging.log_level_filter());
     logging.init();
 
+    match run(args) {
+        Ok(_) => {}
+        Err(e) => {
+            if let Some(src) = e.source() {
+                log::error!("{e}: {src}");
+                eprintln!("{e}: {src}");
+            } else {
+                log::error!("{e}");
+                eprintln!("{e}");
+            }
+            std::process::exit(101);
+        }
+    }
+}
+
+fn run(_args: Cli) -> Result<(), ChangeLogError> {
     let repo_dir = PathBuf::new().join(".");
     let repository = Repository::open(&repo_dir)
         .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
@@ -48,7 +65,9 @@ fn main() {
         .unwrap()
         .build();
 
-    let _ = change_log.save();
+    // let _ = change_log.save();
+    println!("{change_log}");
+    Ok(())
 }
 
 fn get_logging(level: log::LevelFilter) -> env_logger::Builder {
