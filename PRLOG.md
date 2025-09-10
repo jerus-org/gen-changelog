@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ integrate clap for command-line parsing(pr [#88])
 - ✨ add subcommand support for configuration(pr [#89])
 - ✨ enhance error handling and command options(pr [#91])
+- ✨ enhance changelog config with serde support(pr [#93])
 
 ### Changed
 
@@ -231,6 +232,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#90]: https://github.com/jerus-org/gen-changelog/pull/90
 [#91]: https://github.com/jerus-org/gen-changelog/pull/91
 [#92]: https://github.com/jerus-org/gen-changelog/pull/92
+[#93]: https://github.com/jerus-org/gen-changelog/pull/93
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...HEAD
 [0.0.6]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/jerus-org/gen-changelog/compare/v0.0.4...v0.0.5
