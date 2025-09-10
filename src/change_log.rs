@@ -11,42 +11,12 @@ use lazy_regex::{Lazy, Regex, lazy_regex};
 use link::Link;
 use section::{Section, WalkSetup};
 use tag::Tag;
-use thiserror::Error;
 
-use crate::ChangeLogConfig;
+use crate::{ChangeLogConfig, Error};
 
 pub static REMOTE: Lazy<Regex> = lazy_regex!(
     r"^((https://github\.com/)|(git@github.com:))(?P<owner>[a-z\-|A-Z]+)/(?P<repo>[a-z\-_A-Z]+)\.git$$"
 );
-
-/// Error messages for the gen-changelog crate
-#[derive(Debug, Error)]
-pub enum ChangeLogError {
-    /// url not found
-    #[error("url not found")]
-    UrlNotFound,
-    /// capture groups not found
-    #[error("capture groups not found")]
-    CapturesNotFound,
-    /// owner not found in capture group
-    #[error("owner not found in capture group")]
-    OwnerNotFound,
-    /// repo not found in capture group
-    #[error("repo not found in capture group")]
-    RepoNotFound,
-    /// Error from the git2 crate
-    #[error("Git2 says: {0}")]
-    Git2Error(#[from] git2::Error),
-    /// Error from the std io
-    #[error("io error: {0}")]
-    IOError(#[from] std::io::Error),
-    /// Error from the toml serializer
-    #[error("toml serializer error: {0}")]
-    TomlSerError(#[from] toml::ser::Error),
-    // /// Error from the regex crate
-    // #[error("Regex says: {0}")]
-    // RegexError(#[from] regex::Error),
-}
 
 /// ChangeLog main struct
 pub struct ChangeLog {
@@ -62,7 +32,7 @@ impl ChangeLog {
     }
 
     /// Write the changelog to the root directory
-    pub fn save(&self) -> Result<(), ChangeLogError> {
+    pub fn save(&self) -> Result<(), Error> {
         std::fs::write("CHANGELOG.md", self.to_string().as_str())?;
         Ok(())
     }
@@ -136,10 +106,7 @@ impl ChangeLogBuilder {
     }
 
     /// Add sections  and links to the change log
-    pub fn with_repository(
-        &mut self,
-        repository: &Repository,
-    ) -> Result<&mut Self, ChangeLogError> {
+    pub fn with_repository(&mut self, repository: &Repository) -> Result<&mut Self, Error> {
         self.get_remote_details(repository)?;
 
         let version_tags = self.get_version_tags(repository)?;
@@ -196,24 +163,24 @@ impl ChangeLogBuilder {
 }
 
 impl ChangeLogBuilder {
-    fn get_remote_details(&mut self, repository: &Repository) -> Result<(), ChangeLogError> {
+    fn get_remote_details(&mut self, repository: &Repository) -> Result<(), Error> {
         let config = repository.config()?;
         let url = config.get_entry("remote.origin.url")?;
         let Some(haystack) = url.value() else {
-            return Err(ChangeLogError::UrlNotFound);
+            return Err(Error::UrlNotFound);
         };
 
         let captures = REMOTE.captures(haystack);
 
         let Some(caps) = captures else {
-            return Err(ChangeLogError::CapturesNotFound);
+            return Err(Error::CapturesNotFound);
         };
 
         let Some(owner) = caps.name("owner") else {
-            return Err(ChangeLogError::OwnerNotFound);
+            return Err(Error::OwnerNotFound);
         };
         let Some(repo) = caps.name("repo") else {
-            return Err(ChangeLogError::RepoNotFound);
+            return Err(Error::RepoNotFound);
         };
 
         self.owner = owner.as_str().to_string();
@@ -269,7 +236,7 @@ impl ChangeLogBuilder {
         }
     }
 
-    fn get_version_tags(&self, repository: &Repository) -> Result<Vec<Tag>, ChangeLogError> {
+    fn get_version_tags(&self, repository: &Repository) -> Result<Vec<Tag>, Error> {
         let mut tags = Vec::new();
 
         repository.tag_foreach(|id, name| {
