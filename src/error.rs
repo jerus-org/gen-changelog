@@ -24,6 +24,9 @@ pub enum Error {
     /// Error from the toml serializer
     #[error("toml serializer error: {0}")]
     TomlSerError(#[from] toml::ser::Error),
+    /// Error from the toml serializer
+    #[error("toml deserializer error: {0}")]
+    TomlDeError(#[from] toml::de::Error),
     // /// Error from the regex crate
     // #[error("Regex says: {0}")]
     // RegexError(#[from] regex::Error),
