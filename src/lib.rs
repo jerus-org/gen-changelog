@@ -10,3 +10,4 @@ mod change_log_config;
 pub use change_log::ChangeLog;
 pub use change_log::ChangeLogError;
 pub use change_log_config::ChangeLogConfig;
+pub use change_log_config::DisplaySections;
