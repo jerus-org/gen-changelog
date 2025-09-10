@@ -73,11 +73,13 @@ fn run(args: Cli) -> Result<(), gen_changelog::Error> {
         let repository = Repository::open(&repo_dir)
             .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
 
-        let mut config = ChangeLogConfig::default();
+        let mut config = ChangeLogConfig::from_file_or_default()?;
         log::trace!("base config to build on: {config:?}");
 
         config.publish_group("Security");
-        config.set_display_sections(DisplaySections::Custom(3));
+        // config.set_display_sections(DisplaySections::Custom(3));
+
+        println!("{config:#?}");
 
         let change_log = default_changelog_build(&repository, config);
 
