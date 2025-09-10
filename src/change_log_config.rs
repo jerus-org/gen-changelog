@@ -42,8 +42,11 @@ const DEFAULT_CONFIG_FILE: &str = "gen-changelog.toml";
 #[serde(rename_all = "kebab-case")]
 pub enum DisplaySections {
     #[default]
+    /// Display all available sections
     All,
+    /// Display only the most recent section
     One,
+    /// Display the lesser of the specified number and all sections
     Custom(usize),
 }
 
