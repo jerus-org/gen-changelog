@@ -36,11 +36,23 @@ impl ChangeLog {
         ChangeLogBuilder::new()
     }
 
-    /// Set the next_version title to use as the title for the Unreleased section
+    /// Set the next_version title to use as the title for the Unreleased
+    /// section
     pub fn set_next_version(&self, next_version: &str) -> ChangeLog {
         let mut updated = self.clone();
 
-        updated.next_version = Some(next_version.to_string());
+        let mut unreleased = updated.sections[0].clone();
+        log::debug!(
+            "Current unreleased section tag is `{:?}`.",
+            unreleased.tag()
+        );
+
+        unreleased.set_version(next_version);
+        log::debug!(
+            "Updated unreleased section tag is `{:?}`.",
+            unreleased.tag()
+        );
+        updated.sections[0] = unreleased;
 
         updated
     }
