@@ -202,10 +202,24 @@ impl Section {
         }
     }
 
+    pub(crate) fn tag(&self) -> Option<&Tag> {
+        self.tag.as_ref()
+    }
+
     pub(crate) fn version(&self) -> Option<String> {
         let vs = self.tag.as_ref()?.version()?.to_string();
 
         Some(vs)
+    }
+
+    pub(crate) fn set_version(&mut self, value: &str) {
+        log::debug!("Setting the version to `{value}`");
+        let tag = Tag::new(value);
+        let tag_opt = Some(tag.clone());
+        let header = SectionHeader::from(&tag_opt);
+
+        self.tag = Some(tag);
+        self.header = header;
     }
 }
 
