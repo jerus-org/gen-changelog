@@ -25,6 +25,32 @@ pub(crate) struct Tag {
 }
 
 impl Tag {
+    pub(crate) fn new(version: &str) -> Tag {
+        let semver = Version::parse(version);
+        let date = chrono::Utc::now();
+
+        match semver {
+            Ok(_) => {
+                let semver = Some(semver.unwrap());
+                let date = Some(date);
+                Tag {
+                    id: None,
+                    name: version.to_string(),
+                    package: None,
+                    semver,
+                    date,
+                }
+            }
+            Err(_) => Tag {
+                id: None,
+                name: "Unreleased".to_string(),
+                package: None,
+                semver: None,
+                date: None,
+            },
+        }
+    }
+
     pub(crate) fn builder<S: Display>(
         id: Option<Oid>,
         name: S,
