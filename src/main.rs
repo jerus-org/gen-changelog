@@ -79,7 +79,7 @@ fn run(args: Cli) -> Result<(), gen_changelog::Error> {
         config.publish_group("Security");
         // config.set_display_sections(DisplaySections::Custom(3));
 
-        println!("{config:#?}");
+        log::trace!("{config:#?}");
 
         let mut change_log = default_changelog_build(&repository, config);
 
