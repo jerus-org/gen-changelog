@@ -27,7 +27,6 @@ pub struct ChangeLog {
     header: Header,
     sections: Vec<Section>,
     links: Vec<Link>,
-    next_version: Option<String>,
 }
 
 impl ChangeLog {
@@ -36,9 +35,8 @@ impl ChangeLog {
         ChangeLogBuilder::new()
     }
 
-    /// Set the next_version title to use as the title for the Unreleased
-    /// section
-    pub fn set_next_version(&self, next_version: &str) -> ChangeLog {
+    /// Update unreleased to the next version
+    pub fn update_unreleased_to_next_version(&self, next_version: &str) -> ChangeLog {
         let mut updated = self.clone();
 
         let mut unreleased = updated.sections[0].clone();
@@ -117,7 +115,6 @@ impl ChangeLogBuilder {
             header: self.header.clone(),
             sections: self.sections.clone(),
             links: self.links.clone(),
-            next_version: None,
         }
     }
 
