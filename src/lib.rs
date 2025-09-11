@@ -8,8 +8,6 @@ mod change_log;
 mod change_log_config;
 mod error;
 
-pub use change_log::ChangeLog;
-pub use change_log::ChangeLogBuilder;
-pub use change_log_config::ChangeLogConfig;
-pub use change_log_config::DisplaySections;
+pub use change_log::{ChangeLog, ChangeLogBuilder};
+pub use change_log_config::{ChangeLogConfig, DisplaySections};
 pub use error::Error;
