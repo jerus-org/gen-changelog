@@ -7,6 +7,7 @@ default:
 
 alias t := test
 alias c := check
+
 bump := "patch"
 
 # run all tests, clippy, including journey tests, try building docs
@@ -44,11 +45,3 @@ fmt:
 # Generate coverage reported
 cov:
     cargo tarpaulin --output-dir coverage --out lcov
-
-# Smart release dry run
-sr-dry:
-    cargo smart-release --update-crates-index --dry-run-cargo-publish --no-changelog --allow-dirty -b {{bump}}
-
-# Execute smart release
-sr:
-    cargo smart-release --execute --update-crates-index --dry-run-cargo-publish --no-changelog --allow-dirty -b {{bump}}
