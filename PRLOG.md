@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ add file-based config initialization(pr [#97])
 - ✨ add section limit handling for changelog display(pr [#98])
 - ✨ add support for setting next version in changelog(pr [#99])
+- ✨ add tagging and version setting functionality(pr [#102])
 
 ### Changed
 
@@ -249,6 +250,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#99]: https://github.com/jerus-org/gen-changelog/pull/99
 [#100]: https://github.com/jerus-org/gen-changelog/pull/100
 [#101]: https://github.com/jerus-org/gen-changelog/pull/101
+[#102]: https://github.com/jerus-org/gen-changelog/pull/102
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...HEAD
 [0.0.6]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/jerus-org/gen-changelog/compare/v0.0.4...v0.0.5
