@@ -1,12 +1,13 @@
 #[cfg(test)]
 mod integration_tests {
-    use crate::change_log_config::ChangeLogConfig;
     use std::collections::BTreeMap;
+
+    use crate::change_log_config::ChangeLogConfig;
 
     #[test]
     fn test_changelog_config_serialization_with_headings() {
         let mut config = ChangeLogConfig::default();
-        
+
         // Clear and set specific headings for predictable testing
         config.headings.clear();
         config.headings.insert(1, "Added".to_string());
@@ -15,7 +16,7 @@ mod integration_tests {
 
         // Serialize to TOML
         let toml_str = toml::to_string_pretty(&config).expect("serialize config to toml");
-        
+
         // Check that headings are serialized in the inverted format
         assert!(toml_str.contains("[headings]"));
         assert!(toml_str.contains("Added = 1"));
@@ -23,8 +24,8 @@ mod integration_tests {
         assert!(toml_str.contains("Changed = 3"));
 
         // Deserialize back and verify round trip
-        let deserialized: ChangeLogConfig = toml::from_str(&toml_str)
-            .expect("deserialize config from toml");
+        let deserialized: ChangeLogConfig =
+            toml::from_str(&toml_str).expect("deserialize config from toml");
 
         assert_eq!(config.headings, deserialized.headings);
     }
@@ -47,8 +48,8 @@ mod integration_tests {
             prefix = "v"
         "#;
 
-        let config: ChangeLogConfig = toml::from_str(toml_str)
-            .expect("deserialize config from toml");
+        let config: ChangeLogConfig =
+            toml::from_str(toml_str).expect("deserialize config from toml");
 
         let mut expected_headings = BTreeMap::new();
         expected_headings.insert(1, "Added".to_string());
@@ -56,7 +57,10 @@ mod integration_tests {
         expected_headings.insert(5, "Custom".to_string());
 
         assert_eq!(config.headings, expected_headings);
-        assert_eq!(config.groups_mapping.get("feat"), Some(&"Added".to_string()));
+        assert_eq!(
+            config.groups_mapping.get("feat"),
+            Some(&"Added".to_string())
+        );
         assert_eq!(config.groups_mapping.get("fix"), Some(&"Fixed".to_string()));
     }
 }
