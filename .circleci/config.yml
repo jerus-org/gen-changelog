@@ -89,7 +89,11 @@ commands:
 
             case << parameters.initial_bump >> in 
               none)
-                bump=$(nextsv -q require -f CHANGELOG.md feature)
+                if [ $SEMVER == "" ] then;
+                  bump=$(nextsv -q require -f CHANGELOG.md feature)
+                else 
+                  bump=$SEMVER
+                fi
                 ;;
               minor)
                 bump="minor"
@@ -217,6 +221,12 @@ jobs:
           name: install gen-changelog (me)
           command: |
             cargo install --path .
+      - run:
+          name: Update change log
+          command: |
+            set -exo pipefail
+
+            gen-changelog --next_version $SEMVER
       - when:
           condition:
             and:
@@ -337,9 +347,30 @@ workflows:
         - not: << pipeline.parameters.success-flag >>
         - not: << pipeline.parameters.validation-flag >>
     jobs:
+      - toolkit/save_next_version:
+          min_rust_version: << pipeline.parameters.min-rust-version >>
+
       - make_release_and_update_changelog:
+          requires:
+            - toolkit/save_next_version
+          pre-steps:
+            - attach_workspace:
+                at: /tmp/workspace
+            - run:
+                name: Set SEMVER based on next-version file
+                command: |
+                  set +ex
+                  export SEMVER=$(cat /tmp/workspace/next-version)
+                  echo $SEMVER
+                  echo "export SEMVER=$SEMVER" >> "$BASH_ENV"
           context:
             - release
             - bot-check
           ssh_fingerprint: << pipeline.parameters.fingerprint >>
           min_rust_version: << pipeline.parameters.min-rust-version >>
+
+      - toolkit/no_release:
+          min_rust_version: << pipeline.parameters.min-rust-version >>
+          requires:
+            - toolkit/save_next_version:
+                - failed
