@@ -89,8 +89,8 @@ commands:
 
             case << parameters.initial_bump >> in 
               none)
-                if [ $SEMVER == "" ] then;
-                  bump=$(nextsv -q require -f CHANGELOG.md feature)
+                if [ "$SEMVER" == "" ]; then
+                  bump=$(nextsv -q require -f PRLOG.md feature)
                 else 
                   bump=$SEMVER
                 fi
@@ -110,7 +110,7 @@ commands:
                 << parameters.verbosity >> \
                 --execute \
                 --no-confirm \
-                 $bump
+                 "$bump"
 
   get_next_version:
     description: >
