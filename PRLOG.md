@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(logging)-use trace level for config logging(pr [#100])
 - ♻️ refactor(tag)-support optional tag id(pr [#101])
 - ♻️ refactor(lib)-apply comprehensive rust formatting update(pr [#103])
+- 👷 ci(circleci)-enhance changelog update and version management(pr [#104])
 
 ## [0.0.6] - 2025-09-09
 
@@ -253,6 +254,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#101]: https://github.com/jerus-org/gen-changelog/pull/101
 [#102]: https://github.com/jerus-org/gen-changelog/pull/102
 [#103]: https://github.com/jerus-org/gen-changelog/pull/103
+[#104]: https://github.com/jerus-org/gen-changelog/pull/104
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...HEAD
 [0.0.6]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/jerus-org/gen-changelog/compare/v0.0.4...v0.0.5
