@@ -80,7 +80,7 @@ impl Section {
                 log::trace!("{}", self.report_status(false));
             }
             WalkSetup::FromReleaseToRelease(from_tag, to_tag) => {
-                revwalk.push(*from_tag.id())?;
+                revwalk.push(*from_tag.id().unwrap())?;
                 let reference = to_tag.to_string();
                 revwalk.hide_ref(&reference)?;
                 log::trace!("Walking from the release `{from_tag}` to release `{to_tag}`");
@@ -88,7 +88,7 @@ impl Section {
                 log::trace!("{}", self.report_status(false));
             }
             WalkSetup::ReleaseToStart(tag) => {
-                revwalk.push(*tag.id())?;
+                revwalk.push(*tag.id().unwrap())?;
                 log::trace!("Walking from the first release `{tag}` to first commit");
                 self.get_commits(revwalk, repository);
                 log::trace!("{}", self.report_status(false));
