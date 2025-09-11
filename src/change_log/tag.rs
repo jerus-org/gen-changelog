@@ -17,7 +17,7 @@ pub static PACKAGE_PREFIX: Lazy<Regex> = lazy_regex!(
 
 #[derive(Debug, Clone)]
 pub(crate) struct Tag {
-    id: Oid,
+    id: Option<Oid>,
     name: String,
     package: Option<String>,
     semver: Option<Version>,
@@ -25,7 +25,11 @@ pub(crate) struct Tag {
 }
 
 impl Tag {
-    pub(crate) fn builder<S: Display>(id: Oid, name: S, repo: &Repository) -> TagBuilder<'_> {
+    pub(crate) fn builder<S: Display>(
+        id: Option<Oid>,
+        name: S,
+        repo: &Repository,
+    ) -> TagBuilder<'_> {
         let name = name.to_string();
 
         TagBuilder {
@@ -38,8 +42,8 @@ impl Tag {
         }
     }
 
-    pub(crate) fn id(&self) -> &Oid {
-        &self.id
+    pub(crate) fn id(&self) -> Option<&Oid> {
+        self.id.as_ref()
     }
 
     pub(crate) fn name(&self) -> &str {
@@ -79,7 +83,7 @@ pub(crate) enum TagBuilderError {
 
 #[derive(Clone)]
 pub(crate) struct TagBuilder<'a> {
-    id: Oid,
+    id: Option<Oid>,
     repo: &'a Repository,
     name: String,
     package: Option<String>,
@@ -166,7 +170,13 @@ impl<'a> TagBuilder<'a> {
     }
 
     pub(crate) fn get_date(&mut self) -> &mut Self {
-        let Ok(git_tag) = self.repo.find_tag(self.id) else {
+        if self.id.is_none() {
+            let date = Some(chrono::Utc::now());
+            self.date = date;
+            return self;
+        }
+
+        let Ok(git_tag) = self.repo.find_tag(self.id.unwrap()) else {
             return self;
         };
 
