@@ -87,8 +87,7 @@ fn run(args: Cli) -> Result<(), gen_changelog::Error> {
             change_log = change_log.set_next_version(&next_version);
         }
 
-        // let _ = change_log.save();
-        println!("{change_log}");
+        let _ = change_log.save();
     }
     Ok(())
 }
