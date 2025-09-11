@@ -1,6 +1,6 @@
-# Gen-changelog
+![Gen-changelog — Generate a change log based on the git commits compatible with keep-a-changelog and using conventional commits to categorise commits][splash]
 
-Generate a change log based on the git commits compatible with keep-a-changelog and using conventional commits to categorise commits.
+[splash]: https://raw.githubusercontent.com/jerus-org/gen-changelog/main/assets/splash.svg
 
 [![Rust 1.85+][version-badge]][version-url]
 [![circleci-badge]][circleci-url]
@@ -28,7 +28,15 @@ Generate a change log based on the git commits compatible with keep-a-changelog 
 [ghub-badge]: https://img.shields.io/badge/sponsor-30363D?logo=GitHub-Sponsors&logoColor=#white
 [ghub-url]: https://github.com/sponsors/jerusdp
 
+**gen-changelog** is a release tool that generates changelogs in the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format. It analyses a repository's commit history and uses conventional commit types to categorise and filter commits for inclusion in the changelog.
 
+## Main Features
+
+- **Commit Categorization**: Uses [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification to automatically categorise commits and filter them for changelog inclusion
+- **Summary Counts**: Displays summary counts for each commit category in releases, including uncategorised (non-conventional) commits
+- **Detailed Commit Summaries**: Shows commit details for Added, Fixed, Changed, and Security categories
+- **Security Classification**: Automatically classifies commits made to the dependency scope as Security commits, regardless of their conventional commit type
+- **Flexible Configuration**: Configurable mapping of commit types to headings, customizable heading display options, and optional commit summary counts
 ## Gen-changelog library documentation 
 
 The library provides the `ChangeLogConfig` and `ChangeLog` structs to configure and construct the change log document. 
@@ -46,7 +54,7 @@ or by configuring the dependencies in `Cargo.toml`
 
 ```toml
 [dependencies]
-gen-changelog = "0.0.6"
+gen-changelog = "0.0.7"
 ```
 
 ## Gen-changelog executable documentation 
