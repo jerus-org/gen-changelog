@@ -140,7 +140,8 @@ impl Default for ChangeLogConfig {
 }
 
 impl ChangeLogConfig {
-    /// construct a config struct from the default config file if it exists. Return the default config struct if the file did not exist.
+    /// construct a config struct from the default config file if it exists.
+    /// Return the default config struct if the file did not exist.
     pub fn from_file_or_default() -> Result<Self, Error> {
         let file = PathBuf::new().join(DEFAULT_CONFIG_FILE);
         if file.exists() && file.is_file() {
