@@ -84,6 +84,7 @@ fn run(args: Cli) -> Result<(), gen_changelog::Error> {
         let mut change_log = default_changelog_build(&repository, config);
 
         if let Some(next_version) = args.next_version {
+            log::info!("Setting unreleased section title to `{next_version}`");
             change_log = change_log.set_next_version(&next_version);
         }
 
