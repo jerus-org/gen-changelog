@@ -112,6 +112,51 @@ commands:
                 --no-confirm \
                  $bump
 
+  get_next_version:
+    description: >
+      Calculate the next version number and save it to the NEXT_VERSION environment
+      variable
+    parameters:
+      package:
+        default: ""
+        description: Package to release and/or publish
+        type: string
+      verbosity:
+        default: "-q"
+        description: Verbosity flag for nextsv command
+        type: string
+      version:
+        default: ""
+        description: Specific version number to release
+        type: string
+    steps:
+      - run:
+          command: |
+            set -exo pipefail
+            if [ "<< parameters.package >>" != "" ] ; then
+              package="--package << parameters.package >>"
+            else
+              package=""
+            fi
+
+            if [ "<< parameters.version >>" != "" ] ; then
+              version=<< parameters.version >>
+              export version
+            else
+              version=$(nextsv << parameters.verbosity >> -bn -c other require $package -f PRLOG.md feature)
+              export version
+            fi
+            echo "$version"
+            # Save for future steps
+            if [ -z "${version}" ]; then
+              echo "Error: No version found"
+              version="none"
+              echo "export NEXT_VERSION=$version" >> "$BASH_ENV"
+            else
+              echo "export NEXT_VERSION=$version" >> "$BASH_ENV"
+            fi
+          name: Calculate next version and save to environment variable
+
 jobs:
   make_release_and_update_changelog:
     description: |
@@ -226,7 +271,7 @@ jobs:
           command: |
             set -exo pipefail
 
-            gen-changelog --next_version $SEMVER
+            gen-changelog --next-version $SEMVER
       - when:
           condition:
             and:
@@ -265,6 +310,59 @@ jobs:
                 blog_directory: << parameters.blog_directory >>
                 command: << parameters.bluesky_command >>
                 pcu_verbosity: << parameters.pcu_verbosity >>
+
+  save_next_version:
+    description: >
+      Calculate the next version number and save it to the semver file in the
+      workspace to facilitate sharing between different jobs.
+    executor:
+      name: rust-env
+    parameters:
+      install_me:
+        default: false
+        description: Install the current rust package as a binary
+        type: boolean
+      min_rust_version:
+        type: string
+      package:
+        default: ""
+        description: Package to release and/or publish
+        type: string
+      path_to_crate:
+        default: .
+        description: The path to the crate to install
+        type: string
+      verbosity:
+        default: "-q"
+        description: Verbosity flag for nextsv command
+        type: string
+      version:
+        default: ""
+        description: Specific version number to release
+        type: string
+    steps:
+      - checkout
+      - when:
+          condition: << parameters.install_me >>
+          name: Install current project or a package in the current project
+          steps:
+            - toolkit/install_me:
+                path_to_crate: << parameters.path_to_crate >>
+      - get_next_version:
+          package: << parameters.package >>
+          version: << parameters.version >>
+      - run:
+          command: |
+            set -exo pipefail
+            mkdir -p /tmp/workspace
+            echo "Version in environment: $NEXT_VERSION"
+            echo "$NEXT_VERSION" > /tmp/workspace/next-version
+            cat /tmp/workspace/next-version
+          name: Save next version to workspace
+      - persist_to_workspace:
+          paths:
+            - next-version
+          root: /tmp/workspace
 
 workflows:
   check_last_commit:
@@ -347,12 +445,12 @@ workflows:
         - not: << pipeline.parameters.success-flag >>
         - not: << pipeline.parameters.validation-flag >>
     jobs:
-      - toolkit/save_next_version:
+      - save_next_version:
           min_rust_version: << pipeline.parameters.min-rust-version >>
 
       - make_release_and_update_changelog:
           requires:
-            - toolkit/save_next_version
+            - save_next_version
           pre-steps:
             - attach_workspace:
                 at: /tmp/workspace
@@ -372,5 +470,5 @@ workflows:
       - toolkit/no_release:
           min_rust_version: << pipeline.parameters.min-rust-version >>
           requires:
-            - toolkit/save_next_version:
+            - save_next_version:
                 - failed
