@@ -222,8 +222,14 @@ impl ChangeLogConfig {
     }
 
     /// Set a new `display_sections` value
-    pub fn set_display_sections(&mut self, value: DisplaySections) -> &mut Self {
-        self.display_sections = value;
+    pub fn set_display_sections(&mut self, value: Option<u8>) -> &mut Self {
+        if let Some(n) = value {
+            match n {
+                1 => self.display_sections = DisplaySections::One,
+                _ => self.display_sections = DisplaySections::Custom(n),
+            }
+        }
+        log::debug!("Display sections `{:#?}`", self.display_sections);
         self
     }
 }
