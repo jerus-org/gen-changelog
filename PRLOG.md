@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(cli)-extract ConfigCli into separate module(pr [#112])
 - ♻️ refactor(main)-streamline CLI structure(pr [#113])
 - ♻️ refactor(generate_cli)-simplify section handling(pr [#114])
+- 👷 ci(circleci)-update changelog generation command(pr [#115])
 
 ### Fixed
 
@@ -286,6 +287,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#112]: https://github.com/jerus-org/gen-changelog/pull/112
 [#113]: https://github.com/jerus-org/gen-changelog/pull/113
 [#114]: https://github.com/jerus-org/gen-changelog/pull/114
+[#115]: https://github.com/jerus-org/gen-changelog/pull/115
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...HEAD
 [0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...v0.0.6
