@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- ✨ add sections option for changelog display(pr [#109])
+
 ### Changed
 
 - ♻️ refactor(changelog)-remove next_version handling(pr [#108])
@@ -271,6 +275,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#106]: https://github.com/jerus-org/gen-changelog/pull/106
 [#107]: https://github.com/jerus-org/gen-changelog/pull/107
 [#108]: https://github.com/jerus-org/gen-changelog/pull/108
+[#109]: https://github.com/jerus-org/gen-changelog/pull/109
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...HEAD
 [0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...v0.0.6
