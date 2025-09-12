@@ -271,7 +271,7 @@ jobs:
           command: |
             set -exo pipefail
 
-            gen-changelog --next-version $SEMVER
+            gen-changelog generate --next-version $SEMVER
       - when:
           condition:
             and:
