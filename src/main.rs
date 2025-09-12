@@ -1,8 +1,12 @@
 use std::{error::Error, path::PathBuf};
 
+mod config_cli;
+
 use clap::{Parser, Subcommand};
 use gen_changelog::{ChangeLog, ChangeLogConfig, DisplaySections};
 use git2::Repository;
+
+use crate::config_cli::ConfigCli;
 
 #[derive(Parser, Debug)]
 #[clap(author, version, about, long_about = None)]
@@ -27,24 +31,6 @@ enum Commands {
     /// Configuration management
     #[clap(name = "config")]
     Configuration(ConfigCli),
-}
-
-#[derive(Parser, Debug)]
-struct ConfigCli {
-    #[arg(short, long)]
-    save: bool,
-}
-
-impl ConfigCli {
-    fn run(&self) -> Result<(), gen_changelog::Error> {
-        let mut config = ChangeLogConfig::default();
-        config.set_display_sections(DisplaySections::Custom(3));
-        if self.save {
-            log::info!("Saving the default changelog configuration.");
-            config.save()?;
-        }
-        Ok(())
-    }
 }
 
 fn main() {
