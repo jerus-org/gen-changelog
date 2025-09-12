@@ -1,27 +1,53 @@
-[groups.Fixed]
-name = "Fixed"
-publish = true
-cc-types = ["fix"]
-
-[groups."Continuous Integration"]
-name = "Continuous Integration"
+[groups.Build]
+name = "Build"
 publish = false
-cc-types = ["ci"]
+cc-types = ["build"]
 
-[groups.Deprecated]
-name = "Deprecated"
+[groups.Miscellaneous]
+name = "Miscellaneous"
 publish = false
-cc-types = ["deprecated"]
+cc-types = ["misc"]
 
 [groups.Changed]
 name = "Changed"
 publish = true
 cc-types = ["refactor"]
 
-[groups.Build]
-name = "Build"
+[groups."Continuous Integration"]
+name = "Continuous Integration"
 publish = false
-cc-types = ["build"]
+cc-types = ["ci"]
+
+[groups.Documentation]
+name = "Documentation"
+publish = false
+cc-types = [
+    "docs",
+    "doc",
+]
+
+[groups.Deprecated]
+name = "Deprecated"
+publish = false
+cc-types = ["deprecated"]
+
+[groups.Security]
+name = "Security"
+publish = false
+cc-types = [
+    "dependency",
+    "security",
+]
+
+[groups.Removed]
+name = "Removed"
+publish = false
+cc-types = ["removed"]
+
+[groups.Added]
+name = "Added"
+publish = true
+cc-types = ["feat"]
 
 [groups.Chore]
 name = "Chore"
@@ -33,36 +59,10 @@ name = "Testing"
 publish = false
 cc-types = ["test"]
 
-[groups.Added]
-name = "Added"
+[groups.Fixed]
+name = "Fixed"
 publish = true
-cc-types = ["feat"]
-
-[groups.Removed]
-name = "Removed"
-publish = false
-cc-types = ["removed"]
-
-[groups.Documentation]
-name = "Documentation"
-publish = false
-cc-types = [
-    "doc",
-    "docs",
-]
-
-[groups.Miscellaneous]
-name = "Miscellaneous"
-publish = false
-cc-types = ["misc"]
-
-[groups.Security]
-name = "Security"
-publish = false
-cc-types = [
-    "security",
-    "dependency",
-]
+cc-types = ["fix"]
 
 [groups-mapping]
 build = "Build"
