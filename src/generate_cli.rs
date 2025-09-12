@@ -60,7 +60,7 @@ impl GenerateCli {
             .build();
 
         let _ = change_log.save();
-        println!("{change_log}");
+        // println!("{change_log}");
         Ok(())
     }
 }
