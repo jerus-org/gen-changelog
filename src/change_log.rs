@@ -35,23 +35,6 @@ impl ChangeLog {
         ChangeLogBuilder::new()
     }
 
-    /// Update unreleased to the next version
-    pub fn update_unreleased_to_next_version(&mut self, next_version: Option<&String>) {
-        if let Some(nv) = next_version {
-            log::debug!(
-                "Setting unreleased section `{}` to `{nv}`",
-                self.sections[0].header()
-            );
-
-            self.sections[0].set_version(nv);
-
-            log::debug!(
-                "Updated unreleased section tag is `{:?}`.",
-                self.sections[0].tag()
-            );
-        }
-    }
-
     /// Write the changelog to the root directory
     pub fn save(&self) -> Result<(), Error> {
         std::fs::write("CHANGELOG.md", self.to_string().as_str())?;
@@ -192,6 +175,27 @@ impl ChangeLogBuilder {
         }
 
         Ok(self)
+    }
+
+    /// Update unreleased to the next version
+    pub fn update_unreleased_to_next_version(
+        &mut self,
+        next_version: Option<&String>,
+    ) -> &mut Self {
+        if let Some(nv) = next_version {
+            log::debug!(
+                "Setting unreleased section `{}` to `{nv}`",
+                self.sections[0].header()
+            );
+
+            self.sections[0].set_version(nv);
+
+            log::debug!(
+                "Updated unreleased section tag is `{:?}`.",
+                self.sections[0].tag()
+            );
+        }
+        self
     }
 }
 
