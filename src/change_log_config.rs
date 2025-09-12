@@ -51,7 +51,7 @@ pub enum DisplaySections {
     /// Display only the most recent section
     One,
     /// Display the lesser of the specified number and all sections
-    Custom(usize),
+    Custom(u8),
 }
 
 /// Pattern to identify a tag as a release tag.
