@@ -140,9 +140,9 @@ impl ChangeLogBuilder {
         let version_tags = self.get_version_tags(repository)?;
 
         let section_limit = match self.config.display_sections() {
-            crate::DisplaySections::All => version_tags.len() + 1,
+            crate::DisplaySections::All => min((version_tags.len() + 1) as u8, u8::MAX),
             crate::DisplaySections::One => 1,
-            crate::DisplaySections::Custom(n) => min(version_tags.len() + 1, *n),
+            crate::DisplaySections::Custom(n) => min((version_tags.len() + 1) as u8, *n),
         };
 
         let mut revwalk = repository.revwalk()?;
