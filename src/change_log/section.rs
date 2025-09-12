@@ -206,6 +206,10 @@ impl Section {
         self.tag.as_ref()
     }
 
+    pub(crate) fn header(&self) -> &SectionHeader {
+        &self.header
+    }
+
     pub(crate) fn version(&self) -> Option<String> {
         let vs = self.tag.as_ref()?.version()?.to_string();
 
