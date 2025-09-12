@@ -152,8 +152,8 @@ impl ChangeLogConfig {
     }
 
     /// construct a config struct from the file in the specified path
-    fn from_file(path: PathBuf) -> Result<Self, Error> {
-        let file = read_to_string(path)?;
+    pub fn from_file<P: Into<PathBuf>>(path: P) -> Result<Self, Error> {
+        let file = read_to_string(path.into())?;
         Ok(toml::from_str::<ChangeLogConfig>(&file)?)
     }
     /// Returns a reference to the btree storing the ordered list headings to
