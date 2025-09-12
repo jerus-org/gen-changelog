@@ -42,6 +42,7 @@ impl Section {
     pub(crate) fn new(
         tag: Option<Tag>,
         headings: &BTreeMap<u8, String>,
+        summary_flag: bool,
         group_mapping: &BTreeMap<String, String>,
     ) -> Self {
         log::trace!("Section headings to publish: {headings:?}");
@@ -52,7 +53,7 @@ impl Section {
             tag,
             header,
             headings: headings.to_owned(),
-            summary_flag: true,
+            summary_flag,
             groups_mapping: group_mapping.to_owned(),
             commits: Default::default(),
         }
