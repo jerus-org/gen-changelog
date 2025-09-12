@@ -5,29 +5,97 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.0.8] - 2025-09-12
 
-Summary: Build[1], Chore[8], Continuous Integration[1], Documentation[2]
+### Added
 
-## [0.0.5] - 2025-09-09
+ - ✨ feat(demo): add default config file for changelog
+ - ✨ feat(config_cli): add file name option for configuration saving
+ - ✨ feat(change_log): add security heading to changelog configuration
+ - ✨ feat(cli): support commit group management
+ - ✨ feat(cli): add commit group management options
+ - ✨ feat(change_log_config): add group management methods
+ - ✨ feat(cli): add display summaries option
+ - ✨ feat(change_log): add summary flag parameter to section
+ - ✨ feat(generate_cli): add display summary option
+ - ✨ feat(cli): add repository path option to generate_cli
+ - ✨ feat(change_log_config): enhance display sections setting
+ - ✨ feat(cli): add generate_cli command for changelog generation
+ - ✨ feat(cli): add configuration CLI for changelog settings
+ - ✨ feat(cli): add config file option for changelog
+ - ✨ feat(change_log_config): enhance from_file method with generics
+ - ✨ feat(change_log): add header accessor to section
+ - ✨ feat(cli): add option to specify changelog sections
 
-Summary: Chore[4], Continuous Integration[2]
+### Fixed
 
-## [0.0.4] - 2025-09-09
+ - 🐛 fix(change_log): handle section limit overflow
+ - 🐛 fix(main): enable changelog saving
 
-Summary: Chore[5], Continuous Integration[1]
+### Changed
 
-## [0.0.3] - 2025-09-09
+ - ♻️ refactor(config): enhance save method with file parameter
+ - ♻️ refactor(config_cli): update changelog config display sections
+ - ♻️ refactor(change_log): move update function to ChangeLogBuilder
+ - ♻️ refactor(generate_cli): simplify section handling
+ - ♻️ refactor(main): streamline CLI structure
+ - ♻️ refactor(cli): extract ConfigCli into separate module
+ - ♻️ refactor(main): simplify changelog version update logic
+ - ♻️ refactor(change_log): improve version update logic
+ - ♻️ refactor(change_log_config): modify custom section type
+ - ♻️ refactor(changelog): remove next_version handling
+ - ♻️ refactor(main): rename method for better clarity
 
-Summary: Chore[5], Continuous Integration[1], Documentation[1]
+## [0.0.7] - 2025-09-11
 
-## [0.0.2] - 2025-09-09
+### Added
 
-Summary: Chore[9], Continuous Integration[7], Documentation[2]
+ - ✨ feat(tag): add new constructor for Tag struct
+ - ✨ feat(change_log): enhance set_next_version with logging
+ - ✨ feat(change_log): add tagging and version setting functionality
+ - ✨ feat(logging): add info log for setting unreleased section title
+ - ✨ feat(lib): export ChangeLogBuilder
+ - ✨ feat(change_log): add next_version field and method
+ - ✨ feat(main): add support for setting next version in changelog
+ - ✨ feat(change_log): add section limit handling for changelog display
+ - ✨ feat(error): add toml deserializer error handling
+ - ✨ feat(config): add file-based config initialization
+ - ✨ feat(lib): add error module and export error type
+ - ✨ feat(error): add custom error handling with thiserror
+ - ✨ feat(main): add custom display sections for changelog
+ - ✨ feat(lib): export DisplaySections from change_log_config
+ - ✨ feat(change_log): add toml serializer error handling
+ - ✨ feat(examples): add demo for ChangeLogConfig usage
+ - ✨ feat(change_log_config): add heading serialization/deserialization
+ - ✨ feat(change_log_config): enhance group struct with serde support
+ - ✨ feat(dependencies): add serde and toml support
+ - ✨ feat(config): enhance changelog config with serde support
+ - ✨ feat(lib): export ChangeLogError for external use
+ - ✨ feat(cli): enhance error handling and command options
+ - ✨ feat(cli): add subcommand support for configuration
+ - ✨ feat(dependencies): add new dependencies for CLI enhancements
+ - ✨ feat(cli): integrate clap for command-line parsing
+
+### Fixed
+
+ - 🐛 fix(change_log): handle tag id unwrap safely
+ - 🐛 fix(change_log): handle optional tag id in builder
+
+### Changed
+
+ - ♻️ refactor(lib): consolidate pub use statements
+ - ♻️ refactor(tag): support optional tag id
+ - ♻️ refactor(logging): use trace level for config logging
+ - ♻️ refactor(main): enhance changelog configuration handling
+ - ♻️ refactor(main): update error type import
+ - ♻️ refactor(main): rename error type alias for clarity
+ - ♻️ refactor(changelog): simplify error handling
+ - ♻️ refactor(changelog): update error handling
+ - ♻️ refactor(changelog): simplify error handling in changelog
+ - ♻️ refactor(demo_headings): remove unused variable prefix
+ - ♻️ refactor(main): improve command parsing and execution
 
 ## [0.0.1] - 
-
-Summary: Added[62], Build[6], Changed[59], Chore[96], Continuous Integration[21], Documentation[13], Fixed[12], Testing[1]
 
 ### Added
 
@@ -171,11 +239,9 @@ Summary: Added[62], Build[6], Changed[59], Chore[96], Continuous Integration[21]
  - ♻️ refactor(section): enhance markdown generation
  - ♻️ refactor(section): simplify tag handling logic
 
-## [0.0.0] - 2025-08-22
-
-Summary: 
-
-[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...HEAD
+[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...HEAD
+[0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7
+[0.0.6]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/jerus-org/gen-changelog/compare/v0.0.4...v0.0.5
 [0.0.4]: https://github.com/jerus-org/gen-changelog/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/jerus-org/gen-changelog/compare/v0.0.2...v0.0.3
