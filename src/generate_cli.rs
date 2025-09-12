@@ -15,12 +15,15 @@ pub(crate) struct GenerateCli {
     /// The number of level 2 headings to show in the changelog
     #[arg(short, long)]
     config_file: Option<String>,
+    /// Path to the repository
+    #[arg(short, long, default_value = ".")]
+    repo_dir: String,
 }
 
 impl GenerateCli {
     pub(crate) fn run(&self) -> Result<(), gen_changelog::Error> {
         log::debug!("Arguments to apply: {self:#?}");
-        let repo_dir = PathBuf::new().join(".");
+        let repo_dir = PathBuf::new().join(&self.repo_dir);
         let repository = Repository::open(&repo_dir)
             .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
 
