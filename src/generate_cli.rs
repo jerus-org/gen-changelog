@@ -21,6 +21,12 @@ pub(crate) struct GenerateCli {
     /// display summary of commits
     #[arg(short, long)]
     display_summaries: bool,
+    /// add commit groups
+    #[arg(long)]
+    add_groups: Vec<String>,
+    /// remove commit groups
+    #[arg(long)]
+    remove_groups: Vec<String>,
 }
 
 impl GenerateCli {
@@ -39,6 +45,8 @@ impl GenerateCli {
 
         config.publish_group("Security");
         config.set_display_sections(self.sections);
+        config.add_commit_groups(&self.add_groups);
+        config.remove_commit_groups(&self.remove_groups);
 
         log::debug!("{config:#?}");
 
