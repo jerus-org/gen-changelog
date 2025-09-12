@@ -7,4 +7,4 @@ cat docs/main.md >> README.md
 cat docs/readme/tail.md >> README.md   
 
 # Build Changelog
-gen-changelog
+gen-changelog generate --next-version "$SEMVER"
