@@ -18,6 +18,9 @@ pub(crate) struct GenerateCli {
     /// Path to the repository
     #[arg(short, long, default_value = ".")]
     repo_dir: String,
+    /// display summary of commits
+    #[arg(short, long)]
+    display_summaries: bool,
 }
 
 impl GenerateCli {
@@ -42,6 +45,7 @@ impl GenerateCli {
         let mut change_log_builder = ChangeLog::builder();
         let change_log = change_log_builder
             .with_config(config)
+            .with_summary_flag(self.display_summaries)
             .with_repository(&repository)
             .unwrap()
             .update_unreleased_to_next_version(self.next_version.as_ref())
