@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✨ add repository path option to generate_cli(pr [#116])
 - ✨ add display summary option(pr [#117])
 - ✨ support commit group management(pr [#118])
+- ✨ add security heading to changelog configuration(pr [#119])
 
 ### Changed
 
@@ -294,6 +295,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#116]: https://github.com/jerus-org/gen-changelog/pull/116
 [#117]: https://github.com/jerus-org/gen-changelog/pull/117
 [#118]: https://github.com/jerus-org/gen-changelog/pull/118
+[#119]: https://github.com/jerus-org/gen-changelog/pull/119
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...HEAD
 [0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...v0.0.6
