@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use clap::Parser;
-use gen_changelog::{ChangeLog, ChangeLogConfig, DisplaySections};
+use gen_changelog::{ChangeLog, ChangeLogConfig};
 use git2::Repository;
 
 #[derive(Parser, Debug)]
@@ -19,39 +19,30 @@ pub(crate) struct GenerateCli {
 
 impl GenerateCli {
     pub(crate) fn run(&self) -> Result<(), gen_changelog::Error> {
+        log::debug!("Arguments to apply: {self:#?}");
         let repo_dir = PathBuf::new().join(".");
         let repository = Repository::open(&repo_dir)
             .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
-
-        let sections = if let Some(n) = self.sections {
-            if n == 1 {
-                DisplaySections::One
-            } else {
-                DisplaySections::Custom(n)
-            }
-        } else {
-            DisplaySections::All
-        };
 
         let mut config = if let Some(cfg) = &self.config_file {
             ChangeLogConfig::from_file(cfg)?
         } else {
             ChangeLogConfig::from_file_or_default()?
         };
-        log::trace!("initial config to build on: {config:?}");
+        log::debug!("initial config to build on: {config:?}");
 
         config.publish_group("Security");
-        config.set_display_sections(sections);
+        config.set_display_sections(self.sections);
 
-        log::trace!("{config:#?}");
+        log::debug!("{config:#?}");
 
         let mut change_log_builder = ChangeLog::builder();
-        let mut change_log = change_log_builder
+        let change_log = change_log_builder
             .with_config(config)
             .with_repository(&repository)
             .unwrap()
+            .update_unreleased_to_next_version(self.next_version.as_ref())
             .build();
-        change_log.update_unreleased_to_next_version(self.next_version.as_ref());
 
         let _ = change_log.save();
         println!("{change_log}");
