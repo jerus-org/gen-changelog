@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(generate_cli)-simplify section handling(pr [#114])
 - 👷 ci(circleci)-update changelog generation command(pr [#115])
 - 📦 build(release-hook)-enhance changelog generation(pr [#122])
+- 🔧 chore(ci)-remove changelog update step in CI config(pr [#123])
 
 ### Fixed
 
@@ -302,6 +303,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#120]: https://github.com/jerus-org/gen-changelog/pull/120
 [#121]: https://github.com/jerus-org/gen-changelog/pull/121
 [#122]: https://github.com/jerus-org/gen-changelog/pull/122
+[#123]: https://github.com/jerus-org/gen-changelog/pull/123
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...HEAD
 [0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...v0.0.6
