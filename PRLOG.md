@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - ✨ add sections option for changelog display(pr [#109])
+- ✨ add config file option for changelog generation(pr [#111])
 
 ### Changed
 
@@ -278,6 +279,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#108]: https://github.com/jerus-org/gen-changelog/pull/108
 [#109]: https://github.com/jerus-org/gen-changelog/pull/109
 [#110]: https://github.com/jerus-org/gen-changelog/pull/110
+[#111]: https://github.com/jerus-org/gen-changelog/pull/111
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...HEAD
 [0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...v0.0.6
