@@ -15,6 +15,9 @@ struct Cli {
     /// The number of level 2 headings to show in the changelog
     #[arg(short, long)]
     sections: Option<u8>,
+    /// The number of level 2 headings to show in the changelog
+    #[arg(short, long)]
+    config_file: Option<String>,
     #[command(subcommand)]
     command: Option<Commands>,
 }
@@ -85,8 +88,12 @@ fn run(args: Cli) -> Result<(), gen_changelog::Error> {
             DisplaySections::All
         };
 
-        let mut config = ChangeLogConfig::from_file_or_default()?;
-        log::trace!("base config to build on: {config:?}");
+        let mut config = if let Some(cfg) = args.config_file {
+            ChangeLogConfig::from_file(cfg)?
+        } else {
+            ChangeLogConfig::from_file_or_default()?
+        };
+        log::trace!("initial config to build on: {config:?}");
 
         config.publish_group("Security");
         config.set_display_sections(sections);
@@ -97,6 +104,7 @@ fn run(args: Cli) -> Result<(), gen_changelog::Error> {
         change_log.update_unreleased_to_next_version(args.next_version.as_ref());
 
         let _ = change_log.save();
+        println!("{change_log}");
     }
     Ok(())
 }
