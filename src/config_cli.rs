@@ -1,5 +1,5 @@
 use clap::Parser;
-use gen_changelog::{ChangeLogConfig, DisplaySections};
+use gen_changelog::ChangeLogConfig;
 
 #[derive(Parser, Debug)]
 pub(crate) struct ConfigCli {
@@ -10,7 +10,8 @@ pub(crate) struct ConfigCli {
 impl ConfigCli {
     pub(crate) fn run(&self) -> Result<(), gen_changelog::Error> {
         let mut config = ChangeLogConfig::default();
-        config.set_display_sections(DisplaySections::Custom(3));
+        // setting a default number of sections of 3
+        config.set_display_sections(Some(3));
         if self.save {
             log::info!("Saving the default changelog configuration.");
             config.save()?;
