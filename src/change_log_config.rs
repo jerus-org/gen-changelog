@@ -15,6 +15,7 @@ use group::Group;
 use group_mgmt::GroupMgmt;
 use heading_mgmt::HeadingMgmt;
 use serde::{Deserialize, Serialize};
+use titlecase::Titlecase;
 
 use crate::Error;
 
@@ -176,6 +177,14 @@ impl ChangeLogConfig {
 }
 
 impl ChangeLogConfig {
+    /// Add to the list of published groups
+    pub fn add_commit_groups(&mut self, groups: &[String]) -> &mut Self {
+        for g in groups {
+            self.publish_group(&g.titlecase());
+        }
+        self
+    }
+
     /// Set a group to be published in the changelog.
     ///
     /// The flag is updated in the group record and the heading is added to the
@@ -184,6 +193,14 @@ impl ChangeLogConfig {
         self.groups.set_to_publish(group_name);
         self.headings.add_heading(group_name);
         log::trace!("headings to publish: `{:?}`", self.headings);
+        self
+    }
+
+    /// Remove from the list of published groups
+    pub fn remove_commit_groups(&mut self, groups: &[String]) -> &mut Self {
+        for g in groups {
+            self.unpublish_group(&g.titlecase());
+        }
         self
     }
 
