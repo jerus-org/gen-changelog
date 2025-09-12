@@ -170,9 +170,9 @@ impl ChangeLogConfig {
     }
 
     /// Save the config file.
-    pub fn save(&self) -> Result<(), Error> {
+    pub fn save(&self, file: &str) -> Result<(), Error> {
         let toml_string = toml::to_string_pretty(self)?;
-        std::fs::write(DEFAULT_CONFIG_FILE, toml_string)?;
+        std::fs::write(file, toml_string)?;
         Ok(())
     }
 }
