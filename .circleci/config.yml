@@ -266,12 +266,6 @@ jobs:
           name: install gen-changelog (me)
           command: |
             cargo install --path .
-      - run:
-          name: Update change log
-          command: |
-            set -exo pipefail
-
-            gen-changelog generate --next-version $SEMVER
       - when:
           condition:
             and:
