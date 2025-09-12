@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - ♻️ refactor(changelog)-remove next_version handling(pr [#108])
+- ♻️ refactor(main)-streamline changelog version update(pr [#110])
 
 ### Fixed
 
@@ -276,6 +277,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#107]: https://github.com/jerus-org/gen-changelog/pull/107
 [#108]: https://github.com/jerus-org/gen-changelog/pull/108
 [#109]: https://github.com/jerus-org/gen-changelog/pull/109
+[#110]: https://github.com/jerus-org/gen-changelog/pull/110
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...HEAD
 [0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...v0.0.6
