@@ -97,7 +97,7 @@ fn run(args: Cli) -> Result<(), gen_changelog::Error> {
 
         if let Some(next_version) = args.next_version {
             log::debug!("Setting unreleased section title to `{next_version}`");
-            change_log = change_log.set_next_version(&next_version);
+            change_log = change_log.update_unreleased_to_next_version(&next_version);
         }
 
         let _ = change_log.save();
