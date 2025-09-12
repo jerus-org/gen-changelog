@@ -36,23 +36,20 @@ impl ChangeLog {
     }
 
     /// Update unreleased to the next version
-    pub fn update_unreleased_to_next_version(&self, next_version: &str) -> ChangeLog {
-        let mut updated = self.clone();
+    pub fn update_unreleased_to_next_version(&mut self, next_version: Option<&String>) {
+        if let Some(nv) = next_version {
+            log::debug!(
+                "Setting unreleased section `{}` to `{nv}`",
+                self.sections[0].header()
+            );
 
-        let mut unreleased = updated.sections[0].clone();
-        log::debug!(
-            "Current unreleased section tag is `{:?}`.",
-            unreleased.tag()
-        );
+            self.sections[0].set_version(nv);
 
-        unreleased.set_version(next_version);
-        log::debug!(
-            "Updated unreleased section tag is `{:?}`.",
-            unreleased.tag()
-        );
-        updated.sections[0] = unreleased;
-
-        updated
+            log::debug!(
+                "Updated unreleased section tag is `{:?}`.",
+                self.sections[0].tag()
+            );
+        }
     }
 
     /// Write the changelog to the root directory
