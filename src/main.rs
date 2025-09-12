@@ -12,6 +12,9 @@ struct Cli {
     /// The next version number for unreleased changes
     #[arg(short, long)]
     next_version: Option<String>,
+    /// The number of level 2 headings to show in the changelog
+    #[arg(short, long)]
+    sections: Option<u8>,
     #[command(subcommand)]
     command: Option<Commands>,
 }
@@ -72,11 +75,21 @@ fn run(args: Cli) -> Result<(), gen_changelog::Error> {
         let repository = Repository::open(&repo_dir)
             .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
 
+        let sections = if let Some(n) = args.sections {
+            if n == 1 {
+                DisplaySections::One
+            } else {
+                DisplaySections::Custom(n)
+            }
+        } else {
+            DisplaySections::All
+        };
+
         let mut config = ChangeLogConfig::from_file_or_default()?;
         log::trace!("base config to build on: {config:?}");
 
         config.publish_group("Security");
-        // config.set_display_sections(DisplaySections::Custom(3));
+        config.set_display_sections(sections);
 
         log::trace!("{config:#?}");
 
