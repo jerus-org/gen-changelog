@@ -60,6 +60,7 @@ pub struct ChangeLogBuilder {
     repo: String,
     header: Header,
     sections: Vec<Section>,
+    summary_flag: bool,
     links: Vec<Link>,
     config: ChangeLogConfig,
 }
@@ -85,6 +86,7 @@ impl ChangeLogBuilder {
             header: Header::default(),
             links: Vec::new(),
             sections: Vec::default(),
+            summary_flag: bool::default(),
             config: ChangeLogConfig::default(),
         }
     }
@@ -104,9 +106,16 @@ impl ChangeLogBuilder {
         log::trace!("current config: {:?}", self.config);
         self
     }
+
     /// set header
     pub fn with_header(&mut self, title: &str, paragraphs: &[&str]) -> &mut Self {
         self.header = Header::new(title, paragraphs);
+        self
+    }
+
+    /// set header
+    pub fn with_summary_flag(&mut self, value: bool) -> &mut Self {
+        self.summary_flag = value;
         self
     }
 
@@ -125,8 +134,12 @@ impl ChangeLogBuilder {
         let mut revwalk = repository.revwalk()?;
         revwalk.set_sorting(git2::Sort::TIME)?;
 
-        let mut current_section =
-            Section::new(None, self.config.headings(), self.config.groups_mapping());
+        let mut current_section = Section::new(
+            None,
+            self.config.headings(),
+            self.summary_flag,
+            self.config.groups_mapping(),
+        );
 
         // Case where no release has been made - no version tags
         if version_tags.is_empty() {
@@ -155,6 +168,7 @@ impl ChangeLogBuilder {
                 let mut section = Section::new(
                     Some(tag.clone()),
                     self.config.headings(),
+                    self.summary_flag,
                     self.config.groups_mapping(),
                 );
 
