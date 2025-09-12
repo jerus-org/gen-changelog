@@ -125,6 +125,7 @@ impl Default for ChangeLogConfig {
         headings.add_heading("Added");
         headings.add_heading("Fixed");
         headings.add_heading("Changed");
+        headings.add_heading("Security");
 
         log::trace!("default headings to publish {headings:?}");
 
