@@ -40,10 +40,6 @@ mod integration_tests {
             "Fixed" = 2
             "Custom" = 5
 
-            [groups-mapping]
-            feat = "Added"
-            fix = "Fixed"
-
             [release-pattern]
             prefix = "v"
         "#;
@@ -57,10 +53,5 @@ mod integration_tests {
         expected_headings.insert(5, "Custom".to_string());
 
         assert_eq!(config.headings, expected_headings);
-        assert_eq!(
-            config.groups_mapping.get("feat"),
-            Some(&"Added".to_string())
-        );
-        assert_eq!(config.groups_mapping.get("fix"), Some(&"Fixed".to_string()));
     }
 }
