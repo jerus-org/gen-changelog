@@ -133,12 +133,13 @@ impl ChangeLogBuilder {
 
         let mut revwalk = repository.revwalk()?;
         revwalk.set_sorting(git2::Sort::TIME)?;
+        let groups_mapping = self.config.groups_mapping();
 
         let mut current_section = Section::new(
             None,
             self.config.headings(),
             self.summary_flag,
-            self.config.groups_mapping(),
+            &groups_mapping,
         );
 
         // Case where no release has been made - no version tags
@@ -169,7 +170,7 @@ impl ChangeLogBuilder {
                     Some(tag.clone()),
                     self.config.headings(),
                     self.summary_flag,
-                    self.config.groups_mapping(),
+                    &groups_mapping,
                 );
 
                 let next_tag = peekable_tags.peek();
