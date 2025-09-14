@@ -4,6 +4,7 @@
         "Conv",
         "kindstring",
         "mgmt",
+        "Mygroup",
         "revwalk",
         "rtest"
     ]
