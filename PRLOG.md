@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- ✨ add comments for changelog configuration(pr [#125])
+
 ### Changed
 
 - 🔧 chore(script)-update changelog generation command(pr [#124])
@@ -311,6 +315,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#122]: https://github.com/jerus-org/gen-changelog/pull/122
 [#123]: https://github.com/jerus-org/gen-changelog/pull/123
 [#124]: https://github.com/jerus-org/gen-changelog/pull/124
+[#125]: https://github.com/jerus-org/gen-changelog/pull/125
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.8...HEAD
 [0.0.8]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7
