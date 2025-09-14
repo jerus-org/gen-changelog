@@ -34,6 +34,36 @@ const DEFAULT_GROUPS: [(&str, &[&str; 2], bool); 12] = [
     ("Miscellaneous", &["misc", "misc"], false),
 ];
 const DEFAULT_CONFIG_FILE: &str = "gen-changelog.toml";
+const GROUPS_COMMENT: &str = r#"# Group tables define the third-level headings used to organize commits in the changelog.
+# Each group has the following properties:
+#   - name: Display name for the group (should match the table name)
+#   - publish: Controls whether this group appears in the published changelog
+#   - cc-types: Array of conventional commit types that belong to this group
+#
+# To add a new group:
+#   1. Copy an existing group table
+#   2. Update the table name (e.g., [groups.MyGroup])
+#   3. Set the name field to match the table name
+#   4. Add the appropriate conventional commit types to cc-types
+#
+# Example:
+# [groups.MyGroup]
+# name = "MyGroup"
+# publish = true
+# cc-types = ["mygroup"]
+# 
+# Note: Each commit type should only belong to one group.
+"#;
+const HEADINGS_COMMENT: &str = r"# Defines the display order of groups in the changelog.
+# Groups are listed with their priority values (lower numbers appear first).
+# Only groups that should be displayed need to be included here.
+";
+const DISPLAY_SECTIONS_COMMENT: &str = r#"# Controls the number of changelog sections to display.
+# Each section represents a second-level heading and can be either:
+#   - "unreleased" for pending changes
+#   - A version number for released versions
+# This setting limits the changelog to show only the most recent releases.
+"#;
 
 /// How many sections to display in the changelog
 ///
@@ -76,9 +106,6 @@ pub struct ChangeLogConfig {
     /// Group conventional commits under a heading and set a flag to display the
     /// heading in the changelog
     groups: HashMap<String, Group>,
-    /// Group mappings from the convention commit types collected in the group
-    /// to the group name.
-    groups_mapping: BTreeMap<String, String>,
     /// Headings to display in the changelog
     ///
     /// Default settings are:
@@ -95,6 +122,7 @@ pub struct ChangeLogConfig {
     /// - Custom(num)   [a custom number of sections]
     display_sections: DisplaySections,
     /// Pattern to identify a tag as a release tag.
+    #[serde(skip)]
     release_pattern: ReleasePattern,
 }
 
@@ -133,7 +161,6 @@ impl Default for ChangeLogConfig {
 
         Self {
             groups,
-            groups_mapping,
             headings,
             display_sections: DisplaySections::default(),
             release_pattern,
@@ -164,14 +191,32 @@ impl ChangeLogConfig {
         &self.headings
     }
 
-    /// Returns a reference to the btree storing the groups.
-    pub fn groups_mapping(&self) -> &BTreeMap<String, String> {
-        &self.groups_mapping
+    /// Returns a reference to a btree mapping the conventional commit types to groups.
+    pub fn groups_mapping(&self) -> BTreeMap<String, String> {
+        let mut groups_mapping = BTreeMap::new();
+        for g in self.groups.values() {
+            for key in g.cc_types() {
+                groups_mapping.insert(key.to_string(), g.name().to_string());
+            }
+        }
+        groups_mapping
     }
 
     /// Save the config file.
     pub fn save(&self, file: &str) -> Result<(), Error> {
-        let toml_string = toml::to_string_pretty(self)?;
+        let mut toml_string = toml::to_string_pretty(self)?;
+        if let Some(idx) = toml_string.find("[groups.") {
+            toml_string.insert_str(idx, GROUPS_COMMENT);
+        }
+        if let Some(idx) = toml_string.find("[headings]") {
+            toml_string.insert_str(idx, HEADINGS_COMMENT)
+        }
+        if let Some(idx) = toml_string.find("[display-sections]") {
+            toml_string.insert_str(idx, DISPLAY_SECTIONS_COMMENT)
+        } else if let Some(idx) = toml_string.find("display-sections") {
+            toml_string.insert_str(idx, DISPLAY_SECTIONS_COMMENT)
+        }
+
         std::fs::write(file, toml_string)?;
         Ok(())
     }
