@@ -75,7 +75,7 @@ const DISPLAY_SECTIONS_COMMENT: &str = r#"# Controls the number of changelog sec
 #[derive(Debug, Default, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "kebab-case")]
-pub enum DisplaySections {
+pub(crate) enum DisplaySections {
     #[default]
     /// Display all available sections
     All,
@@ -284,7 +284,7 @@ impl ChangeLogConfig {
     }
 
     /// Get a reference to the current display sections value
-    pub fn display_sections(&self) -> &DisplaySections {
+    pub(crate) fn display_sections(&self) -> &DisplaySections {
         &self.display_sections
     }
 
