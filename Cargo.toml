@@ -38,8 +38,10 @@ toml = { version = "0.9.5", features = ["serde", "display"] }
 url = "2.5.7"
 
 [dev-dependencies]
+criterion = "0.7.0"
 rstest = "0.26.1"
 serde_test = "1.0"
+tempfile = "3.22.0"
 
 [lints.clippy]
 uninlined-format-args = "warn"
@@ -55,3 +57,7 @@ path = "src/lib.rs"
 [[bin]]
 name = "gen-changelog"
 path = "src/main.rs"
+
+[[bench]]
+name = "config_log"
+harness = false
