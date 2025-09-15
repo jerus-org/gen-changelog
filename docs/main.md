@@ -1,4 +1,4 @@
-## gen-changelog
+## Gen-changelog CLI
 
 A command-line tool that generates changelogs from git commits using conventional commit messages and keep-a-changelog formatting.
 
@@ -12,7 +12,7 @@ cargo install gen-changelog
 
 ### Overview
 
-gen-changelog automatically generates changelogs by analyzing your git commit history. It uses conventional commit patterns to categorize changes and outputs them in a format compatible with [Keep a Changelog](https://keepachangelog.com/).
+Gen-changelog CLI automatically generates changelogs by analysing your git commit history. It uses conventional commit patterns to categorize changes and outputs them in a format compatible with [Keep a Changelog](https://keepachangelog.com/).
 
 ```bash
 gen-changelog --help
@@ -110,7 +110,7 @@ gen-changelog config --save --file my-config.toml
 
 ### Configuration File
 
-gen-changelog uses a TOML configuration file to customize its behavior. The default configuration file is `gen-changelog.toml` in your project root.
+Gen-changelog CLI uses a TOML configuration file to customize its behaviour. The default configuration file is `gen-changelog.toml` in your project root.
 
 To generate a configuration file with default settings and helpful comments:
 
@@ -120,10 +120,10 @@ gen-changelog config --save
 
 ### How It Works
 
-1. **Analyzes Git History**: Scans your repository's commit messages
+1. **Analyses Git History**: Scans your repository's commit messages
 2. **Applies Conventional Commits**: Categorizes commits based on conventional commit patterns (feat, fix, chore, etc.)
 3. **Groups Changes**: Organizes commits by type and version
-4. **Generates Changelog**: Outputs formatted changelog following Keep a Changelog standards
+4. **Generates Changelog**: Outputs formatted changelog following [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) standard
 
 ### Conventional Commit Support
 
