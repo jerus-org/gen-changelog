@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 🔧 chore(script)-update changelog generation command(pr [#124])
 - 💄 style(shell)-add shellcheck directive for appending(pr [#126])
 - Expand-gen-changelog-documentation(pr [#128])
+- 📝 docs(README)-update Gen-changelog CLI documentation(pr [#129])
 
 ## [0.0.8] - 2025-09-12
 
@@ -322,6 +323,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#126]: https://github.com/jerus-org/gen-changelog/pull/126
 [#127]: https://github.com/jerus-org/gen-changelog/pull/127
 [#128]: https://github.com/jerus-org/gen-changelog/pull/128
+[#129]: https://github.com/jerus-org/gen-changelog/pull/129
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.8...HEAD
 [0.0.8]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7
