@@ -418,20 +418,20 @@ impl ChangeLogBuilder {
         &mut self,
         next_version: Option<&String>,
     ) -> &mut Self {
-        if let Some(nv) = next_version
-            && !self.sections.is_empty()
-        {
-            log::debug!(
-                "Setting unreleased section `{}` to `{nv}`",
-                self.sections[0].header()
-            );
+        if !self.sections.is_empty() {
+            if let Some(nv) = next_version {
+                log::debug!(
+                    "Setting unreleased section `{}` to `{nv}`",
+                    self.sections[0].header()
+                );
 
-            self.sections[0].set_version(nv);
+                self.sections[0].set_version(nv);
 
-            log::debug!(
-                "Updated unreleased section tag is `{:?}`.",
-                self.sections[0].tag()
-            );
+                log::debug!(
+                    "Updated unreleased section tag is `{:?}`.",
+                    self.sections[0].tag()
+                );
+            }
         }
         self
     }
