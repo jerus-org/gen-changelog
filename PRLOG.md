@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 📝 docs(lib)-enhance gen-changelog library documentation(pr [#130])
 - ♻️ refactor(change_log_config)-restrict enum and method visibility(pr [#131])
 - 📦 build(dependencies)-update dev dependencies and add benchmark(pr [#132])
+- 🌐 i18n(vscode): add special characters to spell check(pr [#133])
 
 ## [0.0.8] - 2025-09-12
 
@@ -330,6 +331,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#130]: https://github.com/jerus-org/gen-changelog/pull/130
 [#131]: https://github.com/jerus-org/gen-changelog/pull/131
 [#132]: https://github.com/jerus-org/gen-changelog/pull/132
+[#133]: https://github.com/jerus-org/gen-changelog/pull/133
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.8...HEAD
 [0.0.8]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7
