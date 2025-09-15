@@ -1,3 +1,1 @@
-{"rule":"UPPERCASE_SENTENCE_START","sentence":"^\\Qgen-changelog is a release tool that generates changelogs in the Keep a Changelog format.\\E$"}
-{"rule":"MORFOLOGIK_RULE_EN_GB","sentence":"^\\Q-r, --repo-dir <REPO_DIR>\\E$"}
-{"rule":"COMMA_PARENTHESIS_WHITESPACE","sentence":"^\\QPath to the repository default: .\\E$"}
+{"rule":"ENGLISH_WORD_REPEAT_RULE","sentence":"^\\QAdded feat ✓\nFixed fix ✓\nChanged refactor ✓\nSecurity security, dependency ✗\nBuild build ✗\nDocumentation doc, docs ✗\nChore chore ✗\nContinuous Integration ci ✗\nTesting test ✗\nDeprecated deprecated ✗\nRemoved removed ✗\nMiscellaneous misc ✗\\E$"}
