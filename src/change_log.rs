@@ -15,7 +15,7 @@ use link::Link;
 use section::{Section, WalkSetup};
 use tag::Tag;
 
-use crate::{ChangeLogConfig, Error};
+use crate::{ChangeLogConfig, Error, change_log_config::DisplaySections};
 
 pub static REMOTE: Lazy<Regex> = lazy_regex!(
     r"^((https://github\.com/)|(git@github.com:))(?P<owner>[a-z\-|A-Z]+)/(?P<repo>[a-z\-_A-Z]+)\.git$$"
@@ -126,9 +126,9 @@ impl ChangeLogBuilder {
         let version_tags = self.get_version_tags(repository)?;
 
         let section_limit = match self.config.display_sections() {
-            crate::DisplaySections::All => min((version_tags.len() + 1) as u8, u8::MAX),
-            crate::DisplaySections::One => 1,
-            crate::DisplaySections::Custom(n) => min((version_tags.len() + 1) as u8, *n),
+            DisplaySections::All => min((version_tags.len() + 1) as u8, u8::MAX),
+            DisplaySections::One => 1,
+            DisplaySections::Custom(n) => min((version_tags.len() + 1) as u8, *n),
         };
 
         let mut revwalk = repository.revwalk()?;
