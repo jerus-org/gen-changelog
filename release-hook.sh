@@ -3,7 +3,7 @@
 # Build an updated README
 cat docs/readme/head.md > README.md
 # shellcheck disable=SC2129
-cat docs/lib.md >> README.md
+cat docs/readme/lib.md >> README.md
 cat docs/main.md >> README.md
 cat docs/readme/tail.md >> README.md   
 
