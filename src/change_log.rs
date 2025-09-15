@@ -24,7 +24,7 @@ use crate::{ChangeLogConfig, Error, change_log_config::DisplaySections};
 /// - SSH: `git@github.com:owner/repo.git`
 ///
 /// Captures named groups:
-/// - `owner`: The repository owner/organization name
+/// - `owner`: The repository owner/organization name must be valid GitHub owner
 /// - `repo`: The repository name
 static REMOTE: Lazy<Regex> = lazy_regex!(
     r"^((https://github\.com/)|(git@github.com:))(?P<owner>[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,37}[a-zA-Z0-9])?)/(?P<repo>[a-zA-Z0-9_][a-zA-Z0-9_-]+[a-zA-Z0-9_])\.git$"
