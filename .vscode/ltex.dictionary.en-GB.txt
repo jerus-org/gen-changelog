@@ -9,4 +9,8 @@ BuyMeaCoffee
 bmac-url
 ghub-url
 GitHubSponsors
-toml
+ChangeLog
+ChangeLogBuilder
+ChangeLogConfig
+DisplaySections
+ci
