@@ -11,6 +11,9 @@ pub(crate) struct ConfigCli {
     /// Name of file for configuration
     #[arg(short, long, default_value = DEFAULT_CONFIG_FILE)]
     file: String,
+    /// Print the configuration
+    #[arg(short = 'p', long)]
+    show: bool,
 }
 
 impl ConfigCli {
@@ -20,7 +23,10 @@ impl ConfigCli {
         config.set_display_sections(Some(3));
         if self.save {
             log::info!("Saving the default changelog configuration.");
-            config.save(&self.file)?;
+            config.save(Some(&self.file))?;
+        }
+        if self.show {
+            config.save(None)?;
         }
         Ok(())
     }
