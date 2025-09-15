@@ -6,5 +6,5 @@ fn main() {
     let config = ChangeLogConfig::default();
 
     println!("Default ChangeLogConfig serialized to TOML:");
-    let _ = config.save(DEFAULT_CONFIG_FILE);
+    let _ = config.save(Some(DEFAULT_CONFIG_FILE));
 }
