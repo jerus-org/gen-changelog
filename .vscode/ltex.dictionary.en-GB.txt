@@ -9,3 +9,4 @@ BuyMeaCoffee
 bmac-url
 ghub-url
 GitHubSponsors
+toml
