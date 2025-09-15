@@ -23,7 +23,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(change_log_config)-restrict enum and method visibility(pr [#131])
 - 📦 build(dependencies)-update dev dependencies and add benchmark(pr [#132])
 - 🌐 i18n(vscode): add special characters to spell check(pr [#133])
-- 📝 docs(changelog)-enhance documentation for changelog module(pr [#134])
 - 📝 docs(config)-enhance documentation for changelog configuration(pr [#135])
 
 ## [0.0.8] - 2025-09-12
