@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expand-gen-changelog-documentation(pr [#128])
 - 📝 docs(README)-update Gen-changelog CLI documentation(pr [#129])
 - 📝 docs(lib)-enhance gen-changelog library documentation(pr [#130])
+- ♻️ refactor(change_log_config)-restrict enum and method visibility(pr [#131])
 
 ## [0.0.8] - 2025-09-12
 
@@ -326,6 +327,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#128]: https://github.com/jerus-org/gen-changelog/pull/128
 [#129]: https://github.com/jerus-org/gen-changelog/pull/129
 [#130]: https://github.com/jerus-org/gen-changelog/pull/130
+[#131]: https://github.com/jerus-org/gen-changelog/pull/131
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.8...HEAD
 [0.0.8]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7
