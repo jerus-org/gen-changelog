@@ -203,7 +203,7 @@ impl ChangeLogConfig {
     }
 
     /// Save the config file.
-    pub fn save(&self, file: &str) -> Result<(), Error> {
+    pub fn save(&self, file: Option<&str>) -> Result<(), Error> {
         let mut toml_string = toml::to_string_pretty(self)?;
         if let Some(idx) = toml_string.find("[groups.") {
             toml_string.insert_str(idx, GROUPS_COMMENT);
@@ -217,7 +217,11 @@ impl ChangeLogConfig {
             toml_string.insert_str(idx, DISPLAY_SECTIONS_COMMENT)
         }
 
-        std::fs::write(file, toml_string)?;
+        if let Some(f) = file {
+            std::fs::write(f, toml_string)?;
+        } else {
+            println!("{toml_string}")
+        }
         Ok(())
     }
 }
