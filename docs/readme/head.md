@@ -28,7 +28,7 @@
 [ghub-badge]: https://img.shields.io/badge/sponsor-30363D?logo=GitHub-Sponsors&logoColor=#white
 [ghub-url]: https://github.com/sponsors/jerusdp
 
-**gen-changelog** is a release tool that generates changelogs in the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format. It analyses a repository's commit history and uses conventional commit types to categorise and filter commits for inclusion in the changelog.
+**Gen-changelog** is a release tool that generates changelogs in the [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) format. It analyses a repository's commit history and uses conventional commit types to categorise and filter commits for inclusion in the changelog.
 
 ## Main Features
 
