@@ -7,6 +7,8 @@
 mod change_log;
 mod change_log_config;
 mod error;
+#[cfg(test)]
+pub(crate) mod test_utils;
 
 pub use change_log::{ChangeLog, ChangeLogBuilder};
 pub use change_log_config::ChangeLogConfig;
