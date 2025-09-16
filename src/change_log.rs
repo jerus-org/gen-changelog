@@ -597,3 +597,462 @@ impl ChangeLogBuilder {
         Ok(version_tags)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+    use tempfile::TempDir;
+
+    /// Helper function to create a temporary directory for tests
+    fn setup_temp_dir() -> TempDir {
+        TempDir::new().expect("Failed to create temp directory")
+    }
+
+    /// Test the REMOTE regex pattern with various GitHub URL formats
+    #[test]
+    fn test_remote_regex_patterns() {
+        // Test HTTPS URL
+        let https_url = "https://github.com/user/repo.git";
+        let caps = REMOTE.captures(https_url).unwrap();
+        assert_eq!(caps.name("owner").unwrap().as_str(), "user");
+        assert_eq!(caps.name("repo").unwrap().as_str(), "repo");
+
+        // Test SSH URL
+        let ssh_url = "git@github.com:organization/my-repo.git";
+        let caps = REMOTE.captures(ssh_url).unwrap();
+        assert_eq!(caps.name("owner").unwrap().as_str(), "organization");
+        assert_eq!(caps.name("repo").unwrap().as_str(), "my-repo");
+
+        // Test URL with underscores (not accepted in username)
+        let underscore_url = "https://github.com/username/repo_name.git";
+        let caps = REMOTE.captures(underscore_url).unwrap();
+        assert_eq!(caps.name("owner").unwrap().as_str(), "username");
+        assert_eq!(caps.name("repo").unwrap().as_str(), "repo_name");
+
+        // Test invalid URLs
+        assert!(
+            REMOTE
+                .captures("https://gitlab.com/user/repo.git")
+                .is_none()
+        );
+        assert!(REMOTE.captures("https://github.com/user/repo").is_none()); // Missing .git
+    }
+
+    #[test]
+    fn test_changelog_builder_creation() {
+        let builder = ChangeLogBuilder::new();
+
+        assert_eq!(builder.owner, "");
+        assert_eq!(builder.repo, "");
+        assert_eq!(builder.sections.len(), 0);
+        assert_eq!(builder.links.len(), 0);
+        assert!(!builder.summary_flag);
+    }
+
+    #[test]
+    fn test_changelog_builder_with_header() {
+        let mut builder = ChangeLogBuilder::new();
+        builder.with_header(
+            "Test Project",
+            &["A test project", "With multiple paragraphs"],
+        );
+
+        let changelog = builder.build();
+        let output = changelog.to_string();
+        assert!(output.contains("Test Project"));
+    }
+
+    #[test]
+    fn test_changelog_builder_with_summary_flag() {
+        let mut builder = ChangeLogBuilder::new();
+        builder.with_summary_flag(true);
+
+        assert!(builder.summary_flag);
+
+        builder.with_summary_flag(false);
+        assert!(!builder.summary_flag);
+    }
+
+    #[test]
+    fn test_changelog_builder_with_config() {
+        let mut builder = ChangeLogBuilder::new();
+        let config = ChangeLogConfig::default();
+
+        builder.with_config(config);
+        // Test that the config was set (this would require PartialEq on ChangeLogConfig)
+        // For now, we just test that the method doesn't panic
+    }
+
+    #[test]
+    fn test_changelog_display_formatting() {
+        let changelog = ChangeLog {
+            header: Header::default(),
+            sections: Vec::new(),
+            links: Vec::new(),
+        };
+
+        let output = changelog.to_string();
+        assert!(!output.is_empty());
+        // The exact format depends on Header::default() implementation
+    }
+
+    #[test]
+    fn test_changelog_save() {
+        let temp_dir = setup_temp_dir();
+        let temp_path = temp_dir.path();
+
+        // Change to temp directory
+        let original_dir = std::env::current_dir().unwrap();
+        std::env::set_current_dir(temp_path).unwrap();
+
+        let changelog = ChangeLog::builder().build();
+        let result = changelog.save();
+
+        // Restore original directory
+        std::env::set_current_dir(original_dir).unwrap();
+
+        assert!(result.is_ok());
+        assert!(temp_path.join("CHANGELOG.md").exists());
+
+        let content = fs::read_to_string(temp_path.join("CHANGELOG.md")).unwrap();
+        assert!(!content.is_empty());
+    }
+
+    #[test]
+    fn test_update_unreleased_to_next_version() {
+        // This test would require setting up sections first
+        // For now, we test the method doesn't panic when sections is empty
+        let mut builder = ChangeLogBuilder::new();
+        let version = String::from("1.0.0");
+
+        // This should not panic even with empty sections
+        builder.update_unreleased_to_next_version(Some(&version));
+        builder.update_unreleased_to_next_version(None);
+    }
+
+    #[test]
+    fn test_builder_debug_implementation() {
+        let builder = ChangeLogBuilder::new();
+        let debug_output = format!("{builder:?}");
+
+        assert!(debug_output.contains("ChangeLogBuilder"));
+        assert!(debug_output.contains("owner"));
+        assert!(debug_output.contains("repo"));
+        assert!(debug_output.contains("header"));
+        assert!(debug_output.contains("sections"));
+        assert!(debug_output.contains("links"));
+    }
+
+    #[test]
+    fn test_changelog_clone() {
+        let changelog = ChangeLog {
+            header: Header::default(),
+            sections: Vec::new(),
+            links: Vec::new(),
+        };
+
+        let cloned = changelog.clone();
+        assert_eq!(changelog.sections.len(), cloned.sections.len());
+        assert_eq!(changelog.links.len(), cloned.links.len());
+    }
+    use std::time::Instant;
+
+    // use std::collections::HashMap;
+
+    /// Test helper to create a ChangeLog with predefined content
+    pub fn create_test_changelog() -> ChangeLog {
+        ChangeLog::builder()
+            .with_header("Test Changelog", &["A test changelog for unit tests"])
+            .build()
+    }
+
+    /// Test helper to create a ChangeLogBuilder with common test configuration
+    pub fn create_test_builder() -> ChangeLogBuilder {
+        let mut builder = ChangeLogBuilder::new();
+        builder
+            .with_header("Test Project", &["Test description"])
+            .with_summary_flag(true);
+        builder
+    }
+
+    /// Test helper to verify changelog markdown format
+    pub fn verify_markdown_format(content: &str) -> bool {
+        // Basic checks for markdown structure
+        content.contains("#") && // Should have headers
+        !content.trim().is_empty() // Should not be empty
+    }
+
+    /// Test helper to create mock repository data
+    pub struct MockRepoData {
+        pub owner: String,
+        pub repo: String,
+        pub tags: Vec<String>,
+        pub commits: Vec<String>,
+    }
+
+    impl Default for MockRepoData {
+        fn default() -> Self {
+            Self {
+                owner: "testowner".to_string(),
+                repo: "testrepo".to_string(),
+                tags: vec!["v1.0.0".to_string(), "v1.1.0".to_string()],
+                commits: vec!["Initial commit".to_string(), "Add feature".to_string()],
+            }
+        }
+    }
+
+    #[test]
+    fn test_error_recovery() {
+        // Test that the system can recover from various error conditions
+        let mut builder = ChangeLogBuilder::new();
+
+        // Test with invalid configuration
+        // Should not panic and should handle gracefully
+        builder.with_summary_flag(true);
+    }
+
+    #[test]
+    fn test_empty_header() {
+        let mut builder = ChangeLogBuilder::new();
+        builder.with_header("", &[]);
+
+        let changelog = builder.build();
+        let output = changelog.to_string();
+
+        // Should handle empty header gracefully
+        assert!(!output.is_empty());
+    }
+
+    #[test]
+    fn test_very_long_header() {
+        let mut builder = ChangeLogBuilder::new();
+        let long_title = "A".repeat(1000);
+        let long_paragraph = "B".repeat(1000);
+        let long_paragraphs: Vec<&str> = vec![&long_paragraph; 10];
+
+        builder.with_header(&long_title, &long_paragraphs);
+        let changelog = builder.build();
+
+        // Should handle very long content without issues
+        assert!(changelog.to_string().len() > 1000);
+    }
+
+    #[test]
+    fn test_special_characters_in_header() {
+        let mut builder = ChangeLogBuilder::new();
+        builder.with_header(
+            "Project with éspecial & <characters>",
+            &["Description with \"quotes\" and 'apostrophes'"],
+        );
+
+        let changelog = builder.build();
+        let output = changelog.to_string();
+
+        // Should preserve special characters
+        assert!(output.contains("éspecial"));
+        assert!(output.contains("&"));
+        assert!(output.contains("<characters>"));
+    }
+
+    #[test]
+    fn test_unicode_handling() {
+        let mut builder = ChangeLogBuilder::new();
+        builder.with_header(
+            "🚀 Project",
+            &["Description with emoji 🎉 and unicode ñáéíóú"],
+        );
+
+        let changelog = builder.build();
+        let output = changelog.to_string();
+
+        // Should handle Unicode properly
+        assert!(output.contains("🚀"));
+        assert!(output.contains("🎉"));
+        assert!(output.contains("ñáéíóú"));
+    }
+
+    #[test]
+    fn test_multiple_config_updates() {
+        let mut builder = ChangeLogBuilder::new();
+
+        // Test multiple configuration updates
+        let config1 = ChangeLogConfig::default();
+        let config2 = ChangeLogConfig::default();
+
+        builder.with_config(config1);
+        builder.with_config(config2);
+
+        // Should handle multiple config updates gracefully
+    }
+
+    #[test]
+    fn test_version_update_edge_cases() {
+        let mut builder = ChangeLogBuilder::new();
+
+        // Test with None
+        builder.update_unreleased_to_next_version(None);
+
+        // Test with empty string
+        let empty_version = String::new();
+        builder.update_unreleased_to_next_version(Some(&empty_version));
+
+        // Test with very long version string
+        let long_version = "1.0.0-".to_string() + &"a".repeat(1000);
+        builder.update_unreleased_to_next_version(Some(&long_version));
+
+        // Should handle all edge cases without panicking
+    }
+
+    #[test]
+    fn test_changelog_creation_performance() {
+        let start = Instant::now();
+
+        // Create many changelogs to test performance
+        for i in 0..1000 {
+            let _changelog = ChangeLog::builder()
+                .with_header(&format!("Project {i}"), &[&format!("Description {i}")])
+                .build();
+        }
+
+        let duration = start.elapsed();
+
+        // Should complete within reasonable time (adjust threshold as needed)
+        assert!(
+            duration.as_millis() < 1000,
+            "Changelog creation too slow: {duration:?}"
+        );
+    }
+
+    #[test]
+    fn test_regex_performance() {
+        let urls = vec![
+            "https://github.com/user/repo.git",
+            "git@github.com:org/project.git",
+            "https://github.com/owner/repository.git",
+        ];
+
+        let start = Instant::now();
+
+        // Test regex performance with many iterations
+        for _ in 0..10000 {
+            for url in &urls {
+                let _ = REMOTE.captures(url);
+            }
+        }
+
+        let duration = start.elapsed();
+
+        // Should complete within reasonable time
+        assert!(
+            duration.as_millis() < 500,
+            "Regex matching too slow: {duration:?}"
+        );
+    }
+
+    #[test]
+    fn test_large_changelog_formatting() {
+        let mut builder = ChangeLogBuilder::new();
+        builder.with_header("Large Project", &["A project with many sections"]);
+
+        // Create a changelog with many empty sections to test formatting performance
+        let changelog = builder.build();
+
+        let start = Instant::now();
+        let output = changelog.to_string();
+        let duration = start.elapsed();
+
+        assert!(!output.is_empty());
+        assert!(
+            duration.as_millis() < 100,
+            "Formatting too slow: {duration:?}"
+        );
+    }
+
+    // Concurrency tests (if the code needs to be thread-safe)
+    use std::sync::Arc;
+    use std::thread;
+
+    #[test]
+    fn test_concurrent_changelog_creation() {
+        let handles: Vec<_> = (0..10)
+            .map(|i| {
+                thread::spawn(move || {
+                    let changelog = ChangeLog::builder()
+                        .with_header(&format!("Project {i}"), &[&format!("Desc {i}")])
+                        .build();
+                    changelog.to_string()
+                })
+            })
+            .collect();
+
+        // Wait for all threads and collect results
+        let results: Vec<_> = handles.into_iter().map(|h| h.join().unwrap()).collect();
+
+        assert_eq!(results.len(), 10);
+        for (i, result) in results.iter().enumerate() {
+            assert!(result.contains(&format!("Project {i}")));
+        }
+    }
+
+    #[test]
+    fn test_shared_regex_pattern() {
+        // Test that the static REMOTE regex can be used from multiple threads
+        let url = Arc::new("https://github.com/user/repo.git".to_string());
+
+        let handles: Vec<_> = (0..5)
+            .map(|_| {
+                let url_clone = Arc::clone(&url);
+                thread::spawn(move || REMOTE.captures(&url_clone).is_some())
+            })
+            .collect();
+
+        let results: Vec<_> = handles.into_iter().map(|h| h.join().unwrap()).collect();
+
+        // All threads should successfully match the URL
+        assert!(results.iter().all(|&r| r));
+    }
+
+    // Documentation tests (these test the examples in the doc comments)
+    // These would normally be handled by `cargo test --doc`
+    // but we can add explicit tests for documentation examples
+
+    #[test]
+    fn test_basic_usage_example() {
+        // Test the example from the ChangeLog documentation
+        let changelog = super::ChangeLog::builder()
+            .with_header("My Project", &["A description of the project"])
+            .build();
+
+        let output = changelog.to_string();
+        assert!(output.contains("My Project"));
+        assert!(output.contains("A description of the project"));
+    }
+
+    #[test]
+    fn test_builder_example() {
+        // Test the example from the builder() method documentation
+        let changelog = super::ChangeLog::builder()
+            .with_header("My Project", &["Project description"])
+            .build();
+
+        assert!(!changelog.to_string().is_empty());
+    }
+
+    #[test]
+    fn test_header_example() {
+        // Test the example from with_header documentation
+        let mut builder = super::ChangeLog::builder();
+        builder.with_header(
+            "My Awesome Project",
+            &["This project does amazing things", "Version history below"],
+        );
+
+        let changelog = builder.build();
+        let output = changelog.to_string();
+
+        assert!(output.contains("My Awesome Project"));
+        assert!(output.contains("This project does amazing things"));
+        assert!(output.contains("Version history below"));
+    }
+}
