@@ -28,19 +28,23 @@ The main struct for generating and managing changelog documents.
 Use the builder pattern to create a changelog:
 
 ```rust
-use gen_changelog::{ChangeLog, ChangeLogConfig};
+
+use gen_changelog::{ChangeLog, ChangeLogConfig, Error};
 use git2::Repository;
 
-let repo = Repository::open(".")?;
-let config = ChangeLogConfig::from_file_or_default()?;
+fn main() -> Result<(), Error> {
+    let repo = Repository::open(".")?;
+    let config = ChangeLogConfig::from_file_or_default()?;
 
-let changelog = ChangeLog::builder()
-    .with_config(config)
-    .with_header("My Project Changelog", &[
-        "All notable changes to this project will be documented in this file."
-    ])
-    .with_repository(&repo)?
-    .build();
+    let changelog = ChangeLog::builder()
+        .with_config(config)
+        .with_header("My Project Changelog", &[
+            "All notable changes to this project will be documented in this file."
+        ])
+        .with_repository(&repo)?
+        .build();
+    Ok(())
+}
 ```
 
 ##### Methods
@@ -68,16 +72,21 @@ Configuration struct that controls how the changelog is generated and formatted.
 ##### Creating Configuration
 
 ```rust
-use gen_changelog::ChangeLogConfig;
+use gen_changelog::{ChangeLogConfig, Error};
 
-// Load from default config file or use defaults
-let config = ChangeLogConfig::from_file_or_default()?;
+fn main() -> Result<(), Error> {
 
-// Load from specific file
-let config = ChangeLogConfig::from_file("my-config.toml")?;
+    // Load from default config file or use defaults
+    let config = ChangeLogConfig::from_file_or_default()?;
 
-// Use default configuration
-let config = ChangeLogConfig::default();
+    // Load from specific file
+    let config = ChangeLogConfig::from_file("my-config.toml")?;
+
+    // Use default configuration
+    let config = ChangeLogConfig::default();
+    
+    Ok(())
+}
 ```
 
 ##### Configuration Methods
