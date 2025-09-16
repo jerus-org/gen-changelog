@@ -33,15 +33,13 @@ mod integration_tests {
     #[test]
     fn test_changelog_config_deserialize_from_toml_with_headings() {
         let toml_str = r#"
-            display-sections = "all"
+            [display-sections] 
+            variant = "all"
 
             [headings]
             "Added" = 1
             "Fixed" = 2
             "Custom" = 5
-
-            [release-pattern]
-            prefix = "v"
         "#;
 
         let config: ChangeLogConfig =
