@@ -93,9 +93,9 @@ const DISPLAY_SECTIONS_COMMENT: &str = r#"# Controls the number of changelog sec
 /// // Show exactly 5 sections
 /// let custom = DisplaySections::Custom(5);
 /// ```
-#[derive(Debug, Default, Serialize, Deserialize)]
-#[serde(deny_unknown_fields)]
+#[derive(Debug, Default, Serialize, Deserialize, Clone)]
 #[serde(rename_all = "kebab-case")]
+#[serde(tag = "variant", content = "data")]
 pub(crate) enum DisplaySections {
     #[default]
     /// Display all available sections (releases and unreleased changes)
