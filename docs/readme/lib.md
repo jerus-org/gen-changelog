@@ -73,7 +73,7 @@ cc-types = ["fix"]
 
 #### Basic Usage
 
-```rust, ignore
+```rust
 use gen_changelog::{ChangeLog, ChangeLogConfig};
 use git2::Repository;
 
