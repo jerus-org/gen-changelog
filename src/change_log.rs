@@ -40,7 +40,7 @@ static REMOTE: Lazy<Regex> = lazy_regex!(
 /// # Example
 ///
 /// ```rust
-/// use change_log::ChangeLog;
+/// use gen_changelog::ChangeLog;
 ///
 /// let changelog = ChangeLog::builder()
 ///     .with_header("My Project", &["A description of the project"])
@@ -72,6 +72,8 @@ impl ChangeLog {
     /// # Example
     ///
     /// ```rust
+    /// use gen_changelog::ChangeLog;
+    ///
     /// let changelog = ChangeLog::builder()
     ///     .with_header("My Project", &["Project description"])
     ///     .build();
@@ -100,6 +102,8 @@ impl ChangeLog {
     /// # Example
     ///
     /// ```rust
+    /// use gen_changelog::ChangeLog;
+    ///
     /// let changelog = ChangeLog::builder().build();
     /// changelog.save().expect("Failed to save changelog");
     /// ```
@@ -137,8 +141,9 @@ impl Display for ChangeLog {
 ///
 /// ```rust
 /// use git2::Repository;
-/// use change_log::{ChangeLog, ChangeLogConfig};
+/// use gen_changelog::{ChangeLog, ChangeLogConfig};
 ///
+/// # fn main()  -> Result<(), Box<dyn std::error::Error>>  {
 /// let repo = Repository::open(".")?;
 /// let config = ChangeLogConfig::default();
 ///
@@ -147,6 +152,8 @@ impl Display for ChangeLog {
 ///     .with_header("My Project", &["A great project"])
 ///     .with_repository(&repo)?
 ///     .build();
+/// # Ok(())
+/// # }
 /// ```
 pub struct ChangeLogBuilder {
     /// Repository owner (GitHub username or organization)
@@ -230,7 +237,7 @@ impl ChangeLogBuilder {
     /// # Example
     ///
     /// ```rust
-    /// use change_log::{ChangeLog, ChangeLogConfig};
+    /// use gen_changelog::{ChangeLog, ChangeLogConfig};
     ///
     /// let config = ChangeLogConfig::default();
     /// let builder = ChangeLog::builder()
@@ -259,6 +266,8 @@ impl ChangeLogBuilder {
     /// # Example
     ///
     /// ```rust
+    /// use gen_changelog::ChangeLog;
+    ///
     /// let builder = ChangeLog::builder()
     ///     .with_header(
     ///         "My Awesome Project",
@@ -316,11 +325,15 @@ impl ChangeLogBuilder {
     ///
     /// ```rust
     /// use git2::Repository;
+    /// use gen_changelog::ChangeLog;
     ///
+    /// # fn main() -> Result<(), gen_changelog::Error> {
     /// let repo = Repository::open(".")?;
     /// let changelog = ChangeLog::builder()
     ///     .with_repository(&repo)?
     ///     .build();
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn with_repository(&mut self, repository: &Repository) -> Result<&mut Self, Error> {
         self.get_remote_details(repository)?;
@@ -410,6 +423,8 @@ impl ChangeLogBuilder {
     /// # Example
     ///
     /// ```rust
+    /// use gen_changelog::ChangeLog;
+    ///
     /// let version = String::from("1.2.0");
     /// let builder = ChangeLog::builder()
     ///     .update_unreleased_to_next_version(Some(&version));
