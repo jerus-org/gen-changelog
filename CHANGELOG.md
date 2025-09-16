@@ -5,16 +5,42 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] - 2025-09-16
+
+Summary: Added[7], Build[2], Changed[7], Chore[27], Continuous Integration[2], Documentation[14], Testing[4]
+
+### Added
+
+ - ✨ feat(assets): add splash screen image
+ - ✨ feat(test): add test logger utility
+ - ✨ feat(test): add test utilities module
+ - ✨ feat(benchmark): add benchmarks for changelog creation and regex
+ - ✨ feat(config_cli): add option to print configuration
+ - ✨ feat(change_log_config): add optional file parameter for save function
+ - ✨ feat(change_log_config): enhance changelog configuration
+
+### Changed
+
+ - ♻️ refactor(change_log_config): enhance DisplaySections enum
+ - ♻️ refactor(change_log_config): restrict enum and method visibility
+ - ♻️ refactor(lib): update change_log_config imports
+ - ♻️ refactor(change_log): simplify display section matching
+ - ♻️ refactor(demo_headings): update save method call
+ - ♻️ refactor(change_log): improve groups mapping usage
+ - ♻️ refactor(tests): remove redundant group mappings in config tests
+
 ## [0.0.8] - 2025-09-12
+
+Summary: Added[17], Build[2], Changed[11], Chore[20], Continuous Integration[1], Fixed[2]
 
 ### Added
 
  - ✨ feat(demo): add default config file for changelog
  - ✨ feat(config_cli): add file name option for configuration saving
  - ✨ feat(change_log): add security heading to changelog configuration
- - ✨ feat(cli): support commit group management
  - ✨ feat(cli): add commit group management options
  - ✨ feat(change_log_config): add group management methods
+ - ✨ feat(cli): support commit group management
  - ✨ feat(cli): add display summaries option
  - ✨ feat(change_log): add summary flag parameter to section
  - ✨ feat(generate_cli): add display summary option
@@ -43,10 +69,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
  - ♻️ refactor(main): simplify changelog version update logic
  - ♻️ refactor(change_log): improve version update logic
  - ♻️ refactor(change_log_config): modify custom section type
- - ♻️ refactor(changelog): remove next_version handling
  - ♻️ refactor(main): rename method for better clarity
+ - ♻️ refactor(changelog): remove next_version handling
 
 ## [0.0.7] - 2025-09-11
+
+Summary: Added[25], Build[2], Changed[11], Chore[22], Continuous Integration[3], Documentation[4], Fixed[2], Testing[1]
 
 ### Added
 
@@ -95,7 +123,29 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
  - ♻️ refactor(demo_headings): remove unused variable prefix
  - ♻️ refactor(main): improve command parsing and execution
 
+## [0.0.6] - 2025-09-09
+
+Summary: Build[1], Chore[9], Continuous Integration[1], Documentation[2]
+
+## [0.0.5] - 2025-09-09
+
+Summary: Chore[4], Continuous Integration[2]
+
+## [0.0.4] - 2025-09-09
+
+Summary: Chore[5], Continuous Integration[1]
+
+## [0.0.3] - 2025-09-09
+
+Summary: Chore[5], Continuous Integration[1], Documentation[1]
+
+## [0.0.2] - 2025-09-09
+
+Summary: Chore[9], Continuous Integration[7], Documentation[2]
+
 ## [0.0.1] - 
+
+Summary: Added[62], Build[6], Changed[59], Chore[96], Continuous Integration[21], Documentation[13], Fixed[12], Testing[1]
 
 ### Added
 
@@ -239,7 +289,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) 
  - ♻️ refactor(section): enhance markdown generation
  - ♻️ refactor(section): simplify tag handling logic
 
-[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...HEAD
+## [0.0.0] - 2025-08-22
+
+Summary: 
+
+[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.8...HEAD
+[0.0.8]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7
 [0.0.6]: https://github.com/jerus-org/gen-changelog/compare/v0.0.5...v0.0.6
 [0.0.5]: https://github.com/jerus-org/gen-changelog/compare/v0.0.4...v0.0.5
