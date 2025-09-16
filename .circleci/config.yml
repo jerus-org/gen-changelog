@@ -6,7 +6,7 @@ parameters:
     default: SHA256:OkxsH8Z6Iim6WDJBaII9eTT9aaO1f3eDc6IpsgYYPVg
   min-rust-version:
     type: string
-    default: "1.87"
+    default: "1.85"
   release-flag:
     type: boolean
     default: false
@@ -395,6 +395,8 @@ workflows:
           min_rust_version: << pipeline.parameters.min-rust-version >>
       - toolkit/test_doc_build:
           min_rust_version: << pipeline.parameters.min-rust-version >>
+      - toolkit/common_tests:
+          min_rust_version: << pipeline.parameters.min-rust-version >>
       - toolkit/idiomatic_rust:
           min_rust_version: << pipeline.parameters.min-rust-version >>
       - toolkit/security:
@@ -409,6 +411,7 @@ workflows:
             - toolkit/test_doc_build
             - toolkit/idiomatic_rust
             - toolkit/security
+            - toolkit/common_tests
           context:
             - release
             - bot-check
