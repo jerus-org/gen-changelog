@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - ✨ add comments for changelog configuration(pr [#125])
 - ✨ add option to print configuration(pr [#127])
+- ✨ add splash screen image(pr [#145])
 
 ### Changed
 
@@ -352,6 +353,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#142]: https://github.com/jerus-org/gen-changelog/pull/142
 [#143]: https://github.com/jerus-org/gen-changelog/pull/143
 [#144]: https://github.com/jerus-org/gen-changelog/pull/144
+[#145]: https://github.com/jerus-org/gen-changelog/pull/145
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.8...HEAD
 [0.0.8]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7
