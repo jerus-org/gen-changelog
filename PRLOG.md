@@ -32,6 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ test(cc_commit)-use test_utils for logger setup(pr [#141])
 - 📝 docs(README)-correct capitalization of Gen-changelog(pr [#142])
 - 📝 docs(changelog)-update code examples (pr [#143])
+- 👷 ci(circleci)-update rust version and add common tests(pr [#144])
 
 ## [0.0.8] - 2025-09-12
 
@@ -350,6 +351,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#141]: https://github.com/jerus-org/gen-changelog/pull/141
 [#142]: https://github.com/jerus-org/gen-changelog/pull/142
 [#143]: https://github.com/jerus-org/gen-changelog/pull/143
+[#144]: https://github.com/jerus-org/gen-changelog/pull/144
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.8...HEAD
 [0.0.8]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7
