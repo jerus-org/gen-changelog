@@ -1,6 +1,6 @@
 ![Gen-changelog — Generate a change log based on the git commits compatible with keep-a-changelog and using conventional commits to categorise commits][splash]
 
-[splash]: https://raw.githubusercontent.com/jerus-org/gen-changelog/main/assets/splash.svg
+[splash]: https://raw.githubusercontent.com/jerus-org/gen-changelog/main/assets/splash2.svg
 
 [![Rust 1.87+][version-badge]][version-url]
 [![circleci-badge]][circleci-url]
