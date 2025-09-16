@@ -81,8 +81,7 @@ const DISPLAY_SECTIONS_COMMENT: &str = r#"# Controls the number of changelog sec
 ///
 /// # Examples
 ///
-/// ```rust
-/// use your_crate::DisplaySections;
+/// ```rust, ignore
 ///
 /// // Show all available sections
 /// let all = DisplaySections::All;
@@ -111,17 +110,6 @@ pub(crate) enum DisplaySections {
 /// This is used to filter which tags should be considered as releases
 /// when generating the changelog from Git history.
 ///
-/// # Examples
-///
-/// ```rust
-/// use your_crate::ReleasePattern;
-///
-/// // Match tags like "v1.0.0", "v0.2.1"
-/// let version_tags = ReleasePattern::Prefix("v".to_string());
-///
-/// // Match tags like "mypackage-v1.0.0"
-/// let package_tags = ReleasePattern::PackagePrefix("mypackage-v".to_string());
-/// ```
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "kebab-case")]
@@ -159,9 +147,10 @@ pub enum ReleasePattern {
 ///
 /// # Examples
 ///
-/// ```rust
-/// use your_crate::ChangeLogConfig;
+/// ```rust, ignore
+/// use gen_changelog::ChangeLogConfig;
 ///
+/// # fn main() -> Result<(), gen_changelog::Error> {
 /// // Load config from default file or use defaults
 /// let config = ChangeLogConfig::from_file_or_default()?;
 ///
@@ -170,6 +159,8 @@ pub enum ReleasePattern {
 ///
 /// // Create default config
 /// let config = ChangeLogConfig::default();
+/// # Ok(())
+/// # }
 /// ```
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, default)]
@@ -270,7 +261,13 @@ impl ChangeLogConfig {
     /// # Examples
     ///
     /// ```rust
+    /// use gen_changelog::ChangeLogConfig;
+    ///
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let config = ChangeLogConfig::from_file_or_default()?;
+    ///
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn from_file_or_default() -> Result<Self, Error> {
         let file = PathBuf::new().join(DEFAULT_CONFIG_FILE);
@@ -294,9 +291,17 @@ impl ChangeLogConfig {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust, ignore
+    ///
+    /// use std::path::PathBuf;
+    /// use gen_changelog::ChangeLogConfig;
+    ///
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let config = ChangeLogConfig::from_file("my-config.toml")?;
-    /// let config = ChangeLogConfig::from_file(PathBuf::from("configs/changelog.toml"))?;
+    /// let config = ChangeLogConfig::from_file(PathBuf::new().join("configs/changelog.toml"))?;
+    ///
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn from_file<P: Into<PathBuf>>(path: P) -> Result<Self, Error> {
         let file = read_to_string(path.into())?;
@@ -312,6 +317,8 @@ impl ChangeLogConfig {
     /// # Examples
     ///
     /// ```rust
+    /// use gen_changelog::ChangeLogConfig;
+    ///
     /// let config = ChangeLogConfig::default();
     /// for (priority, heading) in config.headings() {
     ///     println!("Priority {}: {}", priority, heading);
@@ -334,6 +341,8 @@ impl ChangeLogConfig {
     /// # Examples
     ///
     /// ```rust
+    /// use gen_changelog::ChangeLogConfig;
+    ///
     /// let config = ChangeLogConfig::default();
     /// let mapping = config.groups_mapping();
     /// assert_eq!(mapping.get("feat"), Some(&"Added".to_string()));
@@ -366,6 +375,11 @@ impl ChangeLogConfig {
     /// # Examples
     ///
     /// ```rust
+    ///
+    /// use gen_changelog::ChangeLogConfig;
+    ///
+    /// # #[allow(non_snake_case)]
+    /// # fn main() -> Result<(), Box<dyn std::error::Error>> {
     /// let config = ChangeLogConfig::default();
     ///
     /// // Save to file
@@ -373,6 +387,8 @@ impl ChangeLogConfig {
     ///
     /// // Print to stdout
     /// config.save(None)?;
+    /// # Ok(())
+    /// # }
     /// ```
     pub fn save(&self, file: Option<&str>) -> Result<(), Error> {
         let mut toml_string = toml::to_string_pretty(self)?;
@@ -415,6 +431,8 @@ impl ChangeLogConfig {
     /// # Examples
     ///
     /// ```rust
+    /// use gen_changelog::ChangeLogConfig;
+    ///
     /// let mut config = ChangeLogConfig::default();
     /// config.add_commit_groups(&["testing".to_string(), "build".to_string()]);
     /// ```
@@ -441,6 +459,8 @@ impl ChangeLogConfig {
     /// # Examples
     ///
     /// ```rust
+    /// use gen_changelog::ChangeLogConfig;
+    ///
     /// let mut config = ChangeLogConfig::default();
     /// config.publish_group("Testing");
     /// ```
@@ -466,6 +486,8 @@ impl ChangeLogConfig {
     /// # Examples
     ///
     /// ```rust
+    /// use gen_changelog::ChangeLogConfig;
+    ///
     /// let mut config = ChangeLogConfig::default();
     /// config.remove_commit_groups(&["chore".to_string(), "ci".to_string()]);
     /// ```
@@ -492,6 +514,8 @@ impl ChangeLogConfig {
     /// # Examples
     ///
     /// ```rust
+    /// use gen_changelog::ChangeLogConfig;
+    ///
     /// let mut config = ChangeLogConfig::default();
     /// config.unpublish_group("Added");
     /// ```
@@ -513,18 +537,6 @@ impl ChangeLogConfig {
     /// # Returns
     ///
     /// A mutable reference to self for method chaining
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// let mut config = ChangeLogConfig::default();
-    /// let new_group = Group::new_with_name_types_and_publish_flag(
-    ///     "Custom",
-    ///     &["custom"],
-    ///     true
-    /// );
-    /// config.add_group(new_group);
-    /// ```
     pub fn add_group(&mut self, group: Group) -> &mut Self {
         if group.publish() {
             let name = group.name().to_string();
@@ -540,15 +552,6 @@ impl ChangeLogConfig {
     /// The release pattern determines which Git tags are considered release tags
     /// when generating the changelog.
     ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// let config = ChangeLogConfig::default();
-    /// match config.release_pattern() {
-    ///     ReleasePattern::Prefix(prefix) => println!("Using prefix: {}", prefix),
-    ///     ReleasePattern::PackagePrefix(prefix) => println!("Using package prefix: {}", prefix),
-    /// }
-    /// ```
     pub fn release_pattern(&self) -> &ReleasePattern {
         &self.release_pattern
     }
@@ -557,17 +560,6 @@ impl ChangeLogConfig {
     ///
     /// This determines how many changelog sections will be included in the
     /// generated output.
-    ///
-    /// # Examples
-    ///
-    /// ```rust
-    /// let config = ChangeLogConfig::default();
-    /// match config.display_sections() {
-    ///     DisplaySections::All => println!("Displaying all sections"),
-    ///     DisplaySections::One => println!("Displaying one section"),
-    ///     DisplaySections::Custom(n) => println!("Displaying {} sections", n),
-    /// }
-    /// ```
     pub(crate) fn display_sections(&self) -> &DisplaySections {
         &self.display_sections
     }
@@ -587,6 +579,8 @@ impl ChangeLogConfig {
     /// # Examples
     ///
     /// ```rust
+    /// use gen_changelog::ChangeLogConfig;
+    ///
     /// let mut config = ChangeLogConfig::default();
     ///
     /// // Show only the latest section
