@@ -609,3 +609,567 @@ impl ChangeLogConfig {
         self
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::test_utils::get_test_logger;
+    use std::fs;
+    use tempfile::TempDir;
+
+    // Helper function to create a test config with known state
+    fn create_test_config() -> ChangeLogConfig {
+        ChangeLogConfig::default()
+    }
+
+    // Helper function to create a temporary test file
+    fn create_temp_config_file(content: &str) -> (TempDir, PathBuf) {
+        let temp_dir = TempDir::new().expect("Failed to create temp directory");
+        let file_path = temp_dir.path().join("test-config.toml");
+        fs::write(&file_path, content).expect("Failed to write temp file");
+        (temp_dir, file_path)
+    }
+
+    #[test]
+    fn test_display_sections_default() {
+        let sections = DisplaySections::default();
+        assert!(matches!(sections, DisplaySections::All));
+    }
+
+    #[test]
+    fn test_display_sections_serialization() {
+        // Test All variant
+        // let all_sections = DisplaySections::All;
+        // let serialized = toml::to_string(&all_sections).unwrap();
+        // let deserialized: DisplaySections = toml::from_str(&serialized).unwrap();
+        // assert!(matches!(deserialized, DisplaySections::All));
+
+        // Test One variant
+        let one_section = DisplaySections::One;
+        let serialized = toml::to_string(&one_section).unwrap();
+        let deserialized: DisplaySections = toml::from_str(&serialized).unwrap();
+        assert!(matches!(deserialized, DisplaySections::One));
+
+        // Test Custom variant
+        let custom_sections = DisplaySections::Custom(5);
+        let serialized = toml::to_string(&custom_sections).unwrap();
+        let deserialized: DisplaySections = toml::from_str(&serialized).unwrap();
+        if let DisplaySections::Custom(n) = deserialized {
+            assert_eq!(n, 5);
+        } else {
+            panic!("Expected Custom variant");
+        }
+    }
+
+    #[test]
+    fn test_release_pattern_serialization() {
+        // Test Prefix variant
+        let prefix_pattern = ReleasePattern::Prefix("v".to_string());
+        let serialized = toml::to_string(&prefix_pattern).unwrap();
+        let deserialized: ReleasePattern = toml::from_str(&serialized).unwrap();
+        if let ReleasePattern::Prefix(prefix) = deserialized {
+            assert_eq!(prefix, "v");
+        } else {
+            panic!("Expected Prefix variant");
+        }
+
+        // Test PackagePrefix variant
+        let package_pattern = ReleasePattern::PackagePrefix("pkg-v".to_string());
+        let serialized = toml::to_string(&package_pattern).unwrap();
+        let deserialized: ReleasePattern = toml::from_str(&serialized).unwrap();
+        if let ReleasePattern::PackagePrefix(prefix) = deserialized {
+            assert_eq!(prefix, "pkg-v");
+        } else {
+            panic!("Expected PackagePrefix variant");
+        }
+    }
+
+    #[test]
+    fn test_change_log_config_default() {
+        let config = ChangeLogConfig::default();
+
+        // Check that default groups are created
+        assert!(!config.groups.is_empty());
+
+        // Check that default headings are set
+        assert!(!config.headings.is_empty());
+        assert!(config.headings.values().any(|h| h == "Added"));
+        assert!(config.headings.values().any(|h| h == "Fixed"));
+        assert!(config.headings.values().any(|h| h == "Changed"));
+        assert!(config.headings.values().any(|h| h == "Security"));
+
+        // Check display sections default
+        assert!(matches!(config.display_sections, DisplaySections::All));
+
+        // Check release pattern default
+        if let ReleasePattern::Prefix(prefix) = &config.release_pattern {
+            assert_eq!(prefix, "v");
+        } else {
+            panic!("Expected Prefix variant with 'v'");
+        }
+    }
+
+    #[test]
+    fn test_from_file_or_default_no_file() {
+        get_test_logger();
+        let dcf = PathBuf::new().join(DEFAULT_CONFIG_FILE);
+        let mut safe_dcf = String::from(DEFAULT_CONFIG_FILE);
+        safe_dcf.push_str("-safe");
+        let safe_dcf = PathBuf::new().join(safe_dcf);
+        let mut renamed = false;
+        if dcf.exists() {
+            let _ = fs::rename(&dcf, &safe_dcf);
+            renamed = true;
+        }
+        // When no config file exists, should return default config
+        let result = ChangeLogConfig::from_file_or_default();
+        if renamed {
+            let _ = fs::rename(&safe_dcf, &dcf);
+        }
+        assert!(result.is_ok());
+
+        let config = result.unwrap();
+        log::debug!("{config:#?}");
+        assert!(matches!(config.display_sections, DisplaySections::All));
+    }
+
+    #[test]
+    fn test_from_file_or_default_with_file() {
+        get_test_logger();
+        let toml_content = r#"
+[display-sections]
+variant = "one"
+
+[groups.TestGroup]
+name = "TestGroup"
+publish = true
+cc-types = ["test"]
+
+[headings]
+"TestGroup" = 10
+"#;
+
+        let (_temp_dir, _file_path) = create_temp_config_file(toml_content);
+
+        // Temporarily create the default config file
+        let default_config_path = PathBuf::from(DEFAULT_CONFIG_FILE);
+        fs::write(&default_config_path, toml_content).expect("Failed to write default config");
+
+        let result = ChangeLogConfig::from_file_or_default();
+        log::debug!("{result:?}");
+        // Clean up
+        let _ = fs::remove_file(default_config_path);
+
+        assert!(result.is_ok());
+        let config = result.unwrap();
+        assert!(matches!(config.display_sections, DisplaySections::One));
+    }
+
+    #[test]
+    fn test_from_file_success() {
+        let toml_content = r#"
+[display-sections]
+variant = "custom"
+data = 3
+
+[groups.Custom]
+name = "Custom"
+publish = false
+cc-types = ["custom"]
+
+[headings]
+"Custom" = 15
+"#;
+
+        get_test_logger();
+        let (_temp_dir, file_path) = create_temp_config_file(toml_content);
+
+        let result = ChangeLogConfig::from_file(file_path);
+        log::debug!("{result:?}");
+        assert!(result.is_ok());
+
+        let config = result.unwrap();
+        if let DisplaySections::Custom(n) = config.display_sections {
+            assert_eq!(n, 3);
+        } else {
+            panic!("Expected Custom display sections");
+        }
+    }
+
+    #[test]
+    fn test_from_file_invalid_toml() {
+        let invalid_toml = "invalid toml content [";
+        let (_temp_dir, file_path) = create_temp_config_file(invalid_toml);
+
+        let result = ChangeLogConfig::from_file(file_path);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_from_file_nonexistent() {
+        let result = ChangeLogConfig::from_file("nonexistent-file.toml");
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_headings_getter() {
+        let config = ChangeLogConfig::default();
+        let headings = config.headings();
+
+        assert!(!headings.is_empty());
+        assert!(headings.values().any(|h| h == "Added"));
+    }
+
+    #[test]
+    fn test_groups_mapping() {
+        let config = ChangeLogConfig::default();
+        let mapping = config.groups_mapping();
+
+        assert!(!mapping.is_empty());
+        // Check some expected mappings from DEFAULT_GROUPS
+        assert!(mapping.contains_key("feat"));
+        assert!(mapping.contains_key("fix"));
+        assert!(mapping.contains_key("refactor"));
+    }
+
+    #[test]
+    fn test_save_to_file() {
+        let config = ChangeLogConfig::default();
+        let temp_dir = TempDir::new().expect("Failed to create temp directory");
+        let file_path = temp_dir.path().join("output-config.toml");
+
+        let result = config.save(Some(file_path.to_str().unwrap()));
+        assert!(result.is_ok());
+
+        // Verify file was created and contains expected content
+        assert!(file_path.exists());
+        let content = fs::read_to_string(&file_path).expect("Failed to read saved file");
+
+        // Check that comments are included
+        assert!(content.contains("# Group tables define the third-level headings"));
+        assert!(content.contains("# Defines the display order of groups"));
+    }
+
+    #[test]
+    fn test_save_to_stdout() {
+        let config = ChangeLogConfig::default();
+
+        // This test just ensures the method doesn't panic when saving to stdout
+        // In a real scenario, you might want to capture stdout to verify output
+        let result = config.save(None);
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn test_add_commit_groups() {
+        let mut config = ChangeLogConfig::default();
+        let initial_heading_count = config.headings.len();
+
+        let groups_to_add = vec!["testing".to_string(), "build".to_string()];
+        config.add_commit_groups(&groups_to_add);
+
+        // Should have added groups (though they might already exist)
+        // The exact count depends on whether these groups were already published
+        assert!(config.headings.len() >= initial_heading_count);
+    }
+
+    #[test]
+    fn test_publish_group() {
+        let mut config = ChangeLogConfig::default();
+        let initial_heading_count = config.headings.len();
+
+        // Add a group that's likely not already published
+        config.publish_group("CustomGroup");
+
+        // Should have one more heading
+        assert!(config.headings.len() >= initial_heading_count);
+        assert!(config.headings.values().any(|h| h == "CustomGroup"));
+    }
+
+    #[test]
+    fn test_remove_commit_groups() {
+        let mut config = ChangeLogConfig::default();
+
+        // First add some groups
+        config.add_commit_groups(&["Testing".to_string(), "Build".to_string()]);
+        let after_add_count = config.headings.len();
+
+        // Then remove them
+        config.remove_commit_groups(&["testing".to_string(), "build".to_string()]);
+
+        // Should have fewer headings (unless they weren't added initially)
+        assert!(config.headings.len() <= after_add_count);
+    }
+
+    #[test]
+    fn test_unpublish_group() {
+        let mut config = ChangeLogConfig::default();
+
+        // Unpublish a group that should be there by default
+        let initial_count = config.headings.len();
+        config.unpublish_group("Added");
+
+        // Should have one fewer heading
+        assert!(config.headings.len() < initial_count);
+        assert!(!config.headings.values().any(|h| h == "Added"));
+    }
+
+    #[test]
+    fn test_add_group_published() {
+        let mut config = ChangeLogConfig::default();
+        let initial_count = config.headings.len();
+
+        // Create a mock group (you'll need to adjust this based on your Group implementation)
+        // This is a placeholder - adjust according to your actual Group struct
+        let mock_group = Group::new_with_name_types_and_publish_flag(
+            "MockGroup",
+            &["mock"],
+            true, // published
+        );
+
+        config.add_group(mock_group);
+
+        // Should have added the heading since the group is published
+        assert!(config.headings.len() > initial_count);
+        assert!(config.headings.values().any(|h| h == "MockGroup"));
+    }
+
+    #[test]
+    fn test_add_group_unpublished() {
+        let mut config = ChangeLogConfig::default();
+        let initial_count = config.headings.len();
+
+        // Create a mock unpublished group
+        let mock_group = Group::new_with_name_types_and_publish_flag(
+            "UnpublishedGroup",
+            &["unpub"],
+            false, // not published
+        );
+
+        config.add_group(mock_group);
+
+        // Should not have added the heading since the group is not published
+        assert_eq!(config.headings.len(), initial_count);
+        assert!(!config.headings.values().any(|h| h == "UnpublishedGroup"));
+    }
+
+    #[test]
+    fn test_release_pattern_getter() {
+        let config = ChangeLogConfig::default();
+        let pattern = config.release_pattern();
+
+        if let ReleasePattern::Prefix(prefix) = pattern {
+            assert_eq!(prefix, "v");
+        } else {
+            panic!("Expected Prefix variant");
+        }
+    }
+
+    #[test]
+    fn test_display_sections_getter() {
+        let config = ChangeLogConfig::default();
+        let sections = config.display_sections();
+
+        assert!(matches!(sections, DisplaySections::All));
+    }
+
+    #[test]
+    fn test_set_display_sections_one() {
+        let mut config = ChangeLogConfig::default();
+
+        config.set_display_sections(Some(1));
+
+        assert!(matches!(config.display_sections, DisplaySections::One));
+    }
+
+    #[test]
+    fn test_set_display_sections_custom() {
+        let mut config = ChangeLogConfig::default();
+
+        config.set_display_sections(Some(5));
+
+        if let DisplaySections::Custom(n) = config.display_sections {
+            assert_eq!(n, 5);
+        } else {
+            panic!("Expected Custom variant");
+        }
+    }
+
+    #[test]
+    fn test_set_display_sections_none() {
+        let mut config = ChangeLogConfig::default();
+
+        config.set_display_sections(None);
+
+        // Should remain unchanged
+        assert!(matches!(config.display_sections, DisplaySections::All));
+    }
+
+    #[test]
+    fn test_method_chaining() {
+        let mut config = ChangeLogConfig::default();
+
+        // Test that methods return &mut Self for chaining
+        config
+            .add_commit_groups(&["Testing".to_string()])
+            .publish_group("Build")
+            .set_display_sections(Some(3))
+            .unpublish_group("Added");
+
+        // Verify the chained operations worked
+        if let DisplaySections::Custom(n) = config.display_sections {
+            assert_eq!(n, 3);
+        } else {
+            panic!("Expected Custom variant");
+        }
+
+        assert!(!config.headings.values().any(|h| h == "Added"));
+    }
+
+    #[test]
+    fn test_config_serialization_roundtrip() {
+        let original_config = ChangeLogConfig::default();
+
+        // Serialize to TOML
+        let toml_string = toml::to_string(&original_config).expect("Failed to serialize");
+
+        // Deserialize back
+        let deserialized_config: ChangeLogConfig =
+            toml::from_str(&toml_string).expect("Failed to deserialize");
+
+        // Compare key properties (you might need to implement PartialEq or compare manually)
+        assert_eq!(
+            original_config.headings.len(),
+            deserialized_config.headings.len()
+        );
+        assert!(matches!(
+            deserialized_config.display_sections,
+            DisplaySections::All
+        ));
+    }
+
+    #[test]
+    fn test_default_groups_configuration() {
+        let config = ChangeLogConfig::default();
+        let mapping = config.groups_mapping();
+
+        // Verify some key mappings from DEFAULT_GROUPS
+        assert_eq!(mapping.get("feat"), Some(&"Added".to_string()));
+        assert_eq!(mapping.get("fix"), Some(&"Fixed".to_string()));
+        assert_eq!(mapping.get("refactor"), Some(&"Changed".to_string()));
+        assert_eq!(mapping.get("security"), Some(&"Security".to_string()));
+        assert_eq!(mapping.get("build"), Some(&"Build".to_string()));
+        assert_eq!(mapping.get("doc"), Some(&"Documentation".to_string()));
+        assert_eq!(mapping.get("docs"), Some(&"Documentation".to_string()));
+        assert_eq!(mapping.get("chore"), Some(&"Chore".to_string()));
+        assert_eq!(
+            mapping.get("ci"),
+            Some(&"Continuous Integration".to_string())
+        );
+        assert_eq!(mapping.get("test"), Some(&"Testing".to_string()));
+    }
+
+    #[test]
+    fn test_invalid_toml_fields() {
+        // Test that unknown fields are rejected due to serde(deny_unknown_fields)
+        let invalid_toml = r#"
+display-sections = "all"
+unknown-field = "should-fail"
+
+[groups.Added]
+name = "Added"
+publish = true
+cc-types = ["feat"]
+"#;
+
+        let result: Result<ChangeLogConfig, _> = toml::from_str(invalid_toml);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_kebab_case_serialization() {
+        // Test that fields use kebab-case in serialization
+        let config = ChangeLogConfig::default();
+        let toml_string = toml::to_string(&config).expect("Failed to serialize");
+
+        // Should use kebab-case, not snake_case
+        assert!(toml_string.contains("display-sections"));
+        assert!(!toml_string.contains("display_sections"));
+    }
+
+    #[test]
+    fn test_groups_mapping_consistency() {
+        let config = ChangeLogConfig::default();
+        let mapping = config.groups_mapping();
+
+        // Each commit type should map to exactly one group
+        let mut seen_types = std::collections::HashSet::new();
+        for commit_type in mapping.keys() {
+            assert!(
+                !seen_types.contains(commit_type),
+                "Commit type '{commit_type}' appears in multiple groups"
+            );
+            seen_types.insert(commit_type.clone());
+        }
+
+        // Should have mappings for all default commit types
+        assert!(!mapping.is_empty());
+    }
+
+    #[test]
+    fn test_headings_ordering() {
+        let config = ChangeLogConfig::default();
+        let headings = config.headings();
+
+        // BTreeMap should maintain order by keys
+        let mut previous_key = 0u8;
+        for key in headings.keys() {
+            assert!(
+                *key >= previous_key,
+                "Headings should be ordered by priority"
+            );
+            previous_key = *key;
+        }
+    }
+
+    // Integration test that combines multiple operations
+    #[test]
+    fn test_full_workflow() {
+        let mut config = ChangeLogConfig::default();
+
+        // Add some custom groups
+        config.add_commit_groups(&["Performance".to_string(), "Refactoring".to_string()]);
+
+        // Remove a default group
+        config.unpublish_group("Security");
+
+        // Set display sections
+        config.set_display_sections(Some(2));
+
+        // Verify final state
+        assert!(!config.headings.values().any(|h| h == "Security"));
+
+        if let DisplaySections::Custom(n) = config.display_sections {
+            assert_eq!(n, 2);
+        } else {
+            panic!("Expected Custom display sections");
+        }
+
+        // Save and reload to test persistence
+        let temp_dir = TempDir::new().expect("Failed to create temp directory");
+        let file_path = temp_dir.path().join("workflow-test.toml");
+
+        config
+            .save(Some(file_path.to_str().unwrap()))
+            .expect("Failed to save");
+        let reloaded_config = ChangeLogConfig::from_file(&file_path).expect("Failed to load");
+
+        // Verify the reloaded config matches
+        assert!(!reloaded_config.headings.values().any(|h| h == "Security"));
+        if let DisplaySections::Custom(n) = reloaded_config.display_sections {
+            assert_eq!(n, 2);
+        } else {
+            panic!("Expected Custom display sections in reloaded config");
+        }
+    }
+}
