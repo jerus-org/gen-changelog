@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ test(change_log)-add comprehensive unit tests for changelog module(pr [#137])
 - Add-test-logger-utility(pr [#138])
 - ♻️ refactor(change_log_config)-enhance DisplaySections enum(pr [#139])
+- ✅ test(change_log_config)-add comprehensive tests for ChangeLogConfig(pr [#140])
 
 ## [0.0.8] - 2025-09-12
 
@@ -342,6 +343,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#137]: https://github.com/jerus-org/gen-changelog/pull/137
 [#138]: https://github.com/jerus-org/gen-changelog/pull/138
 [#139]: https://github.com/jerus-org/gen-changelog/pull/139
+[#140]: https://github.com/jerus-org/gen-changelog/pull/140
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.0.8...HEAD
 [0.0.8]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7
