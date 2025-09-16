@@ -71,7 +71,7 @@ Configuration struct that controls how the changelog is generated and formatted.
 
 ##### Creating Configuration
 
-```rust
+```rust, ignore
 use gen_changelog::{ChangeLogConfig, Error};
 
 fn main() -> Result<(), Error> {
