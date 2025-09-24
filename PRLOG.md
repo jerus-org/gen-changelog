@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- ✨ add package option for changelog generation(pr [#150])
+
 ### Changed
 
 - 📝 docs(help)-add comprehensive Gen-changelog documentation(pr [#147])
@@ -367,6 +371,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#147]: https://github.com/jerus-org/gen-changelog/pull/147
 [#148]: https://github.com/jerus-org/gen-changelog/pull/148
 [#149]: https://github.com/jerus-org/gen-changelog/pull/149
+[#150]: https://github.com/jerus-org/gen-changelog/pull/150
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/jerus-org/gen-changelog/compare/v0.0.8...v0.1.0
 [0.0.8]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...v0.0.8
