@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - 📝 docs(help)-add comprehensive Gen-changelog documentation(pr [#147])
+- 👷 ci(circleci)-update circleci toolkit orb version(pr [#148])
 
 ## [0.1.0] - 2025-09-16
 
@@ -363,6 +364,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#145]: https://github.com/jerus-org/gen-changelog/pull/145
 [#146]: https://github.com/jerus-org/gen-changelog/pull/146
 [#147]: https://github.com/jerus-org/gen-changelog/pull/147
+[#148]: https://github.com/jerus-org/gen-changelog/pull/148
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/jerus-org/gen-changelog/compare/v0.0.8...v0.1.0
 [0.0.8]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...v0.0.8
