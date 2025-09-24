@@ -1,0 +1,109 @@
+```console
+$ gen-changelog --help
+Generate a change log based on the git commits compatible
+with keep-a-changelog and using conventional commits to categorise commits.
+
+Usage: gen-changelog [OPTIONS] [COMMAND]
+
+Commands:
+  generate  Generate Changelog
+  config    Configuration management
+  help      Print this message or the help of the given subcommand(s)
+
+Options:
+  -v, --verbose...  Increase logging verbosity
+  -q, --quiet...    Decrease logging verbosity
+  -h, --help        Print help
+  -V, --version     Print version
+
+```
+
+```console
+$ gen-changelog -h
+Generate a change log based on the git commits compatible
+with keep-a-changelog and using conventional commits to categorise commits.
+
+Usage: gen-changelog [OPTIONS] [COMMAND]
+
+Commands:
+  generate  Generate Changelog
+  config    Configuration management
+  help      Print this message or the help of the given subcommand(s)
+
+Options:
+  -v, --verbose...  Increase logging verbosity
+  -q, --quiet...    Decrease logging verbosity
+  -h, --help        Print help
+  -V, --version     Print version
+
+```
+
+```console
+$ gen-changelog calculate --help
+? 2
+error: unrecognized subcommand 'calculate'
+
+Usage: gen-changelog [OPTIONS] [COMMAND]
+
+For more information, try '--help'.
+
+```
+
+```console
+$ gen-changelog force --help
+? 2
+error: unrecognized subcommand 'force'
+
+Usage: gen-changelog [OPTIONS] [COMMAND]
+
+For more information, try '--help'.
+
+```
+
+```console
+$ gen-changelog require --help
+? 2
+error: unrecognized subcommand 'require'
+
+Usage: gen-changelog [OPTIONS] [COMMAND]
+
+For more information, try '--help'.
+
+```
+
+```console
+$ gen-changelog calculate -h
+? 2
+error: unrecognized subcommand 'calculate'
+
+Usage: gen-changelog [OPTIONS] [COMMAND]
+
+For more information, try '--help'.
+
+```
+
+```console
+$ gen-changelog force -h
+? 2
+error: unrecognized subcommand 'force'
+
+Usage: gen-changelog [OPTIONS] [COMMAND]
+
+For more information, try '--help'.
+
+```
+
+```console
+$ gen-changelog require -h
+? 2
+error: unrecognized subcommand 'require'
+
+Usage: gen-changelog [OPTIONS] [COMMAND]
+
+For more information, try '--help'.
+
+```
+```
+$ gen-changelog
+
+```
