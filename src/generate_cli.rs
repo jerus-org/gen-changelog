@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 
 use clap::Parser;
-use gen_changelog::{ChangeLog, ChangeLogConfig};
+use gen_changelog::{ChangeLog, ChangeLogConfig, Error};
 use git2::Repository;
 
 #[derive(Parser, Debug)]
@@ -33,25 +33,13 @@ pub(crate) struct GenerateCli {
 }
 
 impl GenerateCli {
-    pub(crate) fn run(&self) -> Result<(), gen_changelog::Error> {
+    pub(crate) fn run(&self) -> Result<(), Error> {
         log::debug!("Arguments to apply: {self:#?}");
         let repo_dir = PathBuf::new().join(&self.repo_dir);
         let repository = Repository::open(&repo_dir)
             .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
 
-        let mut config = if let Some(cfg) = &self.config_file {
-            ChangeLogConfig::from_file(cfg)?
-        } else {
-            ChangeLogConfig::from_file_or_default()?
-        };
-        log::debug!("initial config to build on: {config:?}");
-
-        config.publish_group("Security");
-        config.set_display_sections(self.sections);
-        config.add_commit_groups(&self.add_groups);
-        config.remove_commit_groups(&self.remove_groups);
-
-        log::debug!("{config:#?}");
+        let config = self.make_config()?;
 
         let mut change_log_builder = ChangeLog::builder();
         let change_log = change_log_builder
@@ -65,5 +53,22 @@ impl GenerateCli {
         let _ = change_log.save();
         // println!("{change_log}");
         Ok(())
+    }
+
+    fn make_config(&self) -> Result<ChangeLogConfig, gen_changelog::Error> {
+        let mut config = if let Some(cfg) = &self.config_file {
+            ChangeLogConfig::from_file(cfg)?
+        } else {
+            ChangeLogConfig::from_file_or_default()?
+        };
+        log::debug!("initial config to build on: {config:?}");
+
+        config.publish_group("Security");
+        config.set_display_sections(self.sections);
+        config.add_commit_groups(&self.add_groups);
+        config.remove_commit_groups(&self.remove_groups);
+
+        log::debug!("{config:#?}");
+        Ok(config)
     }
 }
