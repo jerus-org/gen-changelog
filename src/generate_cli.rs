@@ -27,6 +27,9 @@ pub(crate) struct GenerateCli {
     /// remove commit groups
     #[arg(long)]
     remove_groups: Vec<String>,
+    /// generate the change log for a specific package
+    #[arg(short, long)]
+    package: Option<String>,
 }
 
 impl GenerateCli {
