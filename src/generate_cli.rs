@@ -30,6 +30,7 @@ pub(crate) struct GenerateCli {
     /// generate the change log for a specific package
     #[arg(short, long)]
     package: Option<String>,
+    config_root: Option<String>,
 }
 
 impl GenerateCli {
