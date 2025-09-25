@@ -15,6 +15,9 @@ pub enum Error {
     /// repo not found in capture group
     #[error("repo not found in capture group")]
     RepoNotFound,
+    /// no rust package found in repository
+    #[error("no rust package found in repository")]
+    NoPackageFound,
     /// Error from the git2 crate
     #[error("Git2 says: {0}")]
     Git2Error(#[from] git2::Error),
