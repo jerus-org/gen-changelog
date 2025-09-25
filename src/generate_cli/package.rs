@@ -4,6 +4,7 @@ use std::{
     path::{Path, PathBuf},
 };
 
+use gen_changelog::Error;
 use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
@@ -28,7 +29,7 @@ struct Package {
     name: Option<String>,
 }
 
-pub(crate) fn get_packages(root: &Path) -> Option<HashMap<String, PathBuf>> {
+pub(crate) fn get_packages(root: &Path) -> Result<HashMap<String, PathBuf>, Error> {
     let mut packages = HashMap::new();
 
     if let Some(root_cargo) = insert_package(root, &mut packages) {
@@ -43,9 +44,9 @@ pub(crate) fn get_packages(root: &Path) -> Option<HashMap<String, PathBuf>> {
     }
 
     if packages.is_empty() {
-        None
+        Err(Error::NoPackageFound)
     } else {
-        Some(packages)
+        Ok(packages)
     }
 }
 
