@@ -1,5 +1,7 @@
 use std::path::PathBuf;
 
+mod package;
+
 use clap::Parser;
 use gen_changelog::{ChangeLog, ChangeLogConfig, Error};
 use git2::Repository;
@@ -30,15 +32,28 @@ pub(crate) struct GenerateCli {
     /// generate the change log for a specific package
     #[arg(short, long)]
     package: Option<String>,
-    config_root: Option<String>,
 }
 
 impl GenerateCli {
     pub(crate) fn run(&self) -> Result<(), Error> {
         log::debug!("Arguments to apply: {self:#?}");
         let repo_dir = PathBuf::new().join(&self.repo_dir);
+        log::debug!("{}", repo_dir.display());
         let repository = Repository::open(&repo_dir)
             .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
+
+        let packages = package::get_packages(&repo_dir)?;
+        log::debug!("{packages:?}");
+
+        let pkg_root = if let Some(p) = &self.package {
+            packages
+                .get(p)
+                .unwrap_or(&repo_dir.to_path_buf())
+                .to_path_buf()
+        } else {
+            let root = &repo_dir.to_path_buf();
+            root.to_path_buf()
+        };
 
         let config = self.make_config()?;
 
@@ -48,6 +63,7 @@ impl GenerateCli {
             .with_summary_flag(self.display_summaries)
             .with_repository(&repository)
             .unwrap()
+            .with_package_root(&pkg_root)
             .update_unreleased_to_next_version(self.next_version.as_ref())
             .build();
 
