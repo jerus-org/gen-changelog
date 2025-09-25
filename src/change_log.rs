@@ -414,6 +414,7 @@ impl ChangeLogBuilder {
     /// Add the package root to the configuration
     pub fn with_package_root(&mut self, pkg_root: &Path) -> &mut Self {
         self.pkg_root = pkg_root.to_path_buf();
+        log::debug!("package root set to `{}`", self.pkg_root.display());
         self
     }
 
