@@ -6,6 +6,7 @@ mod tag;
 use std::{
     cmp::min,
     fmt::{Debug, Display},
+    path::{Path, PathBuf},
 };
 
 use git2::Repository;
@@ -160,6 +161,8 @@ pub struct ChangeLogBuilder {
     owner: String,
     /// Repository name
     repo: String,
+    /// Root of the package to process
+    pkg_root: PathBuf,
     /// Changelog header
     header: Header,
     /// Version sections
@@ -197,6 +200,7 @@ impl ChangeLogBuilder {
         ChangeLogBuilder {
             owner: String::default(),
             repo: String::default(),
+            pkg_root: PathBuf::new().join("."),
             header: Header::default(),
             links: Vec::new(),
             sections: Vec::default(),
@@ -405,6 +409,12 @@ impl ChangeLogBuilder {
         }
 
         Ok(self)
+    }
+
+    /// Add the package root to the configuration
+    pub fn with_package_root(&mut self, pkg_root: &Path) -> &mut Self {
+        self.pkg_root = pkg_root.to_path_buf();
+        self
     }
 
     /// Updates the first (unreleased) section to represent the next version.
