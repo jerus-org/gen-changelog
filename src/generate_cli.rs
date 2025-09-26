@@ -32,6 +32,9 @@ pub(crate) struct GenerateCli {
     /// generate the change log for a specific package
     #[arg(short, long)]
     package: Option<String>,
+    /// do not save the changelog
+    #[arg(short = 'S', long)]
+    no_save: bool,
 }
 
 impl GenerateCli {
@@ -68,7 +71,9 @@ impl GenerateCli {
             .update_unreleased_to_next_version(self.next_version.as_ref())
             .build();
 
-        let _ = change_log.save();
+        if !self.no_save {
+            let _ = change_log.save();
+        }
         // println!("{change_log}");
         Ok(())
     }
