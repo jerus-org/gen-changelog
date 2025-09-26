@@ -157,7 +157,7 @@ impl Display for ChangeLog {
 /// let changelog = ChangeLog::builder()
 ///     .with_config(config)
 ///     .with_header("My Project", &["A great project"])
-///     .with_repository(&repo)?
+///     .walk_repository(&repo)?
 ///     .build();
 /// # Ok(())
 /// # }
@@ -350,7 +350,7 @@ impl ChangeLogBuilder {
     /// # fn main() -> Result<(), gen_changelog::Error> {
     /// let repo = Repository::open(".")?;
     /// let changelog = ChangeLog::builder()
-    ///     .with_repository(&repo)?
+    ///     .walk_repository(&repo)?
     ///     .build();
     /// # Ok(())
     /// # }

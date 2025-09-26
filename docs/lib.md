@@ -41,7 +41,7 @@ fn main() -> Result<(), Error> {
         .with_header("My Project Changelog", &[
             "All notable changes to this project will be documented in this file."
         ])
-        .with_repository(&repo)?
+        .walk_repository(&repo)?
         .build();
     Ok(())
 }
@@ -61,7 +61,7 @@ Builder struct for constructing `ChangeLog` instances with custom configurations
 - `with_config(config: ChangeLogConfig)` - Sets a custom configuration
 - `with_header(title: &str, paragraphs: &[&str])` - Sets the changelog header
 - `with_summary_flag(value: bool)` - Enables/disables commit summaries
-- `with_repository(repository: &Repository)` - Processes Git repository for changes
+- `walk_repository(repository: &Repository)` - Processes Git repository for changes
 - `update_unreleased_to_next_version(next_version: Option<&String>)` - Updates unreleased section to specific version
 - `build()` - Constructs the final `ChangeLog` instance
 
@@ -189,7 +189,7 @@ fn generate_changelog() -> Result<(), Box<dyn std::error::Error>> {
             "All notable changes to this project will be documented in this file.",
             "The format is based on Keep a Changelog."
         ])
-        .with_repository(&repo)?
+        .walk_repository(&repo)?
         .build();
     
     changelog.save()?;
@@ -216,7 +216,7 @@ fn generate_custom_changelog() -> Result<(), Box<dyn std::error::Error>> {
     let changelog = ChangeLog::builder()
         .with_config(config)
         .with_summary_flag(true)
-        .with_repository(&repo)?
+        .walk_repository(&repo)?
         .build();
     
     changelog.save()?;
@@ -236,7 +236,7 @@ fn prepare_release(version: &str) -> Result<(), Box<dyn std::error::Error>> {
     
     let changelog = ChangeLog::builder()
         .with_config(config)
-        .with_repository(&repo)?
+        .walk_repository(&repo)?
         .update_unreleased_to_next_version(Some(&version.to_string()))
         .build();
     
