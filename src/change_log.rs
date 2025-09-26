@@ -300,6 +300,13 @@ impl ChangeLogBuilder {
         self
     }
 
+    /// Add the package root to the configuration
+    pub fn with_package_root(&mut self, pkg_root: &Path) -> &mut Self {
+        self.pkg_root = pkg_root.to_path_buf();
+        log::debug!("package root set to `{}`", self.pkg_root.display());
+        self
+    }
+
     /// Analyses a Git repository to populate changelog sections and links.
     ///
     /// This method performs the core changelog generation logic:
@@ -339,7 +346,7 @@ impl ChangeLogBuilder {
     /// # Ok(())
     /// # }
     /// ```
-    pub fn with_repository(&mut self, repository: &Repository) -> Result<&mut Self, Error> {
+    pub fn walk_repository(&mut self, repository: &Repository) -> Result<&mut Self, Error> {
         self.get_remote_details(repository)?;
 
         let version_tags = self.get_version_tags(repository)?;
@@ -348,6 +355,12 @@ impl ChangeLogBuilder {
             DisplaySections::All => min((version_tags.len() + 1) as u8, u8::MAX),
             DisplaySections::One => 1,
             DisplaySections::Custom(n) => min((version_tags.len() + 1) as u8, *n),
+        };
+
+        let filter = if self.pkg_root.display().to_string() != "." {
+            Some(self.pkg_root.display().to_string())
+        } else {
+            None
         };
 
         let mut revwalk = repository.revwalk()?;
@@ -364,13 +377,13 @@ impl ChangeLogBuilder {
         // Case where no release has been made - no version tags
         if version_tags.is_empty() {
             let setup = WalkSetup::NoReleases;
-            current_section.walk_repository(&setup, repository, &mut revwalk)?;
+            current_section.walk_repository(&setup, repository, &mut revwalk, filter.as_deref())?;
             self.sections.push(current_section);
             self.set_link(&setup);
         } else {
             // get the unreleased
             let setup = WalkSetup::HeadToRelease(version_tags.first().unwrap());
-            current_section.walk_repository(&setup, repository, &mut revwalk)?;
+            current_section.walk_repository(&setup, repository, &mut revwalk, filter.as_deref())?;
             self.sections.push(current_section);
             self.set_link(&setup);
 
@@ -396,11 +409,11 @@ impl ChangeLogBuilder {
 
                 if let Some(next_tag) = next_tag {
                     let setup = WalkSetup::FromReleaseToRelease(tag, next_tag);
-                    section.walk_repository(&setup, repository, &mut revwalk)?;
+                    section.walk_repository(&setup, repository, &mut revwalk, filter.as_deref())?;
                     self.set_link(&setup);
                 } else {
                     let setup = WalkSetup::ReleaseToStart(tag);
-                    section.walk_repository(&setup, repository, &mut revwalk)?;
+                    section.walk_repository(&setup, repository, &mut revwalk, filter.as_deref())?;
                     self.set_link(&setup);
                 }
                 self.sections.push(section);
@@ -409,13 +422,6 @@ impl ChangeLogBuilder {
         }
 
         Ok(self)
-    }
-
-    /// Add the package root to the configuration
-    pub fn with_package_root(&mut self, pkg_root: &Path) -> &mut Self {
-        self.pkg_root = pkg_root.to_path_buf();
-        log::debug!("package root set to `{}`", self.pkg_root.display());
-        self
     }
 
     /// Updates the first (unreleased) section to represent the next version.
