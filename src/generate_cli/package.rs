@@ -32,6 +32,7 @@ struct Package {
 pub(crate) fn get_packages(root: &Path) -> Result<HashMap<String, PathBuf>, Error> {
     log::debug!("getting the rust packages in the repository");
     let mut packages = HashMap::new();
+    log::debug!("Starting from the root `{}`", root.display());
 
     if let Some(root_cargo) = insert_package(root, &mut packages) {
         if let Some(workspace) = root_cargo.workspace {
