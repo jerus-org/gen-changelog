@@ -1,9 +1,9 @@
 mod cc_commit;
 mod section_header;
 
-use std::{collections::BTreeMap, fmt::Display};
+use std::{collections::BTreeMap, fmt::Display, path::PathBuf};
 
-use git2::{Repository, Revwalk, TreeWalkMode, TreeWalkResult};
+use git2::{Commit, Repository, Revwalk};
 
 use crate::{
     change_log::{
@@ -111,20 +111,17 @@ impl Section {
                 continue;
             };
             if let Some(filter) = filter {
-                if let Ok(tree) = commit.tree() {
-                    let mut pass = false;
-                    log::debug!("Testing for `{filter}` in tree `{}`", tree.id());
-                    tree.walk(TreeWalkMode::PreOrder, |_, entry| {
-                        if let Some(name) = entry.name() {
-                            log::trace!("Walking tree found entry named `{name}`");
-                            if name.starts_with(filter) {
-                                pass = true; // once set to true it can't be unset
-                            }
-                        }
-                        TreeWalkResult::Ok
-                    })
-                    .unwrap();
-                    log::debug!("tree in filter is `{pass}`");
+                let files = self.files(&commit, repository);
+
+                let mut pass = false;
+                for file in files {
+                    log::debug!("Test `{}`", file.display());
+
+                    if file.display().to_string().starts_with(filter) {
+                        pass = true; // once set to true it can't be unset
+                    }
+
+                    log::debug!("filter has `{}`", if pass { "passed" } else { "failed" });
                     if !pass {
                         continue;
                     }
@@ -139,6 +136,31 @@ impl Section {
         }
 
         self
+    }
+
+    pub(crate) fn files(&self, commit: &Commit, repository: &Repository) -> Vec<PathBuf> {
+        let mut diff_files = vec![];
+
+        let a = if commit.parents().len() == 1 {
+            let parent = commit.parent(0).unwrap();
+            Some(parent.tree().unwrap())
+        } else {
+            None
+        };
+        let b = commit.tree().unwrap();
+        let diff = repository
+            .diff_tree_to_tree(a.as_ref(), Some(&b), None)
+            .unwrap();
+        let ds = diff.deltas();
+        for d in ds {
+            let file_name = d.new_file().path().unwrap().to_owned();
+            // .unwrap().to_str().unwrap().to_owned()
+            if !file_name.starts_with("master") {
+                diff_files.push(file_name);
+            }
+        }
+
+        diff_files
     }
 
     fn add_commit_to_hashmap(&mut self, class: &str, commit: ConvCommit) {
