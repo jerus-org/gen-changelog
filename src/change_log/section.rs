@@ -111,20 +111,19 @@ impl Section {
                 continue;
             };
             if let Some(filter) = filter {
-                let files = self.files(&commit, repository);
-
                 let mut pass = false;
-                for file in files {
+
+                for file in self.files(&commit, repository) {
                     log::debug!("Test `{}`", file.display());
 
                     if file.display().to_string().starts_with(filter) {
                         pass = true; // once set to true it can't be unset
                     }
+                }
 
-                    log::debug!("filter has `{}`", if pass { "passed" } else { "failed" });
-                    if !pass {
-                        continue;
-                    }
+                log::debug!("filter has `{}`", if pass { "passed" } else { "failed" });
+                if !pass {
+                    continue;
                 }
             }
             let summary = commit.summary();
