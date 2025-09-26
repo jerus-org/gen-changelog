@@ -44,7 +44,6 @@ impl GenerateCli {
 
         let packages = package::get_packages(&repo_dir)?;
         log::debug!("{packages:?}");
-
         let pkg_root = if let Some(p) = &self.package {
             packages
                 .get(p)
@@ -61,9 +60,9 @@ impl GenerateCli {
         let change_log = change_log_builder
             .with_config(config)
             .with_summary_flag(self.display_summaries)
-            .with_repository(&repository)
-            .unwrap()
             .with_package_root(&pkg_root)
+            .walk_repository(&repository)
+            .unwrap()
             .update_unreleased_to_next_version(self.next_version.as_ref())
             .build();
 
