@@ -11,15 +11,15 @@ pub(crate) struct GenerateCli {
     /// The next version number for unreleased changes
     #[arg(short, long)]
     next_version: Option<String>,
-    /// The number of level 2 headings to show in the changelog
+    /// The number of level 2 headings (releases) to show in the changelog
     #[arg(short, long)]
-    sections: Option<u8>,
+    releases: Option<u8>,
     /// The number of level 2 headings to show in the changelog
     #[arg(short, long)]
     config_file: Option<String>,
     /// Path to the repository
-    #[arg(short, long, default_value = ".")]
-    repo_dir: String,
+    #[arg(long, default_value = ".")]
+    repository_dir: String,
     /// display summary of commits
     #[arg(short, long)]
     display_summaries: bool,
@@ -35,12 +35,15 @@ pub(crate) struct GenerateCli {
     /// do not save the changelog
     #[arg(short = 'S', long)]
     no_save: bool,
+    /// print the changelog to standard output
+    #[arg(short, long)]
+    show: bool,
 }
 
 impl GenerateCli {
     pub(crate) fn run(&self) -> Result<(), Error> {
         log::debug!("Arguments to apply: {self:#?}");
-        let repo_dir = PathBuf::new().join(&self.repo_dir);
+        let repo_dir = PathBuf::new().join(&self.repository_dir);
         log::debug!("{}", repo_dir.display());
         let repository = Repository::open(&repo_dir)
             .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
@@ -54,8 +57,6 @@ impl GenerateCli {
                 .to_path_buf();
             Some(r)
         } else {
-            // let root = &repo_dir.to_path_buf();
-            // root.to_path_buf()
             None
         };
 
@@ -74,7 +75,9 @@ impl GenerateCli {
         if !self.no_save {
             let _ = change_log.save();
         }
-        // println!("{change_log}");
+        if self.show {
+            println!("{change_log}");
+        }
         Ok(())
     }
 
@@ -87,7 +90,7 @@ impl GenerateCli {
         log::debug!("initial config to build on: {config:?}");
 
         config.publish_group("Security");
-        config.set_display_sections(self.sections);
+        config.set_display_sections(self.releases);
         config.add_commit_groups(&self.add_groups);
         config.remove_commit_groups(&self.remove_groups);
 
