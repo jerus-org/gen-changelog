@@ -3,7 +3,7 @@ mod section_header;
 
 use std::{collections::BTreeMap, fmt::Display};
 
-use git2::{Repository, Revwalk};
+use git2::{Repository, Revwalk, TreeWalkMode, TreeWalkResult};
 
 use crate::{
     change_log::{
@@ -64,12 +64,13 @@ impl Section {
         setup: &WalkSetup,
         repository: &Repository,
         revwalk: &mut Revwalk,
+        filter: Option<&str>,
     ) -> Result<&mut Self, Error> {
         match setup {
             WalkSetup::NoReleases => {
                 revwalk.push_head()?;
                 log::trace!("Walking from the HEAD to the first commit");
-                self.get_commits(revwalk, repository);
+                self.get_commits(revwalk, repository, filter);
                 log::trace!("{}", self.report_status(false));
             }
             WalkSetup::HeadToRelease(tag) => {
@@ -77,7 +78,7 @@ impl Section {
                 let reference = tag.to_string();
                 revwalk.hide_ref(&reference)?;
                 log::trace!("Walking from the HEAD to the last release `{tag}`",);
-                self.get_commits(revwalk, repository);
+                self.get_commits(revwalk, repository, filter);
                 log::trace!("{}", self.report_status(false));
             }
             WalkSetup::FromReleaseToRelease(from_tag, to_tag) => {
@@ -85,13 +86,13 @@ impl Section {
                 let reference = to_tag.to_string();
                 revwalk.hide_ref(&reference)?;
                 log::trace!("Walking from the release `{from_tag}` to release `{to_tag}`");
-                self.get_commits(revwalk, repository);
+                self.get_commits(revwalk, repository, filter);
                 log::trace!("{}", self.report_status(false));
             }
             WalkSetup::ReleaseToStart(tag) => {
                 revwalk.push(*tag.id().unwrap())?;
                 log::trace!("Walking from the first release `{tag}` to first commit");
-                self.get_commits(revwalk, repository);
+                self.get_commits(revwalk, repository, filter);
                 log::trace!("{}", self.report_status(false));
             }
         }
@@ -99,12 +100,36 @@ impl Section {
         Ok(self)
     }
 
-    fn get_commits(&mut self, revwalk: &mut Revwalk, repository: &Repository) -> &mut Self {
+    fn get_commits(
+        &mut self,
+        revwalk: &mut Revwalk,
+        repository: &Repository,
+        filter: Option<&str>,
+    ) -> &mut Self {
         for oid in revwalk.flatten() {
             let Ok(commit) = repository.find_commit(oid) else {
                 continue;
             };
-
+            if let Some(filter) = filter {
+                if let Ok(tree) = commit.tree() {
+                    let mut pass = false;
+                    log::debug!("Testing for `{filter}` in tree `{}`", tree.id());
+                    tree.walk(TreeWalkMode::PreOrder, |_, entry| {
+                        if let Some(name) = entry.name() {
+                            log::trace!("Walking tree found entry named `{name}`");
+                            if name.starts_with(filter) {
+                                pass = true; // once set to true it can't be unset
+                            }
+                        }
+                        TreeWalkResult::Ok
+                    })
+                    .unwrap();
+                    log::debug!("tree in filter is `{pass}`");
+                    if !pass {
+                        continue;
+                    }
+                }
+            }
             let summary = commit.summary();
             let body = commit.body();
             if summary.is_some() {
