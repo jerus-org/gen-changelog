@@ -45,13 +45,15 @@ impl GenerateCli {
         let packages = package::get_packages(&repo_dir)?;
         log::debug!("{packages:?}");
         let pkg_root = if let Some(p) = &self.package {
-            packages
+            let r = packages
                 .get(p)
                 .unwrap_or(&repo_dir.to_path_buf())
-                .to_path_buf()
+                .to_path_buf();
+            Some(r)
         } else {
-            let root = &repo_dir.to_path_buf();
-            root.to_path_buf()
+            // let root = &repo_dir.to_path_buf();
+            // root.to_path_buf()
+            None
         };
 
         let config = self.make_config()?;
