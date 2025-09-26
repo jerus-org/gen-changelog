@@ -306,7 +306,7 @@ impl Section {
         }
 
         if section_string.is_empty() {
-            log::warn!("Section is empty");
+            log::warn!("`{}` section is empty", self.header());
         } else {
             log::trace!("constructed section markdown: {section_string}");
         }
