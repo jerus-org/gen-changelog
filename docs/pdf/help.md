@@ -287,7 +287,7 @@ fn generate_changelog() -> Result<(), Box<dyn std::error::Error>> {
             "All notable changes to this project will be documented in this file.",
             "The format is based on Keep a Changelog."
         ])
-        .with_repository(&repo)?
+        .walk_repository(&repo)?
         .build();
     
     changelog.save()?;
@@ -314,7 +314,7 @@ fn generate_custom_changelog() -> Result<(), Box<dyn std::error::Error>> {
     let changelog = ChangeLog::builder()
         .with_config(config)
         .with_summary_flag(true)
-        .with_repository(&repo)?
+        .walk_repository(&repo)?
         .build();
     
     changelog.save()?;
@@ -334,7 +334,7 @@ fn prepare_release(version: &str) -> Result<(), Box<dyn std::error::Error>> {
     
     let changelog = ChangeLog::builder()
         .with_config(config)
-        .with_repository(&repo)?
+        .walk_repository(&repo)?
         .update_unreleased_to_next_version(Some(&version.to_string()))
         .build();
     
