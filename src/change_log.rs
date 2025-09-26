@@ -6,7 +6,7 @@ mod tag;
 use std::{
     cmp::min,
     fmt::{Debug, Display},
-    path::{Path, PathBuf},
+    path::PathBuf,
 };
 
 use git2::Repository;
@@ -17,6 +17,8 @@ use section::{Section, WalkSetup};
 use tag::Tag;
 
 use crate::{ChangeLogConfig, Error, change_log_config::DisplaySections};
+
+const CHANGELOG_FILENAME: &str = "CHANGELOG.md";
 
 /// Regular expression pattern for matching GitHub repository URLs.
 ///
@@ -58,6 +60,7 @@ pub struct ChangeLog {
     sections: Vec<Section>,
     /// Reference links used throughout the changelog
     links: Vec<Link>,
+    pkg_root: PathBuf,
 }
 
 impl ChangeLog {
@@ -109,7 +112,10 @@ impl ChangeLog {
     /// changelog.save().expect("Failed to save changelog");
     /// ```
     pub fn save(&self) -> Result<(), Error> {
-        std::fs::write("CHANGELOG.md", self.to_string().as_str())?;
+        log::debug!("package root is `{}`", self.pkg_root.display());
+        let path = self.pkg_root.join(CHANGELOG_FILENAME);
+        log::debug!("path to changelog is `{}`", path.display());
+        std::fs::write(path, self.to_string().as_str())?;
         Ok(())
     }
 }
@@ -200,7 +206,7 @@ impl ChangeLogBuilder {
         ChangeLogBuilder {
             owner: String::default(),
             repo: String::default(),
-            pkg_root: PathBuf::new().join("."),
+            pkg_root: PathBuf::new(),
             header: Header::default(),
             links: Vec::new(),
             sections: Vec::default(),
@@ -222,6 +228,7 @@ impl ChangeLogBuilder {
             header: self.header.clone(),
             sections: self.sections.clone(),
             links: self.links.clone(),
+            pkg_root: self.pkg_root.clone(),
         }
     }
 
@@ -301,8 +308,10 @@ impl ChangeLogBuilder {
     }
 
     /// Add the package root to the configuration
-    pub fn with_package_root(&mut self, pkg_root: &Path) -> &mut Self {
-        self.pkg_root = pkg_root.to_path_buf();
+    pub fn with_package_root(&mut self, pkg_root: &Option<PathBuf>) -> &mut Self {
+        if let Some(pr) = pkg_root {
+            self.pkg_root = pr.to_path_buf();
+        }
         log::debug!("package root set to `{}`", self.pkg_root.display());
         self
     }
@@ -357,7 +366,7 @@ impl ChangeLogBuilder {
             DisplaySections::Custom(n) => min((version_tags.len() + 1) as u8, *n),
         };
 
-        let filter = if self.pkg_root.display().to_string() != "." {
+        let filter = if self.pkg_root.display().to_string() != "" {
             let mut filter = self.pkg_root.display().to_string();
             filter = filter.trim_start_matches("./").to_string();
             Some(filter)
@@ -725,6 +734,7 @@ mod tests {
             header: Header::default(),
             sections: Vec::new(),
             links: Vec::new(),
+            pkg_root: PathBuf::new(),
         };
 
         let output = changelog.to_string();
@@ -785,6 +795,7 @@ mod tests {
             header: Header::default(),
             sections: Vec::new(),
             links: Vec::new(),
+            pkg_root: PathBuf::new(),
         };
 
         let cloned = changelog.clone();
