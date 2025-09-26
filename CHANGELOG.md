@@ -5,21 +5,29 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2] - 2025-09-26
+
+Summary: Changed[1], Chore[1]
+
+### Changed
+
+ - ♻️ refactor(generate_cli): optimize package root determination
+
 ## [0.1.1] - 2025-09-26
 
-Summary: Added[10], Build[1], Changed[9], Chore[9], Continuous Integration[4], Documentation[4], Fixed[2], Testing[2]
+Summary: Added[10], Build[1], Changed[9], Chore[10], Continuous Integration[4], Documentation[4], Fixed[2], Testing[2]
 
 ### Added
 
  - ✨ feat(generate_cli): add no-save option for changelog
+ - ✨ feat(change_log): add package root filtering support
+ - ✨ feat(change_log): add filter option to commit retrieval
+ - ✨ feat(change_log): add package root configuration
+ - ✨ feat(error): add NoPackageFound error variant
+ - ✨ feat(cli): add package root support in changelog generation
+ - ✨ feat(generate_cli): add package retrieval functionality
  - ✨ feat(dependencies): add new development dependencies
  - ✨ feat(cli): add config root option to generatecli
- - ✨ feat(cli): add package root support in changelog generation
- - ✨ feat(error): add NoPackageFound error variant
- - ✨ feat(change_log): add filter option to commit retrieval
- - ✨ feat(change_log): add package root filtering support
- - ✨ feat(generate_cli): add package retrieval functionality
- - ✨ feat(change_log): add package root configuration
  - ✨ feat(cli): add package option for changelog generation
 
 ### Fixed
@@ -30,14 +38,14 @@ Summary: Added[10], Build[1], Changed[9], Chore[9], Continuous Integration[4], D
 ### Changed
 
  - ♻️ refactor(cli): rename and add options in GenerateCli
- - ♻️ refactor(cli): extract config creation into separate function
- - ♻️ refactor(change_log): improve filter handling in ChangeLogBuilder
- - ♻️ refactor(generate_cli): improve package retrieval error handling
- - ♻️ refactor(section): simplify commit filtering logic
- - ♻️ refactor(generate_cli): streamline changelog generation
- - ♻️ refactor(generate_cli): streamline package root determination
  - ♻️ refactor(section): streamline file filtering logic
  - ♻️ refactor(change_log): enhance changelog path handling
+ - ♻️ refactor(generate_cli): streamline package root determination
+ - ♻️ refactor(change_log): improve filter handling in ChangeLogBuilder
+ - ♻️ refactor(section): simplify commit filtering logic
+ - ♻️ refactor(generate_cli): streamline changelog generation
+ - ♻️ refactor(generate_cli): improve package retrieval error handling
+ - ♻️ refactor(cli): extract config creation into separate function
 
 ## [0.1.0] - 2025-09-16
 
@@ -327,7 +335,8 @@ Summary: Added[62], Build[6], Changed[59], Chore[96], Continuous Integration[21]
 
 Summary: 
 
-[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/jerus-org/gen-changelog/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/jerus-org/gen-changelog/compare/v0.0.8...v0.1.0
 [0.0.8]: https://github.com/jerus-org/gen-changelog/compare/v0.0.7...v0.0.8
 [0.0.7]: https://github.com/jerus-org/gen-changelog/compare/v0.0.6...v0.0.7

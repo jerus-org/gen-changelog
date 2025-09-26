@@ -14,7 +14,7 @@ Or by configuring the dependencies manually in `Cargo.toml`:
 
 ```toml
 [dependencies]
-gen-changelog = "0.1.1"
+gen-changelog = "0.1.2"
 ```
 
 ### Core Components
