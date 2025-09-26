@@ -358,10 +358,13 @@ impl ChangeLogBuilder {
         };
 
         let filter = if self.pkg_root.display().to_string() != "." {
-            Some(self.pkg_root.display().to_string())
+            let mut filter = self.pkg_root.display().to_string();
+            filter = filter.trim_start_matches("./").to_string();
+            Some(filter)
         } else {
             None
         };
+        log::debug!("filter set to: `{filter:?}`");
 
         let mut revwalk = repository.revwalk()?;
         revwalk.set_sorting(git2::Sort::TIME)?;
