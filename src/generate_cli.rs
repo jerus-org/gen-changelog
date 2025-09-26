@@ -48,14 +48,18 @@ impl GenerateCli {
         let repository = Repository::open(&repo_dir)
             .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
 
-        let packages = package::get_packages(&repo_dir)?;
-        log::debug!("{packages:?}");
-        let pkg_root = if let Some(p) = &self.package {
-            let r = packages
-                .get(p)
-                .unwrap_or(&repo_dir.to_path_buf())
-                .to_path_buf();
-            Some(r)
+        let pkg_root = if self.package.is_some() {
+            let packages = package::get_packages(&repo_dir)?;
+            log::debug!("{packages:?}");
+            if let Some(p) = &self.package {
+                let r = packages
+                    .get(p)
+                    .unwrap_or(&repo_dir.to_path_buf())
+                    .to_path_buf();
+                Some(r)
+            } else {
+                None
+            }
         } else {
             None
         };
