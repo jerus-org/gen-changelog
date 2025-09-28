@@ -192,7 +192,7 @@ fn generate_changelog() -> Result<(), Box<dyn std::error::Error>> {
         .walk_repository(&repo)?
         .build();
     
-    changelog.save()?;
+    changelog.save("CHANGELOG.md")?;
     Ok(())
 }
 ```
@@ -219,7 +219,7 @@ fn generate_custom_changelog() -> Result<(), Box<dyn std::error::Error>> {
         .walk_repository(&repo)?
         .build();
     
-    changelog.save()?;
+    changelog.save("CHANGELOG.md")?;
     Ok(())
 }
 ```
@@ -240,7 +240,7 @@ fn prepare_release(version: &str) -> Result<(), Box<dyn std::error::Error>> {
         .update_unreleased_to_next_version(Some(&version.to_string()))
         .build();
     
-    changelog.save()?;
+    changelog.save("CHANGELOG.md")?;
     Ok(())
 }
 ```
