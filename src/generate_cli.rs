@@ -3,7 +3,7 @@ use std::path::PathBuf;
 mod package;
 
 use clap::Parser;
-use gen_changelog::{ChangeLog, ChangeLogConfig, Error};
+use gen_changelog::{ChangeLog, ChangeLogConfig, DEFAULT_CHANGELOG_FILENAME, Error};
 use git2::Repository;
 
 #[derive(Parser, Debug)]
@@ -39,7 +39,7 @@ pub(crate) struct GenerateCli {
     #[arg(short, long)]
     show: bool,
     /// name for changelog file
-    #[arg(long, default_value = "CHANGELOG.md")]
+    #[arg(long, default_value = DEFAULT_CHANGELOG_FILENAME)]
     name: String,
 }
 
@@ -80,7 +80,7 @@ impl GenerateCli {
             .build();
 
         if !self.no_save {
-            let _ = change_log.save();
+            let _ = change_log.save(&self.name);
         }
         if self.show {
             println!("{change_log}");
