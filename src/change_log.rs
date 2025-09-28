@@ -18,7 +18,8 @@ use tag::Tag;
 
 use crate::{ChangeLogConfig, Error, change_log_config::DisplaySections};
 
-const CHANGELOG_FILENAME: &str = "CHANGELOG.md";
+/// default name for the file to save the changlog.
+pub const DEFAULT_CHANGELOG_FILENAME: &str = "CHANGELOG.md";
 
 /// Regular expression pattern for matching GitHub repository URLs.
 ///
@@ -111,9 +112,9 @@ impl ChangeLog {
     /// let changelog = ChangeLog::builder().build();
     /// changelog.save().expect("Failed to save changelog");
     /// ```
-    pub fn save(&self) -> Result<(), Error> {
+    pub fn save(&self, name: &str) -> Result<(), Error> {
         log::debug!("package root is `{}`", self.pkg_root.display());
-        let path = self.pkg_root.join(CHANGELOG_FILENAME);
+        let path = self.pkg_root.join(name);
         log::debug!("path to changelog is `{}`", path.display());
         std::fs::write(path, self.to_string().as_str())?;
         Ok(())
@@ -752,7 +753,7 @@ mod tests {
         std::env::set_current_dir(temp_path).unwrap();
 
         let changelog = ChangeLog::builder().build();
-        let result = changelog.save();
+        let result = changelog.save(DEFAULT_CHANGELOG_FILENAME);
 
         // Restore original directory
         std::env::set_current_dir(original_dir).unwrap();
