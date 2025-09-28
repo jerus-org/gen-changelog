@@ -38,6 +38,9 @@ pub(crate) struct GenerateCli {
     /// print the changelog to standard output
     #[arg(short, long)]
     show: bool,
+    /// name for changelog file
+    #[arg(long, default_value = "CHANGELOG.md")]
+    name: String,
 }
 
 impl GenerateCli {
