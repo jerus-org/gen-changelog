@@ -51,7 +51,7 @@ static REMOTE: Lazy<Regex> = lazy_regex!(
 ///     .build();
 ///
 /// // Save to CHANGELOG.md
-/// changelog.save().expect("Failed to save changelog");
+/// changelog.save("CHANGELOG.md").expect("Failed to save changelog");
 /// ```
 #[derive(Debug, Clone)]
 pub struct ChangeLog {
@@ -110,7 +110,7 @@ impl ChangeLog {
     /// use gen_changelog::ChangeLog;
     ///
     /// let changelog = ChangeLog::builder().build();
-    /// changelog.save().expect("Failed to save changelog");
+    /// changelog.save("CHANGELOG.md").expect("Failed to save changelog");
     /// ```
     pub fn save(&self, name: &str) -> Result<(), Error> {
         log::debug!("package root is `{}`", self.pkg_root.display());
