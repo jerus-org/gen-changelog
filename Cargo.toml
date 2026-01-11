@@ -45,7 +45,7 @@ serde_test = "1.0.177"
 snapbox = "0.6.24"
 tempfile = "3.24.0"
 trycmd = "0.15.11"
-uuid = { version = "1.18.1", features = ["v4"] }
+uuid = { version = "1.19.0", features = ["v4"] }
 
 [lints.clippy]
 uninlined-format-args = "warn"
