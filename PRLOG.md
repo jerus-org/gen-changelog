@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update rust crate url to 2.5.8(pr [#166])
 - deps: update rust crate criterion to 0.8.1(pr [#169])
 - deps: update rust crate lazy-regex to 3.5.1(pr [#170])
+- deps: update rust crate tempfile to 3.24.0(pr [#171])
 
 ## [0.1.3] - 2025-09-28
 
@@ -427,6 +428,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#166]: https://github.com/jerus-org/gen-changelog/pull/166
 [#169]: https://github.com/jerus-org/gen-changelog/pull/169
 [#170]: https://github.com/jerus-org/gen-changelog/pull/170
+[#171]: https://github.com/jerus-org/gen-changelog/pull/171
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...HEAD
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/jerus-org/gen-changelog/compare/v0.1.1...v0.1.2
