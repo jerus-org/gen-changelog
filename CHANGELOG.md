@@ -5,20 +5,59 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.4] - 2026-01-11
+
+Summary: Chore[16], Continuous Integration[1], Fixed[32]
+
+### Fixed
+
+ - fix(deps): update rust crate uuid to 1.19.0 (#172)
+ - fix(deps): update rust crate uuid to 1.19.0
+ - fix(deps): update rust crate tempfile to 3.24.0 (#171)
+ - fix(deps): update rust crate tempfile to 3.24.0
+ - fix(deps): update rust crate lazy-regex to 3.5.1 (#170)
+ - fix(deps): update rust crate lazy-regex to 3.5.1
+ - fix(deps): update rust crate criterion to 0.8.1 (#169)
+ - fix(deps): update rust crate criterion to 0.8.1
+ - fix(deps): update rust crate url to 2.5.8 (#166)
+ - fix(deps): update rust crate url to 2.5.8
+ - fix(deps): update serde packages (#167)
+ - fix(deps): update serde packages
+ - fix(deps): update rust crate trycmd to 0.15.11 (#165)
+ - fix(deps): update rust crate trycmd to 0.15.11
+ - fix(deps): update rust crate toml to 0.9.11 (#164)
+ - fix(deps): update rust crate toml to 0.9.11
+ - fix(deps): update rust crate thiserror to 2.0.17 (#163)
+ - fix(deps): update rust crate thiserror to 2.0.17
+ - fix(deps): update rust crate snapbox to 0.6.24 (#162)
+ - fix(deps): update rust crate snapbox to 0.6.24
+ - fix(deps): update rust crate semver to 1.0.27 (#161)
+ - fix(deps): update rust crate semver to 1.0.27
+ - fix(deps): update rust crate log to 0.4.29 (#160)
+ - fix(deps): update rust crate log to 0.4.29
+ - fix(deps): update rust crate git2 to 0.20.3 (#159)
+ - fix(deps): update rust crate git2 to 0.20.3
+ - fix(deps): update rust crate clap to 4.5.54 (#158)
+ - fix(deps): update rust crate clap to 4.5.54
+ - fix(deps): update rust crate chrono to 0.4.42 (#157)
+ - fix(deps): update rust crate chrono to 0.4.42
+ - 🐛 fix(change_log): correct trace log placement in section.rs
+ - fix(deps): update dependency toolkit to v4
+
 ## [0.1.3] - 2025-09-28
 
-Summary: Added[2], Changed[3], Chore[1]
+Summary: Added[2], Changed[3], Chore[2]
 
 ### Added
 
- - ✨ feat(cli): add name option for changelog file
  - ✨ feat(lib): export default changelog filename
+ - ✨ feat(cli): add name option for changelog file
 
 ### Changed
 
- - ♻️ refactor(change_log): enhance changelog file handling
- - ♻️ refactor(generate_cli): use constant for changelog filename
  - ♻️ refactor(changelog): update save method to accept filename
+ - ♻️ refactor(generate_cli): use constant for changelog filename
+ - ♻️ refactor(change_log): enhance changelog file handling
 
 ## [0.1.2] - 2025-09-26
 
@@ -350,7 +389,8 @@ Summary: Added[62], Build[6], Changed[59], Chore[96], Continuous Integration[21]
 
 Summary: 
 
-[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/jerus-org/gen-changelog/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/jerus-org/gen-changelog/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/jerus-org/gen-changelog/compare/v0.0.8...v0.1.0
