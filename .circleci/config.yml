@@ -7,15 +7,15 @@ parameters:
   min-rust-version:
     type: string
     default: "1.87"
-  release-flag:
+  release_flag:
     type: boolean
     default: false
     description: "If true, the release workflow will be executed."
-  success-flag:
+  success_flag:
     type: boolean
     default: false
     description: "If true, the success pipeline will be executed."
-  validation-flag:
+  validation_flag:
     type: boolean
     default: false
     description: "If true, the validation pipeline will be executed."
@@ -34,9 +34,9 @@ workflows:
       and:
         - not:
             equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - not: << pipeline.parameters.success-flag >>
-        - not: << pipeline.parameters.release-flag >>
-        - not: << pipeline.parameters.validation-flag >>
+        - not: << pipeline.parameters.success_flag >>
+        - not: << pipeline.parameters.release_flag >>
+        - not: << pipeline.parameters.validation_flag >>
 
     jobs:
       - toolkit/choose_pipeline:
@@ -48,9 +48,9 @@ workflows:
       and:
         - not:
             equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - not: << pipeline.parameters.success-flag >>
-        - << pipeline.parameters.validation-flag >>
-        - not: << pipeline.parameters.release-flag >>
+        - not: << pipeline.parameters.success_flag >>
+        - << pipeline.parameters.validation_flag >>
+        - not: << pipeline.parameters.release_flag >>
     jobs:
       - toolkit/label:
           min_rust_version: << pipeline.parameters.min-rust-version >>
@@ -94,9 +94,9 @@ workflows:
       and:
         - not:
             equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - << pipeline.parameters.success-flag >>
-        - not: << pipeline.parameters.validation-flag >>
-        - not: << pipeline.parameters.release-flag >>
+        - << pipeline.parameters.success_flag >>
+        - not: << pipeline.parameters.validation_flag >>
+        - not: << pipeline.parameters.release_flag >>
 
     jobs:
       - toolkit/end_success
@@ -108,9 +108,9 @@ workflows:
             - and:
                 - equal: [scheduled_pipeline, << pipeline.trigger_source >>]
                 - equal: ["release check", << pipeline.schedule.name >>]
-            - << pipeline.parameters.release-flag >>
-        - not: << pipeline.parameters.success-flag >>
-        - not: << pipeline.parameters.validation-flag >>
+            - << pipeline.parameters.release_flag >>
+        - not: << pipeline.parameters.success_flag >>
+        - not: << pipeline.parameters.validation_flag >>
     jobs:
       - toolkit/save_next_version:
           min_rust_version: << pipeline.parameters.min-rust-version >>
