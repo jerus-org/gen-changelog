@@ -26,7 +26,7 @@ chrono = { version = "0.4.42", features = ["alloc"] }
 clap = { version = "4.5.54", features = ["derive"] }
 clap-verbosity-flag = "3.0.4"
 env_logger = "0.11.8"
-git2 = "0.20.2"
+git2 = "0.20.3"
 lazy-regex = "3.4.1"
 log = "0.4.27"
 semver = "1.0.26"
