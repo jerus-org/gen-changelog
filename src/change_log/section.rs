@@ -129,8 +129,10 @@ impl Section {
             let summary = commit.summary();
             let body = commit.body();
             if summary.is_some() {
-                log::trace!("Found commit with Summary:\t`{}.", summary.unwrap());
                 self.add_commit(summary, body);
+            }
+            if let Some(s) = summary {
+                log::trace!("Found commit with Summary:\t`{s}.");
             }
         }
 
