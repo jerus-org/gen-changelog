@@ -44,7 +44,7 @@ rstest = "0.26.1"
 serde_test = "1.0"
 snapbox = "0.6.24"
 tempfile = "3.22.0"
-trycmd = "0.15.10"
+trycmd = "0.15.11"
 uuid = { version = "1.18.1", features = ["v4"] }
 
 [lints.clippy]
