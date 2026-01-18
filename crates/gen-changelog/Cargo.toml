@@ -1,0 +1,63 @@
+[package]
+name = "gen-changelog"
+description = """Generate a change log based on the git commits compatible
+with keep-a-changelog and using conventional commits to categorise commits."""
+version = "0.1.4"
+license = "MIT OR Apache-2.0"
+readme = "README.md"
+keywords = ["keep-a-changelog", "conventional-commits", "changelog"]
+categories = ["development-tools", "command-line-utilities"]
+include = [
+    "**/*.rs",
+    "Cargo.toml",
+    "README.md",
+    "LICENSE-MIT",
+    "LICENSE-APACHE",
+    "CHANGELOG.md",
+    "docs",
+]
+edition.workspace = true
+authors.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+
+[dependencies]
+chrono.workspace = true
+clap.workspace = true
+clap-verbosity-flag.workspace = true
+env_logger.workspace = true
+git2.workspace = true
+lazy-regex.workspace = true
+log.workspace = true
+semver.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+titlecase.workspace = true
+toml.workspace = true
+url.workspace = true
+
+[dev-dependencies]
+copy_dir.workspace = true
+criterion.workspace = true
+rstest.workspace = true
+serde_test.workspace = true
+snapbox.workspace = true
+tempfile.workspace = true
+trycmd.workspace = true
+uuid.workspace = true
+
+[lints]
+workspace = true
+
+[lib]
+name = "gen_changelog"
+path = "src/lib.rs"
+
+[[bin]]
+name = "gen-changelog"
+path = "src/main.rs"
+
+[[bench]]
+name = "config_log"
+harness = false

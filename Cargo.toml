@@ -1,27 +1,14 @@
-[package]
-name = "gen-changelog"
-description = """Generate a change log based on the git commits compatible
-with keep-a-changelog and using conventional commits to categorise commits."""
-version = "0.1.4"
-authors = ["Jeremiah Russell <jrussell@jerus.ie>"]
-edition = "2024"
-rust-version = "1.87"
-keywords = ["keep-a-changelog", "conventional-commits", "changelog"]
-categories = ["development-tools", "command-line-utilities"]
-license = "MIT OR Apache-2.0"
-readme = "README.md"
-repository = "https://github.com/jerus-org/gen-changelog"
-include = [
-    "**/*.rs",
-    "Cargo.toml",
-    "README.md",
-    "LICENSE-MIT",
-    "LICENSE-APACHE",
-    "CHANGELOG.md",
-    "docs",
-]
+[workspace]
+members = ["crates/gen-changelog"]
+resolver = "2"
 
-[dependencies]
+[workspace.package]
+edition = "2024"
+authors = ["Jeremiah Russell <jrussell@jerus.ie>"]
+rust-version = "1.87"
+repository = "https://github.com/jerus-org/gen-changelog"
+
+[workspace.dependencies]
 chrono = { version = "0.4.42", features = ["alloc"] }
 clap = { version = "4.5.54", features = ["derive"] }
 clap-verbosity-flag = "3.0.4"
@@ -37,7 +24,7 @@ titlecase = "3.6.0"
 toml = { version = "0.9.11", features = ["serde", "display"] }
 url = "2.5.8"
 
-[dev-dependencies]
+# Dev dependencies
 copy_dir = "0.1.3"
 criterion = "0.8.1"
 rstest = "0.26.1"
@@ -47,21 +34,9 @@ tempfile = "3.24.0"
 trycmd = "0.15.11"
 uuid = { version = "1.19.0", features = ["v4"] }
 
-[lints.clippy]
+[workspace.lints.clippy]
 uninlined-format-args = "warn"
 unnecessary_semicolon = "warn"
 
-[lints.rust]
+[workspace.lints.rust]
 dead-code = "allow" # allow temporarily while developing initial code
-
-[lib]
-name = "gen_changelog"
-path = "src/lib.rs"
-
-[[bin]]
-name = "gen-changelog"
-path = "src/main.rs"
-
-[[bench]]
-name = "config_log"
-harness = false

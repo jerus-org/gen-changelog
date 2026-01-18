@@ -1,0 +1,8 @@
+pre-release-commit-message = "chore: Release gen-changelog v{{version}}"
+tag-message = "{{tag_name}}"
+tag-name = "gen-changelog-v{{version}}"
+pre-release-hook = ["./release-hook.sh"]
+pre-release-replacements = [
+    { file = "README.md", search = "gen-changelog = \"\\d+\\.\\d+\\.\\d+\"", replace = "gen-changelog = \"{{version}}\"", min = 0 },
+    { file = "src/lib.rs", search = "gen-changelog = \"\\d+\\.\\d+\\.\\d+\"", replace = "gen-changelog = \"{{version}}\"", min = 0 },
+]
