@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - chore-add deny.toml for cargo-deny(pr [#174])
+- refactor-convert to workspace structure(pr [#175])
 
 ## [0.1.4] - 2026-01-11
 
@@ -438,6 +439,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#171]: https://github.com/jerus-org/gen-changelog/pull/171
 [#172]: https://github.com/jerus-org/gen-changelog/pull/172
 [#174]: https://github.com/jerus-org/gen-changelog/pull/174
+[#175]: https://github.com/jerus-org/gen-changelog/pull/175
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
