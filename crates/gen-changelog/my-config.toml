@@ -1,0 +1,101 @@
+# Group tables define the third-level headings used to organize commits in the changelog.
+# Each group has the following properties:
+#   - name: Display name for the group (should match the table name)
+#   - publish: Controls whether this group appears in the published changelog
+#   - cc-types: Array of conventional commit types that belong to this group
+#
+# To add a new group:
+#   1. Copy an existing group table
+#   2. Update the table name (e.g., [groups.MyGroup])
+#   3. Set the name field to match the table name
+#   4. Add the appropriate conventional commit types to cc-types
+#
+# Example:
+# [groups.MyGroup]
+# name = "MyGroup"
+# publish = true
+# cc-types = ["mygroup"]
+# 
+# Note: Each commit type should only belong to one group.
+[groups.Removed]
+name = "Removed"
+publish = false
+cc-types = ["removed"]
+
+[groups.Chore]
+name = "Chore"
+publish = false
+cc-types = ["chore"]
+
+[groups.Fixed]
+name = "Fixed"
+publish = true
+cc-types = ["fix"]
+
+[groups.Added]
+name = "Added"
+publish = true
+cc-types = ["feat"]
+
+[groups.Testing]
+name = "Testing"
+publish = false
+cc-types = ["test"]
+
+[groups.Security]
+name = "Security"
+publish = false
+cc-types = [
+    "dependency",
+    "security",
+]
+
+[groups.Documentation]
+name = "Documentation"
+publish = false
+cc-types = [
+    "doc",
+    "docs",
+]
+
+[groups.Deprecated]
+name = "Deprecated"
+publish = false
+cc-types = ["deprecated"]
+
+[groups.Miscellaneous]
+name = "Miscellaneous"
+publish = false
+cc-types = ["misc"]
+
+[groups.Build]
+name = "Build"
+publish = false
+cc-types = ["build"]
+
+[groups.Changed]
+name = "Changed"
+publish = true
+cc-types = ["refactor"]
+
+[groups."Continuous Integration"]
+name = "Continuous Integration"
+publish = false
+cc-types = ["ci"]
+
+# Defines the display order of groups in the changelog.
+# Groups are listed with their priority values (lower numbers appear first).
+# Only groups that should be displayed need to be included here.
+[headings]
+Added = 1
+Changed = 3
+Fixed = 2
+Security = 4
+
+# Controls the number of changelog sections to display.
+# Each section represents a second-level heading and can be either:
+#   - "unreleased" for pending changes
+#   - A version number for released versions
+# This setting limits the changelog to show only the most recent releases.
+[display-sections]
+variant = "all"
