@@ -17,37 +17,32 @@
 # cc-types = ["mygroup"]
 # 
 # Note: Each commit type should only belong to one group.
-[groups.Removed]
-name = "Removed"
+[groups.Build]
+name = "Build"
 publish = false
-cc-types = ["removed"]
+cc-types = ["build"]
 
 [groups.Chore]
 name = "Chore"
 publish = false
 cc-types = ["chore"]
 
-[groups.Fixed]
-name = "Fixed"
-publish = true
-cc-types = ["fix"]
-
 [groups.Added]
 name = "Added"
 publish = true
 cc-types = ["feat"]
 
-[groups.Testing]
-name = "Testing"
+[groups."Continuous Integration"]
+name = "Continuous Integration"
 publish = false
-cc-types = ["test"]
+cc-types = ["ci"]
 
 [groups.Security]
 name = "Security"
 publish = false
 cc-types = [
-    "dependency",
     "security",
+    "dependency",
 ]
 
 [groups.Documentation]
@@ -58,30 +53,35 @@ cc-types = [
     "docs",
 ]
 
-[groups.Deprecated]
-name = "Deprecated"
-publish = false
-cc-types = ["deprecated"]
+[groups.Fixed]
+name = "Fixed"
+publish = true
+cc-types = ["fix"]
 
-[groups.Miscellaneous]
-name = "Miscellaneous"
+[groups.Testing]
+name = "Testing"
 publish = false
-cc-types = ["misc"]
-
-[groups.Build]
-name = "Build"
-publish = false
-cc-types = ["build"]
+cc-types = ["test"]
 
 [groups.Changed]
 name = "Changed"
 publish = true
 cc-types = ["refactor"]
 
-[groups."Continuous Integration"]
-name = "Continuous Integration"
+[groups.Deprecated]
+name = "Deprecated"
 publish = false
-cc-types = ["ci"]
+cc-types = ["deprecated"]
+
+[groups.Removed]
+name = "Removed"
+publish = false
+cc-types = ["removed"]
+
+[groups.Miscellaneous]
+name = "Miscellaneous"
+publish = false
+cc-types = ["misc"]
 
 # Defines the display order of groups in the changelog.
 # Groups are listed with their priority values (lower numbers appear first).

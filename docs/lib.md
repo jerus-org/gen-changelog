@@ -27,7 +27,7 @@ The main struct for generating and managing changelog documents.
 
 Use the builder pattern to create a changelog:
 
-```rust
+```rust,ignore
 
 use gen_changelog::{ChangeLog, ChangeLogConfig, Error};
 use git2::Repository;

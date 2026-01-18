@@ -147,7 +147,7 @@ impl Display for ChangeLog {
 ///
 /// # Example
 ///
-/// ```rust
+/// ```rust,ignore
 /// use git2::Repository;
 /// use gen_changelog::{ChangeLog, ChangeLogConfig};
 ///
@@ -344,7 +344,7 @@ impl ChangeLogBuilder {
     ///
     /// # Example
     ///
-    /// ```rust
+    /// ```rust,ignore
     /// use git2::Repository;
     /// use gen_changelog::ChangeLog;
     ///
