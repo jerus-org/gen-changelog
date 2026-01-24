@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - chore-add deny.toml for cargo-deny(pr [#174])
 - refactor-convert to workspace structure(pr [#175])
 
+### Fixed
+
+- deps: update rust crate chrono to 0.4.43(pr [#176])
+
 ## [0.1.4] - 2026-01-11
 
 ### Fixed
@@ -440,6 +444,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#172]: https://github.com/jerus-org/gen-changelog/pull/172
 [#174]: https://github.com/jerus-org/gen-changelog/pull/174
 [#175]: https://github.com/jerus-org/gen-changelog/pull/175
+[#176]: https://github.com/jerus-org/gen-changelog/pull/176
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
