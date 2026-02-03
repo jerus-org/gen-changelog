@@ -10,7 +10,7 @@ repository = "https://github.com/jerus-org/gen-changelog"
 
 [workspace.dependencies]
 chrono = { version = "0.4.43", features = ["alloc"] }
-clap = { version = "4.5.54", features = ["derive"] }
+clap = { version = "4.5.56", features = ["derive"] }
 clap-verbosity-flag = "3.0.4"
 env_logger = "0.11.8"
 git2 = "0.20.3"
