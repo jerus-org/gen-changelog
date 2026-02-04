@@ -76,10 +76,6 @@ workflows:
             - bot-check
 
   post_merge_main:
-    filters:
-      branches:
-        only:
-          - main
     when:
       and:
         - not:
@@ -89,6 +85,10 @@ workflows:
 
     jobs:
       - toolkit/update_prlog:
+          filters:
+            branches:
+              only:
+                - main
           context:
             - release
             - bot-check
@@ -99,14 +99,14 @@ workflows:
           pcu_from_merge: --from-merge
           pcu_verbosity: -vvv
       - toolkit/label:
-          min_rust_version: << pipeline.parameters.min-rust-version >>
-          context: pcu-app
-          requires:
-            - toolkit/update_prlog
           filters:
             branches:
               only:
                 - main
+          min_rust_version: << pipeline.parameters.min-rust-version >>
+          context: pcu-app
+          requires:
+            - toolkit/update_prlog
 
   on_success:
     when:
