@@ -52,13 +52,6 @@ workflows:
         - << pipeline.parameters.validation_flag >>
         - not: << pipeline.parameters.release_flag >>
     jobs:
-      - toolkit/label:
-          min_rust_version: << pipeline.parameters.min-rust-version >>
-          context: pcu-app
-          filters:
-            branches:
-              only:
-                - main
       - toolkit/required_builds:
           min_rust_version: << pipeline.parameters.min-rust-version >>
       - toolkit/optional_builds:
@@ -71,11 +64,7 @@ workflows:
           min_rust_version: << pipeline.parameters.min-rust-version >>
       - toolkit/security:
           context: SonarCloud
-      - toolkit/update_prlog:
-          filters:
-            branches:
-              ignore:
-                - main
+      - toolkit/trigger_pipeline:
           requires:
             - toolkit/required_builds
             - toolkit/test_doc_build
@@ -85,9 +74,39 @@ workflows:
           context:
             - release
             - bot-check
-          ssh_fingerprint: << pipeline.parameters.fingerprint >>
+
+  post_merge_main:
+    filters:
+      branches:
+        only:
+          - main
+    when:
+      and:
+        - not:
+            equal: [scheduled_pipeline, << pipeline.trigger_source >>]
+        - not: << pipeline.parameters.success_flag >>
+        - not: << pipeline.parameters.release_flag >>
+
+    jobs:
+      - toolkit/update_prlog:
+          context:
+            - release
+            - bot-check
           min_rust_version: << pipeline.parameters.min-rust-version >>
-          update_pcu: false
+          ssh_fingerprint: << pipeline.parameters.fingerprint >>
+          update_log_option: halt
+          update_pcu: true
+          pcu_from_merge: --from-merge
+          pcu_verbosity: -vvv
+      - toolkit/label:
+          min_rust_version: << pipeline.parameters.min-rust-version >>
+          context: pcu-app
+          requires:
+            - toolkit/update_prlog
+          filters:
+            branches:
+              only:
+                - main
 
   on_success:
     when:
