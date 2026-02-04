@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - chore-add deny.toml for cargo-deny(pr [#174])
 - refactor-convert to workspace structure(pr [#175])
+- 👷 ci(circleci)-update circleci-toolkit orb version(pr [#182])
 
 ### Fixed
 
@@ -455,6 +456,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#179]: https://github.com/jerus-org/gen-changelog/pull/179
 [#180]: https://github.com/jerus-org/gen-changelog/pull/180
 [#181]: https://github.com/jerus-org/gen-changelog/pull/181
+[#182]: https://github.com/jerus-org/gen-changelog/pull/182
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
