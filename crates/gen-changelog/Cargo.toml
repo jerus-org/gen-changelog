@@ -22,6 +22,7 @@ rust-version.workspace = true
 repository.workspace = true
 
 [dependencies]
+cargo_toml = "0.22.3"
 chrono.workspace = true
 clap.workspace = true
 clap-verbosity-flag.workspace = true
@@ -56,7 +57,7 @@ path = "src/lib.rs"
 
 [[bin]]
 name = "gen-changelog"
-path = "src/main.rs"
+path = "src/cli/main.rs"
 
 [[bench]]
 name = "config_log"

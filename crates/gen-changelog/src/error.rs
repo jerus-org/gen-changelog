@@ -30,6 +30,9 @@ pub enum Error {
     /// Error from the toml serializer
     #[error("toml deserializer error: {0}")]
     TomlDeError(#[from] toml::de::Error),
+    /// Error from the cargo_crate
+    #[error("cargo toml error: {0}")]
+    CargoTomlError(#[from] cargo_toml::Error),
     // /// Error from the regex crate
     // #[error("Regex says: {0}")]
     // RegexError(#[from] regex::Error),

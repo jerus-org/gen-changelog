@@ -16,7 +16,7 @@ use link::Link;
 use section::{Section, WalkSetup};
 use tag::Tag;
 
-use crate::{ChangeLogConfig, Error, change_log_config::DisplaySections};
+use crate::{ChangeLogConfig, Error, change_log_config::DisplaySections, package::RustPackage};
 
 /// default name for the file to save the changelog.
 pub const DEFAULT_CHANGELOG_FILENAME: &str = "CHANGELOG.md";
@@ -170,6 +170,8 @@ pub struct ChangeLogBuilder {
     repo: String,
     /// Root of the package to process
     pkg_root: PathBuf,
+    /// Package dependencies
+    dependencies: Vec<String>,
     /// Changelog header
     header: Header,
     /// Version sections
@@ -208,6 +210,7 @@ impl ChangeLogBuilder {
             owner: String::default(),
             repo: String::default(),
             pkg_root: PathBuf::new(),
+            dependencies: Vec::new(),
             header: Header::default(),
             links: Vec::new(),
             sections: Vec::default(),
@@ -308,10 +311,11 @@ impl ChangeLogBuilder {
         self
     }
 
-    /// Add the package root to the configuration
-    pub fn with_package_root(&mut self, pkg_root: &Option<PathBuf>) -> &mut Self {
-        if let Some(pr) = pkg_root {
-            self.pkg_root = pr.to_path_buf();
+    /// Add the package root and dependencies to the configuration
+    pub fn with_rust_package(&mut self, rust_package: Option<RustPackage>) -> &mut Self {
+        if let Some(rp) = rust_package {
+            self.pkg_root = rp.root;
+            self.dependencies = rp.dependencies;
         }
         log::debug!("package root set to `{}`", self.pkg_root.display());
         self
