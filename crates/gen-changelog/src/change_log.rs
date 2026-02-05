@@ -18,7 +18,7 @@ use tag::Tag;
 
 use crate::{ChangeLogConfig, Error, change_log_config::DisplaySections};
 
-/// default name for the file to save the changlog.
+/// default name for the file to save the changelog.
 pub const DEFAULT_CHANGELOG_FILENAME: &str = "CHANGELOG.md";
 
 /// Regular expression pattern for matching GitHub repository URLs.
