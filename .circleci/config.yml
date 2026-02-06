@@ -160,8 +160,9 @@ workflows:
               only:
                 - main
           requires:
-            - toolkit/update_prlog
+            - toolkit/label
           pipeline_parameter: validation_flag
+          context: bot-check
 
   release:
     when:
