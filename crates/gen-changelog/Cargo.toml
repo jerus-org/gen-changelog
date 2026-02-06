@@ -53,7 +53,7 @@ workspace = true
 
 [lib]
 name = "gen_changelog"
-path = "src/lib.rs"
+path = "src/lib/lib.rs"
 
 [[bin]]
 name = "gen-changelog"
