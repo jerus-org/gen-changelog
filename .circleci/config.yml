@@ -44,6 +44,10 @@ workflows:
 
     jobs:
       - toolkit/choose_pipeline:
+          filters:
+            branches:
+              ignore:
+                - main
           name: choose pipeline based on committer
           context: bot-check
 
@@ -123,6 +127,12 @@ workflows:
           context: pcu-app
           requires:
             - toolkit/update_prlog
+      - toolkit/trigger_pipeline:
+          filters:
+            branches:
+              only:
+                - main
+          pipeline_parameter: validation_flag
 
   release:
     when:
