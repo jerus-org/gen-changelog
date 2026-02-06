@@ -7,6 +7,10 @@ parameters:
   min-rust-version:
     type: string
     default: "1.87"
+  post_merge_flag:
+    type: boolean
+    default: false
+    description: "If true, the post_merge workflow will be executed."
   release_flag:
     type: boolean
     default: false
@@ -38,6 +42,7 @@ workflows:
       and:
         - not:
             equal: [scheduled_pipeline, << pipeline.trigger_source >>]
+        - not: << pipeline.parameters.post_merge_flag >>
         - not: << pipeline.parameters.success_flag >>
         - not: << pipeline.parameters.release_flag >>
         - not: << pipeline.parameters.validation_flag >>
@@ -51,11 +56,32 @@ workflows:
           name: choose pipeline based on committer
           context: bot-check
 
+  check_last_commit_on_main:
+    when:
+      and:
+        - not:
+            equal: [scheduled_pipeline, << pipeline.trigger_source >>]
+        - not: << pipeline.parameters.post_merge_flag >>
+        - not: << pipeline.parameters.success_flag >>
+        - not: << pipeline.parameters.release_flag >>
+        - not: << pipeline.parameters.validation_flag >>
+
+    jobs:
+      - toolkit/choose_pipeline:
+          filters:
+            branches:
+              only:
+                - main
+          name: choose pipeline based on committer
+          pipeline_flag_test_fail: prlog_flag
+          context: bot-check
+
   validation:
     when:
       and:
         - not:
             equal: [scheduled_pipeline, << pipeline.trigger_source >>]
+        - not: << pipeline.parameters.post_merge_flag >>
         - not: << pipeline.parameters.success_flag >>
         - << pipeline.parameters.validation_flag >>
         - not: << pipeline.parameters.release_flag >>
@@ -100,6 +126,7 @@ workflows:
       and:
         - not:
             equal: [scheduled_pipeline, << pipeline.trigger_source >>]
+        - << pipeline.parameters.post_merge_flag >>
         - not: << pipeline.parameters.success_flag >>
         - not: << pipeline.parameters.release_flag >>
 
@@ -144,6 +171,7 @@ workflows:
                 - equal: [scheduled_pipeline, << pipeline.trigger_source >>]
                 - equal: ["release check", << pipeline.schedule.name >>]
             - << pipeline.parameters.release_flag >>
+        - not: << pipeline.parameters.post_merge_flag >>
         - not: << pipeline.parameters.success_flag >>
         - not: << pipeline.parameters.validation_flag >>
     jobs:
