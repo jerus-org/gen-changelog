@@ -53,8 +53,34 @@ impl RustPackage {
     ///
     /// True if any of the files changed in the commit are located in the package's directory tree.
     pub fn is_related_to_package(&self, subject: &str, files_in_commit: Vec<PathBuf>) -> bool {
-        self.is_update_to_package_dependency(subject)
-            && self.is_commit_to_package_file(files_in_commit)
+        if self.is_update_to_package_dependency(subject) {
+            if !log::log_enabled!(log::Level::Debug) {
+                log::debug!("Commit is an update to a dependency");
+            }
+            if !log::log_enabled!(log::Level::Trace) {
+                log::trace!("Commit is an update to a dependency ({subject})");
+            }
+            return true;
+        }
+
+        if self.is_commit_to_package_file(files_in_commit) {
+            if !log::log_enabled!(log::Level::Debug) {
+                log::debug!("File in package directory tree");
+            }
+            if !log::log_enabled!(log::Level::Trace) {
+                log::trace!("File in package directory tree ({})", self.root);
+            }
+            return true;
+        }
+
+        log::trace!(
+            "Commit is not related to the {} package",
+            self.root
+                .split('/')
+                .next_back()
+                .unwrap_or("***not found***")
+        );
+        false
     }
 
     fn is_update_to_package_dependency(&self, subject: &str) -> bool {
