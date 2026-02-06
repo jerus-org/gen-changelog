@@ -128,6 +128,10 @@ workflows:
           requires:
             - toolkit/update_prlog
       - toolkit/trigger_pipeline:
+          filters:
+            branches:
+              only:
+                - main
           pipeline_parameter: validation_flag
 
   release:
