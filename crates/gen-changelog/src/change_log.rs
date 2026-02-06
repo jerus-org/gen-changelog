@@ -16,9 +16,9 @@ use link::Link;
 use section::{Section, WalkSetup};
 use tag::Tag;
 
-use crate::{ChangeLogConfig, Error, change_log_config::DisplaySections};
+use crate::{ChangeLogConfig, Error, change_log_config::DisplaySections, package::RustPackage};
 
-/// default name for the file to save the changlog.
+/// default name for the file to save the changelog.
 pub const DEFAULT_CHANGELOG_FILENAME: &str = "CHANGELOG.md";
 
 /// Regular expression pattern for matching GitHub repository URLs.
@@ -168,8 +168,8 @@ pub struct ChangeLogBuilder {
     owner: String,
     /// Repository name
     repo: String,
-    /// Root of the package to process
-    pkg_root: PathBuf,
+    /// Rust Package data used to identify the correct commits for a package
+    rust_package: Option<RustPackage>,
     /// Changelog header
     header: Header,
     /// Version sections
@@ -207,7 +207,7 @@ impl ChangeLogBuilder {
         ChangeLogBuilder {
             owner: String::default(),
             repo: String::default(),
-            pkg_root: PathBuf::new(),
+            rust_package: None,
             header: Header::default(),
             links: Vec::new(),
             sections: Vec::default(),
@@ -229,7 +229,15 @@ impl ChangeLogBuilder {
             header: self.header.clone(),
             sections: self.sections.clone(),
             links: self.links.clone(),
-            pkg_root: self.pkg_root.clone(),
+            pkg_root: self.package_root(),
+        }
+    }
+
+    fn package_root(&self) -> PathBuf {
+        if let Some(rp) = &self.rust_package {
+            PathBuf::new().join(rp.root.clone())
+        } else {
+            PathBuf::new()
         }
     }
 
@@ -308,12 +316,9 @@ impl ChangeLogBuilder {
         self
     }
 
-    /// Add the package root to the configuration
-    pub fn with_package_root(&mut self, pkg_root: &Option<PathBuf>) -> &mut Self {
-        if let Some(pr) = pkg_root {
-            self.pkg_root = pr.to_path_buf();
-        }
-        log::debug!("package root set to `{}`", self.pkg_root.display());
+    /// Add the package root and dependencies to the configuration
+    pub fn with_rust_package(&mut self, rust_package: Option<RustPackage>) -> &mut Self {
+        self.rust_package = rust_package;
         self
     }
 
@@ -367,15 +372,6 @@ impl ChangeLogBuilder {
             DisplaySections::Custom(n) => min((version_tags.len() + 1) as u8, *n),
         };
 
-        let filter = if self.pkg_root.display().to_string() != "" {
-            let mut filter = self.pkg_root.display().to_string();
-            filter = filter.trim_start_matches("./").to_string();
-            Some(filter)
-        } else {
-            None
-        };
-        log::debug!("filter set to: `{filter:?}`");
-
         let mut revwalk = repository.revwalk()?;
         revwalk.set_sorting(git2::Sort::TIME)?;
         let groups_mapping = self.config.groups_mapping();
@@ -390,13 +386,23 @@ impl ChangeLogBuilder {
         // Case where no release has been made - no version tags
         if version_tags.is_empty() {
             let setup = WalkSetup::NoReleases;
-            current_section.walk_repository(&setup, repository, &mut revwalk, filter.as_deref())?;
+            current_section.walk_repository(
+                &setup,
+                repository,
+                &mut revwalk,
+                &self.rust_package,
+            )?;
             self.sections.push(current_section);
             self.set_link(&setup);
         } else {
             // get the unreleased
             let setup = WalkSetup::HeadToRelease(version_tags.first().unwrap());
-            current_section.walk_repository(&setup, repository, &mut revwalk, filter.as_deref())?;
+            current_section.walk_repository(
+                &setup,
+                repository,
+                &mut revwalk,
+                &self.rust_package,
+            )?;
             self.sections.push(current_section);
             self.set_link(&setup);
 
@@ -422,11 +428,21 @@ impl ChangeLogBuilder {
 
                 if let Some(next_tag) = next_tag {
                     let setup = WalkSetup::FromReleaseToRelease(tag, next_tag);
-                    section.walk_repository(&setup, repository, &mut revwalk, filter.as_deref())?;
+                    section.walk_repository(
+                        &setup,
+                        repository,
+                        &mut revwalk,
+                        &self.rust_package,
+                    )?;
                     self.set_link(&setup);
                 } else {
                     let setup = WalkSetup::ReleaseToStart(tag);
-                    section.walk_repository(&setup, repository, &mut revwalk, filter.as_deref())?;
+                    section.walk_repository(
+                        &setup,
+                        repository,
+                        &mut revwalk,
+                        &self.rust_package,
+                    )?;
                     self.set_link(&setup);
                 }
                 self.sections.push(section);

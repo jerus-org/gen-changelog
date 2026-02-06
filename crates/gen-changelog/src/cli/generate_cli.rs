@@ -1,10 +1,10 @@
 use std::path::PathBuf;
 
-mod package;
-
 use clap::Parser;
 use gen_changelog::{ChangeLog, ChangeLogConfig, DEFAULT_CHANGELOG_FILENAME, Error};
 use git2::Repository;
+
+use gen_changelog::RustPackages;
 
 #[derive(Parser, Debug)]
 pub(crate) struct GenerateCli {
@@ -51,15 +51,11 @@ impl GenerateCli {
         let repository = Repository::open(&repo_dir)
             .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
 
-        let pkg_root = if self.package.is_some() {
-            let packages = package::get_packages(&repo_dir)?;
+        let rust_package = if self.package.is_some() {
+            let packages = RustPackages::new(&repo_dir)?;
             log::debug!("{packages:?}");
             if let Some(p) = &self.package {
-                let r = packages
-                    .get(p)
-                    .unwrap_or(&repo_dir.to_path_buf())
-                    .to_path_buf();
-                Some(r)
+                packages.packages_by_name.get(p).cloned()
             } else {
                 None
             }
@@ -73,7 +69,7 @@ impl GenerateCli {
         let change_log = change_log_builder
             .with_config(config)
             .with_summary_flag(self.display_summaries)
-            .with_package_root(&pkg_root)
+            .with_rust_package(rust_package)
             .walk_repository(&repository)
             .unwrap()
             .update_unreleased_to_next_version(self.next_version.as_ref())
