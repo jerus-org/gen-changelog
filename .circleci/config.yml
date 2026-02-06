@@ -19,6 +19,10 @@ parameters:
     type: boolean
     default: false
     description: "If true, the validation pipeline will be executed."
+  update_pcu:
+    type: boolean
+    default: false
+    description: "If true, the pcu tool is updated from its main github branch."
 
 orbs:
   toolkit: jerus-org/circleci-toolkit@4.3.0
@@ -54,26 +58,38 @@ workflows:
     jobs:
       - toolkit/required_builds:
           min_rust_version: << pipeline.parameters.min-rust-version >>
+          requires:
+            - toolkit/security
       - toolkit/optional_builds:
+          filters:
+            branches:
+              ignore:
+                - main
           min_rust_version: << pipeline.parameters.min-rust-version >>
+          requires:
+            - toolkit/security
       - toolkit/test_doc_build:
+          filters:
+            branches:
+              ignore:
+                - main
           min_rust_version: << pipeline.parameters.min-rust-version >>
+          requires:
+            - toolkit/security
       - toolkit/common_tests:
           min_rust_version: << pipeline.parameters.min-rust-version >>
+          requires:
+            - toolkit/security
       - toolkit/idiomatic_rust:
+          filters:
+            branches:
+              ignore:
+                - main
           min_rust_version: << pipeline.parameters.min-rust-version >>
+          requires:
+            - toolkit/security
       - toolkit/security:
           context: SonarCloud
-      - toolkit/trigger_pipeline:
-          requires:
-            - toolkit/required_builds
-            - toolkit/test_doc_build
-            - toolkit/idiomatic_rust
-            - toolkit/security
-            - toolkit/common_tests
-          context:
-            - release
-            - bot-check
 
   post_merge_main:
     when:
@@ -95,7 +111,7 @@ workflows:
           min_rust_version: << pipeline.parameters.min-rust-version >>
           ssh_fingerprint: << pipeline.parameters.fingerprint >>
           update_log_option: halt
-          update_pcu: true
+          update_pcu: << pipeline.parameters.update_pcu >>
           pcu_from_merge: --from-merge
           pcu_verbosity: -vvv
       - toolkit/label:
@@ -107,18 +123,6 @@ workflows:
           context: pcu-app
           requires:
             - toolkit/update_prlog
-
-  on_success:
-    when:
-      and:
-        - not:
-            equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - << pipeline.parameters.success_flag >>
-        - not: << pipeline.parameters.validation_flag >>
-        - not: << pipeline.parameters.release_flag >>
-
-    jobs:
-      - toolkit/end_success
 
   release:
     when:
