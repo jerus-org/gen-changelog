@@ -19,7 +19,6 @@ fi
 gen-changelog generate \
     --display-summaries \
     --name "${NAME}" \
-    --package "${PACKAGE}" \
     --repository-dir "${REPO_DIR}" \
     --next-version "${VERSION}"
 
