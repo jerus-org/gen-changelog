@@ -53,7 +53,7 @@ workflows:
             branches:
               ignore:
                 - main
-          name: choose pipeline based on committer
+          name: choose pipeline based on committer for branches
           context: bot-check
 
   check_last_commit_on_main:
@@ -72,7 +72,7 @@ workflows:
             branches:
               only:
                 - main
-          name: choose pipeline based on committer
+          name: choose pipeline based on committer for main
           pipeline_flag_test_failed: prlog_flag
           context: bot-check
 
