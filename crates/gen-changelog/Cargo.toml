@@ -22,7 +22,7 @@ rust-version.workspace = true
 repository.workspace = true
 
 [dependencies]
-cargo_toml = "0.22.3"
+cargo_toml.workspace = true
 chrono.workspace = true
 clap.workspace = true
 clap-verbosity-flag.workspace = true
