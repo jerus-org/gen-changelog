@@ -132,6 +132,8 @@ workflows:
             branches:
               only:
                 - main
+          requires:
+            - toolkit/update_prlog
           pipeline_parameter: validation_flag
 
   release:
