@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 👷 ci(circleci)-update circleci-toolkit orb version(pr [#182])
 - 👷 ci(circleci)-update CI workflow configuration(pr [#183])
 - Fix/include-Cargo.lock-in--changelog-generation(pr [#184])
+- 🔧 chore(dependencies)-update workspace dependencies(pr [#185])
 
 ### Fixed
 
@@ -461,6 +462,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#182]: https://github.com/jerus-org/gen-changelog/pull/182
 [#183]: https://github.com/jerus-org/gen-changelog/pull/183
 [#184]: https://github.com/jerus-org/gen-changelog/pull/184
+[#185]: https://github.com/jerus-org/gen-changelog/pull/185
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
