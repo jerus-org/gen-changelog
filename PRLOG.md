@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 👷 ci(circleci): add post_merge_flag for conditional workflows(pr [#189])
 - 👷 ci(circleci)-update pipeline flag for main branch(pr [#190])
 - 👷 ci(circleci)-update workflow dependencies(pr [#191])
+- ♻️ refactor(gen-changelog)-remove unnecessary package argument(pr [#192])
 
 ### Fixed
 
@@ -473,6 +474,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#189]: https://github.com/jerus-org/gen-changelog/pull/189
 [#190]: https://github.com/jerus-org/gen-changelog/pull/190
 [#191]: https://github.com/jerus-org/gen-changelog/pull/191
+[#192]: https://github.com/jerus-org/gen-changelog/pull/192
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
