@@ -73,7 +73,7 @@ workflows:
               only:
                 - main
           name: choose pipeline based on committer
-          pipeline_flag_test_fail: prlog_flag
+          pipeline_flag_test_failed: prlog_flag
           context: bot-check
 
   validation:
