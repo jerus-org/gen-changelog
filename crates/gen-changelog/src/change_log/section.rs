@@ -12,6 +12,7 @@ use crate::{
         tag::Tag,
     },
     change_log_config::heading_mgmt::HeadingMgmt,
+    package::RustPackage,
 };
 
 pub(crate) enum WalkSetup<'a> {
@@ -64,13 +65,13 @@ impl Section {
         setup: &WalkSetup,
         repository: &Repository,
         revwalk: &mut Revwalk,
-        filter: Option<&str>,
+        rust_package: &Option<RustPackage>,
     ) -> Result<&mut Self, Error> {
         match setup {
             WalkSetup::NoReleases => {
                 revwalk.push_head()?;
                 log::trace!("Walking from the HEAD to the first commit");
-                self.get_commits(revwalk, repository, filter);
+                self.get_commits(revwalk, repository, rust_package);
                 log::trace!("{}", self.report_status(false));
             }
             WalkSetup::HeadToRelease(tag) => {
@@ -78,7 +79,7 @@ impl Section {
                 let reference = tag.to_string();
                 revwalk.hide_ref(&reference)?;
                 log::trace!("Walking from the HEAD to the last release `{tag}`",);
-                self.get_commits(revwalk, repository, filter);
+                self.get_commits(revwalk, repository, rust_package);
                 log::trace!("{}", self.report_status(false));
             }
             WalkSetup::FromReleaseToRelease(from_tag, to_tag) => {
@@ -86,13 +87,13 @@ impl Section {
                 let reference = to_tag.to_string();
                 revwalk.hide_ref(&reference)?;
                 log::trace!("Walking from the release `{from_tag}` to release `{to_tag}`");
-                self.get_commits(revwalk, repository, filter);
+                self.get_commits(revwalk, repository, rust_package);
                 log::trace!("{}", self.report_status(false));
             }
             WalkSetup::ReleaseToStart(tag) => {
                 revwalk.push(*tag.id().unwrap())?;
                 log::trace!("Walking from the first release `{tag}` to first commit");
-                self.get_commits(revwalk, repository, filter);
+                self.get_commits(revwalk, repository, rust_package);
                 log::trace!("{}", self.report_status(false));
             }
         }
@@ -104,29 +105,34 @@ impl Section {
         &mut self,
         revwalk: &mut Revwalk,
         repository: &Repository,
-        filter: Option<&str>,
+        rust_package: &Option<RustPackage>,
     ) -> &mut Self {
         for oid in revwalk.flatten() {
             let Ok(commit) = repository.find_commit(oid) else {
                 continue;
             };
-            if let Some(filter) = filter {
-                let mut pass = false;
 
-                for file in self.files(&commit, repository) {
-                    log::debug!("Test `{}`", file.display());
+            let summary = commit.summary();
 
-                    if file.display().to_string().starts_with(filter) {
-                        pass = true; // once set to true it can't be unset
-                    }
-                }
+            // Filter out commits not in scope for a package
+            if let Some(rp) = rust_package {
+                // We are processing a rust package and will need to filter the
+                // commits based on
+                // - the root directory
+                // - update to a dependency of the package
 
-                log::debug!("filter has `{}`", if pass { "passed" } else { "failed" });
-                if !pass {
+                let subject = summary.unwrap_or("***no subject***");
+                let files_in_commit = self.list_files_related_to_commit(&commit, repository);
+
+                if !rp.is_related_to_package(subject, files_in_commit) {
+                    log::debug!(
+                        "commit {subject} not related to crate {:?}",
+                        rp.root.split('/').next_back()
+                    );
                     continue;
                 }
             }
-            let summary = commit.summary();
+
             let body = commit.body();
             if summary.is_some() {
                 self.add_commit(summary, body);
@@ -139,7 +145,11 @@ impl Section {
         self
     }
 
-    pub(crate) fn files(&self, commit: &Commit, repository: &Repository) -> Vec<PathBuf> {
+    pub(crate) fn list_files_related_to_commit(
+        &self,
+        commit: &Commit,
+        repository: &Repository,
+    ) -> Vec<PathBuf> {
         let mut diff_files = vec![];
 
         let a = if commit.parents().len() == 1 {
