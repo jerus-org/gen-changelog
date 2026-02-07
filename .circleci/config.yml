@@ -165,7 +165,7 @@ workflows:
                 - main
           name: choose pipeline based on committer for main
           pipeline_flag_test_failed: post_merge_flag
-          pipeline_flag_test_passed:
+          pipeline_flag_test_passed: ""
           context: bot-check
 
   validation:
