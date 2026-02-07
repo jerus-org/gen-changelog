@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(gen-changelog)-remove unnecessary package argument(pr [#192])
 - ♻️ refactor(gen-changelog)-reorganize source files structure(pr [#193])
 - 👷 ci(circleci)-add pipeline control based on committer(pr [#194])
+- 👷 ci(circleci)-fix pipeline flag configuration(pr [#195])
 
 ### Fixed
 
@@ -479,6 +480,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#192]: https://github.com/jerus-org/gen-changelog/pull/192
 [#193]: https://github.com/jerus-org/gen-changelog/pull/193
 [#194]: https://github.com/jerus-org/gen-changelog/pull/194
+[#195]: https://github.com/jerus-org/gen-changelog/pull/195
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
