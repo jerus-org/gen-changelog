@@ -219,6 +219,7 @@ workflows:
             - security audit only
       - toolkit/common_tests:
           min_rust_version: << pipeline.parameters.min-rust-version >>
+          test_runner: nextest
           requires:
             - security audit only
       - toolkit/idiomatic_rust:
