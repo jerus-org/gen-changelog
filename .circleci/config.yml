@@ -178,10 +178,29 @@ workflows:
         - << pipeline.parameters.validation_flag >>
         - not: << pipeline.parameters.release_flag >>
     jobs:
+      # Signature verification for trusted PRs (with write access for comments)
+      - toolkit/verify_commit_signatures:
+          name: verify_commit_signatures_trusted
+          context: bot-check
+          post_comment: true
+          update_pcu: false
+          filters:
+            branches:
+              ignore:
+                - main
+                - /pull\/[0-9]+/
+      # Signature verification for forked PRs (read-only, no comments)
+      - toolkit/verify_commit_signatures:
+          name: verify_commit_signatures_forked
+          post_comment: false
+          update_pcu: false
+          filters:
+            branches:
+              only: /pull\/[0-9]+/
       - toolkit/required_builds:
           min_rust_version: << pipeline.parameters.min-rust-version >>
           requires:
-            - toolkit/security
+            - security audit only
       - toolkit/optional_builds:
           filters:
             branches:
@@ -189,7 +208,7 @@ workflows:
                 - main
           min_rust_version: << pipeline.parameters.min-rust-version >>
           requires:
-            - toolkit/security
+            - security audit only
       - toolkit/test_doc_build:
           filters:
             branches:
@@ -197,11 +216,12 @@ workflows:
                 - main
           min_rust_version: << pipeline.parameters.min-rust-version >>
           requires:
-            - toolkit/security
+            - security audit only
       - toolkit/common_tests:
           min_rust_version: << pipeline.parameters.min-rust-version >>
+          test_runner: nextest
           requires:
-            - toolkit/security
+            - security audit only
       - toolkit/idiomatic_rust:
           filters:
             branches:
@@ -209,9 +229,18 @@ workflows:
                 - main
           min_rust_version: << pipeline.parameters.min-rust-version >>
           requires:
-            - toolkit/security
+            - security audit only
       - toolkit/security:
+          name: security audit only
+          sonarcloud: false
+      - toolkit/security:
+          name: security with sonarcloud
           context: SonarCloud
+          filters:
+            branches:
+              ignore:
+                - /pull\/[0-9]+/
+                - main
 
   post_merge_main:
     when:
