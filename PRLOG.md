@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- add security improvements to CI(pr [#196])
+
 ### Changed
 
 - chore-add deny.toml for cargo-deny(pr [#174])
@@ -481,6 +485,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#193]: https://github.com/jerus-org/gen-changelog/pull/193
 [#194]: https://github.com/jerus-org/gen-changelog/pull/194
 [#195]: https://github.com/jerus-org/gen-changelog/pull/195
+[#196]: https://github.com/jerus-org/gen-changelog/pull/196
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
