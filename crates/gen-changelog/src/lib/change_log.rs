@@ -51,7 +51,9 @@ static REMOTE: Lazy<Regex> = lazy_regex!(
 ///     .build();
 ///
 /// // Save to CHANGELOG.md
-/// changelog.save("CHANGELOG.md").expect("Failed to save changelog");
+/// changelog
+///     .save("CHANGELOG.md")
+///     .expect("Failed to save changelog");
 /// ```
 #[derive(Debug, Clone)]
 pub struct ChangeLog {
@@ -87,7 +89,8 @@ impl ChangeLog {
         ChangeLogBuilder::new()
     }
 
-    /// Writes the changelog to a file named "CHANGELOG.md" in the current directory.
+    /// Writes the changelog to a file named "CHANGELOG.md" in the current
+    /// directory.
     ///
     /// This method serializes the entire changelog structure to markdown format
     /// and saves it to the filesystem.
@@ -110,7 +113,9 @@ impl ChangeLog {
     /// use gen_changelog::ChangeLog;
     ///
     /// let changelog = ChangeLog::builder().build();
-    /// changelog.save("CHANGELOG.md").expect("Failed to save changelog");
+    /// changelog
+    ///     .save("CHANGELOG.md")
+    ///     .expect("Failed to save changelog");
     /// ```
     pub fn save(&self, name: &str) -> Result<(), Error> {
         log::debug!("package root is `{}`", self.pkg_root.display());
@@ -176,6 +181,8 @@ pub struct ChangeLogBuilder {
     sections: Vec<Section>,
     /// Whether to include summary information
     summary_flag: bool,
+    /// Whether to include merge commits
+    include_merge_commits: bool,
     /// Reference links
     links: Vec<Link>,
     /// Configuration for changelog generation
@@ -212,6 +219,7 @@ impl ChangeLogBuilder {
             links: Vec::new(),
             sections: Vec::default(),
             summary_flag: bool::default(),
+            include_merge_commits: bool::default(),
             config: ChangeLogConfig::default(),
         }
     }
@@ -244,7 +252,8 @@ impl ChangeLogBuilder {
     /// Sets a custom configuration for changelog generation.
     ///
     /// The configuration controls various aspects of changelog generation
-    /// including section display limits, grouping rules, and formatting options.
+    /// including section display limits, grouping rules, and formatting
+    /// options.
     ///
     /// # Arguments
     ///
@@ -260,10 +269,10 @@ impl ChangeLogBuilder {
     /// use gen_changelog::{ChangeLog, ChangeLogConfig};
     ///
     /// let config = ChangeLogConfig::default();
-    /// let builder = ChangeLog::builder()
-    ///     .with_config(config);
+    /// let builder = ChangeLog::builder().with_config(config);
     /// ```
     pub fn with_config(&mut self, config: ChangeLogConfig) -> &mut Self {
+        self.include_merge_commits = config.include_merge_commits();
         self.config = config;
         log::trace!("current config: {:?}", self.config);
         self
@@ -288,11 +297,13 @@ impl ChangeLogBuilder {
     /// ```rust
     /// use gen_changelog::ChangeLog;
     ///
-    /// let builder = ChangeLog::builder()
-    ///     .with_header(
-    ///         "My Awesome Project",
-    ///         &["This project does amazing things", "Version history below"]
-    ///     );
+    /// let builder = ChangeLog::builder().with_header(
+    ///     "My Awesome Project",
+    ///     &[
+    ///         "This project does amazing things",
+    ///         "Version history below",
+    ///     ],
+    /// );
     /// ```
     pub fn with_header(&mut self, title: &str, paragraphs: &[&str]) -> &mut Self {
         self.header = Header::new(title, paragraphs);
@@ -319,6 +330,15 @@ impl ChangeLogBuilder {
     /// Add the package root and dependencies to the configuration
     pub fn with_rust_package(&mut self, rust_package: Option<RustPackage>) -> &mut Self {
         self.rust_package = rust_package;
+        self
+    }
+
+    /// Sets whether merge commits should be included in the changelog.
+    ///
+    /// Merge commits (commits with two or more parents) are excluded by
+    /// default.
+    pub fn with_include_merge_commits(&mut self, value: bool) -> &mut Self {
+        self.include_merge_commits = value;
         self
     }
 
@@ -381,6 +401,7 @@ impl ChangeLogBuilder {
             self.config.headings(),
             self.summary_flag,
             &groups_mapping,
+            self.include_merge_commits,
         );
 
         // Case where no release has been made - no version tags
@@ -422,6 +443,7 @@ impl ChangeLogBuilder {
                     self.config.headings(),
                     self.summary_flag,
                     &groups_mapping,
+                    self.include_merge_commits,
                 );
 
                 let next_tag = peekable_tags.peek();
@@ -460,7 +482,8 @@ impl ChangeLogBuilder {
     ///
     /// # Arguments
     ///
-    /// * `next_version` - Optional version string to set for the unreleased section
+    /// * `next_version` - Optional version string to set for the unreleased
+    ///   section
     ///
     /// # Returns
     ///
@@ -661,9 +684,11 @@ impl ChangeLogBuilder {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use std::fs;
+
     use tempfile::TempDir;
+
+    use super::*;
 
     /// Helper function to create a temporary directory for tests
     fn setup_temp_dir() -> TempDir {
@@ -741,8 +766,9 @@ mod tests {
         let config = ChangeLogConfig::default();
 
         builder.with_config(config);
-        // Test that the config was set (this would require PartialEq on ChangeLogConfig)
-        // For now, we just test that the method doesn't panic
+        // Test that the config was set (this would require PartialEq on
+        // ChangeLogConfig) For now, we just test that the method
+        // doesn't panic
     }
 
     #[test]
@@ -1033,8 +1059,7 @@ mod tests {
     }
 
     // Concurrency tests (if the code needs to be thread-safe)
-    use std::sync::Arc;
-    use std::thread;
+    use std::{sync::Arc, thread};
 
     #[test]
     fn test_concurrent_changelog_creation() {

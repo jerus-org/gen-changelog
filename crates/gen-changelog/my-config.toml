@@ -1,3 +1,9 @@
+# Controls whether merge commits are included in the changelog.
+# Merge commits (commits with two or more parents) are excluded by default
+# because they typically duplicate their constituent commits.
+# Set to true to include merge commits in the generated changelog.
+include-merge-commits = false
+
 # Group tables define the third-level headings used to organize commits in the changelog.
 # Each group has the following properties:
 #   - name: Display name for the group (should match the table name)
@@ -17,6 +23,34 @@
 # cc-types = ["mygroup"]
 # 
 # Note: Each commit type should only belong to one group.
+[groups.Changed]
+name = "Changed"
+publish = true
+cc-types = ["refactor"]
+
+[groups.Fixed]
+name = "Fixed"
+publish = true
+cc-types = ["fix"]
+
+[groups."Continuous Integration"]
+name = "Continuous Integration"
+publish = false
+cc-types = ["ci"]
+
+[groups.Added]
+name = "Added"
+publish = true
+cc-types = ["feat"]
+
+[groups.Security]
+name = "Security"
+publish = false
+cc-types = [
+    "security",
+    "dependency",
+]
+
 [groups.Build]
 name = "Build"
 publish = false
@@ -27,23 +61,10 @@ name = "Chore"
 publish = false
 cc-types = ["chore"]
 
-[groups.Added]
-name = "Added"
-publish = true
-cc-types = ["feat"]
-
-[groups."Continuous Integration"]
-name = "Continuous Integration"
+[groups.Testing]
+name = "Testing"
 publish = false
-cc-types = ["ci"]
-
-[groups.Security]
-name = "Security"
-publish = false
-cc-types = [
-    "security",
-    "dependency",
-]
+cc-types = ["test"]
 
 [groups.Documentation]
 name = "Documentation"
@@ -52,21 +73,6 @@ cc-types = [
     "doc",
     "docs",
 ]
-
-[groups.Fixed]
-name = "Fixed"
-publish = true
-cc-types = ["fix"]
-
-[groups.Testing]
-name = "Testing"
-publish = false
-cc-types = ["test"]
-
-[groups.Changed]
-name = "Changed"
-publish = true
-cc-types = ["refactor"]
 
 [groups.Deprecated]
 name = "Deprecated"
