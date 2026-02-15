@@ -28,6 +28,7 @@ pub(crate) struct Section {
     header: SectionHeader,
     headings: BTreeMap<u8, String>,
     summary_flag: bool,
+    include_merge_commits: bool,
     groups_mapping: BTreeMap<String, String>,
     // commits in the section by group
     commits: BTreeMap<String, Vec<ConvCommit>>,
@@ -45,6 +46,7 @@ impl Section {
         headings: &BTreeMap<u8, String>,
         summary_flag: bool,
         group_mapping: &BTreeMap<String, String>,
+        include_merge_commits: bool,
     ) -> Self {
         log::trace!("Section headings to publish: {headings:?}");
 
@@ -55,6 +57,7 @@ impl Section {
             header,
             headings: headings.to_owned(),
             summary_flag,
+            include_merge_commits,
             groups_mapping: group_mapping.to_owned(),
             commits: Default::default(),
         }
@@ -111,6 +114,15 @@ impl Section {
             let Ok(commit) = repository.find_commit(oid) else {
                 continue;
             };
+
+            // Skip merge commits unless explicitly included
+            if !self.include_merge_commits && commit.parent_count() > 1 {
+                log::debug!(
+                    "Skipping merge commit: {}",
+                    commit.summary().unwrap_or("***no subject***")
+                );
+                continue;
+            }
 
             let summary = commit.summary();
 

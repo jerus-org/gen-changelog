@@ -124,10 +124,10 @@ impl std::fmt::Display for ConvCommit {
 #[cfg(test)]
 mod tests {
 
-    use crate::test_utils::get_test_logger;
     use rstest::rstest;
 
     use super::*;
+    use crate::test_utils::get_test_logger;
 
     #[test]
     fn test_cmt_summary_parse() {

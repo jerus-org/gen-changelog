@@ -1,10 +1,8 @@
 use std::path::PathBuf;
 
 use clap::Parser;
-use gen_changelog::{ChangeLog, ChangeLogConfig, DEFAULT_CHANGELOG_FILENAME, Error};
+use gen_changelog::{ChangeLog, ChangeLogConfig, DEFAULT_CHANGELOG_FILENAME, Error, RustPackages};
 use git2::Repository;
-
-use gen_changelog::RustPackages;
 
 #[derive(Parser, Debug)]
 pub(crate) struct GenerateCli {
@@ -41,6 +39,9 @@ pub(crate) struct GenerateCli {
     /// name for changelog file
     #[arg(long, default_value = DEFAULT_CHANGELOG_FILENAME)]
     name: String,
+    /// include merge commits in the changelog
+    #[arg(long)]
+    include_merge_commits: bool,
 }
 
 impl GenerateCli {
@@ -96,6 +97,7 @@ impl GenerateCli {
         config.set_display_sections(self.releases);
         config.add_commit_groups(&self.add_groups);
         config.remove_commit_groups(&self.remove_groups);
+        config.set_include_merge_commits(self.include_merge_commits);
 
         log::debug!("{config:#?}");
         Ok(config)

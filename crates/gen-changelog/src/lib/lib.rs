@@ -12,8 +12,7 @@ mod package;
 #[cfg(test)]
 pub(crate) mod test_utils;
 
-pub use change_log::DEFAULT_CHANGELOG_FILENAME;
-pub use change_log::{ChangeLog, ChangeLogBuilder};
+pub use change_log::{ChangeLog, ChangeLogBuilder, DEFAULT_CHANGELOG_FILENAME};
 pub use change_log_config::ChangeLogConfig;
 pub use error::Error;
 pub use package::RustPackages;

@@ -1,5 +1,4 @@
 use criterion::{Criterion, criterion_group, criterion_main};
-
 use gen_changelog::ChangeLog;
 use lazy_regex::{Lazy, Regex, lazy_regex};
 
