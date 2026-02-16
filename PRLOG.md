@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - add security improvements to CI(pr [#196])
+- exclude merge commits from changelog(pr [#197])
 
 ### Changed
 
@@ -486,6 +487,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#194]: https://github.com/jerus-org/gen-changelog/pull/194
 [#195]: https://github.com/jerus-org/gen-changelog/pull/195
 [#196]: https://github.com/jerus-org/gen-changelog/pull/196
+[#197]: https://github.com/jerus-org/gen-changelog/pull/197
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
