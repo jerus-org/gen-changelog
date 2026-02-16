@@ -29,7 +29,7 @@ parameters:
     description: "If true, the pcu tool is updated from its main github branch."
 
 orbs:
-  toolkit: jerus-org/circleci-toolkit@4.3.0
+  toolkit: jerus-org/circleci-toolkit@4.4.3
 
 executors:
   rust-env:
