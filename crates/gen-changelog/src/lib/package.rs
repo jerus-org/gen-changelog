@@ -3,11 +3,10 @@ use std::{
     path::{Path, PathBuf},
 };
 
-use crate::Error;
-
 use cargo_toml::Manifest;
-
 use lazy_regex::{Lazy, Regex, lazy_regex};
+
+use crate::Error;
 
 /// Regular expression pattern for update rust crate commits.
 ///
@@ -15,12 +14,12 @@ use lazy_regex::{Lazy, Regex, lazy_regex};
 /// - `crate`: The name of the crate updated
 static CRATE: Lazy<Regex> = lazy_regex!(r"^.+update rust crate (?P<crate>[\w-]+).+$");
 
-/// A RustPackage structure that contains key data from the rust package manifest.
+/// A RustPackage structure that contains key data from the rust package
+/// manifest.
 ///
 /// A RustPackage consists of:
 /// - the root of the package source relative to the workspace
 /// - a list of the dependencies used by the package in the workspace
-///
 #[derive(Debug, Clone, Default)]
 pub struct RustPackage {
     pub root: String,
@@ -47,11 +46,13 @@ impl RustPackage {
     ///
     /// ## Update to dependency
     ///
-    /// True if the `subject` indicates an update to a crate on which this package depends.
+    /// True if the `subject` indicates an update to a crate on which this
+    /// package depends.
     ///
     /// ## Files in the package
     ///
-    /// True if any of the files changed in the commit are located in the package's directory tree.
+    /// True if any of the files changed in the commit are located in the
+    /// package's directory tree.
     pub fn is_related_to_package(&self, subject: &str, files_in_commit: Vec<PathBuf>) -> bool {
         if self.is_update_to_package_dependency(subject) {
             if !log::log_enabled!(log::Level::Debug) {
@@ -106,15 +107,14 @@ impl RustPackage {
     }
 }
 
-/// A RustPackage structure that contains key data from the rust package manifest.
+/// A RustPackage structure that contains key data from the rust package
+/// manifest.
 ///
 /// A RustPackage consists of:
 /// - the root of the package source relative to the workspace
 /// - a list of the dependencies used by the package in the workspace
 ///
 /// # Example
-///
-///
 #[derive(Debug, Clone)]
 pub struct RustPackages {
     /// BTreeMap of the packages in the workspace by name

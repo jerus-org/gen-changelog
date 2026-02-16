@@ -19,7 +19,8 @@ use titlecase::Titlecase;
 
 use crate::Error;
 
-/// Default groups configuration with their conventional commit types and publish flags
+/// Default groups configuration with their conventional commit types and
+/// publish flags
 const DEFAULT_GROUPS: [(&str, &[&str; 2], bool); 12] = [
     ("Added", &["feat", "feat"], true),
     ("Fixed", &["fix", "fix"], true),
@@ -74,15 +75,21 @@ const DISPLAY_SECTIONS_COMMENT: &str = r#"# Controls the number of changelog sec
 # This setting limits the changelog to show only the most recent releases.
 "#;
 
+/// Documentation comment for include-merge-commits in generated TOML
+const INCLUDE_MERGE_COMMITS_COMMENT: &str = r#"# Controls whether merge commits are included in the changelog.
+# Merge commits (commits with two or more parents) are excluded by default
+# because they typically duplicate their constituent commits.
+# Set to true to include merge commits in the generated changelog.
+"#;
+
 /// Configures how many changelog sections to display in the generated output.
 ///
-/// Each section typically represents a version or release, with the "unreleased"
-/// section containing commits since the last release.
+/// Each section typically represents a version or release, with the
+/// "unreleased" section containing commits since the last release.
 ///
 /// # Examples
 ///
 /// ```rust, ignore
-///
 /// // Show all available sections
 /// let all = DisplaySections::All;
 ///
@@ -99,9 +106,11 @@ pub(crate) enum DisplaySections {
     #[default]
     /// Display all available sections (releases and unreleased changes)
     All,
-    /// Display only the most recent section (latest release or unreleased if no releases)
+    /// Display only the most recent section (latest release or unreleased if no
+    /// releases)
     One,
-    /// Display the specified number of sections, or all sections if fewer are available
+    /// Display the specified number of sections, or all sections if fewer are
+    /// available
     Custom(u8),
 }
 
@@ -109,14 +118,14 @@ pub(crate) enum DisplaySections {
 ///
 /// This is used to filter which tags should be considered as releases
 /// when generating the changelog from Git history.
-///
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 #[serde(rename_all = "kebab-case")]
 pub enum ReleasePattern {
     /// Match tags with the specified prefix (e.g., "v" matches "v1.0.0")
     Prefix(String),
-    /// Match tags with a package-specific prefix (e.g., "pkg-v" matches "pkg-v1.0.0")
+    /// Match tags with a package-specific prefix (e.g., "pkg-v" matches
+    /// "pkg-v1.0.0")
     PackagePrefix(String),
 }
 
@@ -130,7 +139,8 @@ pub enum ReleasePattern {
 ///
 /// # Configuration File Format
 ///
-/// The configuration is typically stored in a TOML file with the following structure:
+/// The configuration is typically stored in a TOML file with the following
+/// structure:
 ///
 /// ```toml
 /// display-sections = "all"
@@ -168,9 +178,9 @@ pub enum ReleasePattern {
 pub struct ChangeLogConfig {
     /// Groups that organize conventional commit types under specific headings.
     ///
-    /// Each group maps one or more conventional commit types (like "feat", "fix")
-    /// to a display heading (like "Added", "Fixed") and controls whether that
-    /// group should be published in the changelog.
+    /// Each group maps one or more conventional commit types (like "feat",
+    /// "fix") to a display heading (like "Added", "Fixed") and controls
+    /// whether that group should be published in the changelog.
     groups: HashMap<String, Group>,
 
     /// Ordered list of headings to display in the changelog.
@@ -187,6 +197,12 @@ pub struct ChangeLogConfig {
     /// or a specific number of recent releases.
     display_sections: DisplaySections,
 
+    /// Controls whether merge commits are included in the changelog.
+    ///
+    /// Merge commits (commits with two or more parents) are excluded by default
+    /// because they typically duplicate their constituent commits.
+    include_merge_commits: bool,
+
     /// Pattern used to identify Git tags as release tags.
     ///
     /// This field is not serialized to/from configuration files and uses
@@ -196,11 +212,13 @@ pub struct ChangeLogConfig {
 }
 
 impl Default for ChangeLogConfig {
-    /// Creates a default configuration with standard conventional commit groups.
+    /// Creates a default configuration with standard conventional commit
+    /// groups.
     ///
     /// The default configuration includes:
     /// - 12 predefined groups for common conventional commit types
-    /// - Only "Added", "Fixed", "Changed", and "Security" groups are published by default
+    /// - Only "Added", "Fixed", "Changed", and "Security" groups are published
+    ///   by default
     /// - Display all sections
     /// - Use "v" prefix for release tag identification
     fn default() -> Self {
@@ -241,17 +259,20 @@ impl Default for ChangeLogConfig {
             groups,
             headings,
             display_sections: DisplaySections::default(),
+            include_merge_commits: false,
             release_pattern,
         }
     }
 }
 
 impl ChangeLogConfig {
-    /// Loads configuration from the default config file, or returns default config if file doesn't exist.
+    /// Loads configuration from the default config file, or returns default
+    /// config if file doesn't exist.
     ///
-    /// This method first checks if the default configuration file (`gen-changelog.toml`)
-    /// exists in the current directory. If it does, it loads the configuration from that file.
-    /// Otherwise, it returns the default configuration.
+    /// This method first checks if the default configuration file
+    /// (`gen-changelog.toml`) exists in the current directory. If it does,
+    /// it loads the configuration from that file. Otherwise, it returns the
+    /// default configuration.
     ///
     /// # Returns
     ///
@@ -292,7 +313,6 @@ impl ChangeLogConfig {
     /// # Examples
     ///
     /// ```rust, ignore
-    ///
     /// use std::path::PathBuf;
     /// use gen_changelog::ChangeLogConfig;
     ///
@@ -308,11 +328,12 @@ impl ChangeLogConfig {
         Ok(toml::from_str::<ChangeLogConfig>(&file)?)
     }
 
-    /// Returns a reference to the ordered headings that will be displayed in the changelog.
+    /// Returns a reference to the ordered headings that will be displayed in
+    /// the changelog.
     ///
-    /// The returned BTreeMap has priority values as keys (lower numbers = higher priority)
-    /// and heading names as values. Only headings in this map will appear in the
-    /// generated changelog.
+    /// The returned BTreeMap has priority values as keys (lower numbers =
+    /// higher priority) and heading names as values. Only headings in this
+    /// map will appear in the generated changelog.
     ///
     /// # Examples
     ///
@@ -328,7 +349,8 @@ impl ChangeLogConfig {
         &self.headings
     }
 
-    /// Returns a mapping of conventional commit types to their corresponding group names.
+    /// Returns a mapping of conventional commit types to their corresponding
+    /// group names.
     ///
     /// This creates a new BTreeMap where each key is a conventional commit type
     /// (like "feat", "fix") and each value is the group name it belongs to
@@ -360,8 +382,9 @@ impl ChangeLogConfig {
 
     /// Saves the configuration to a file or prints it to stdout.
     ///
-    /// The saved configuration includes helpful comments explaining each section.
-    /// If no filename is provided, the configuration is printed to stdout.
+    /// The saved configuration includes helpful comments explaining each
+    /// section. If no filename is provided, the configuration is printed to
+    /// stdout.
     ///
     /// # Arguments
     ///
@@ -375,7 +398,6 @@ impl ChangeLogConfig {
     /// # Examples
     ///
     /// ```rust
-    ///
     /// use gen_changelog::ChangeLogConfig;
     ///
     /// # #[allow(non_snake_case)]
@@ -404,6 +426,9 @@ impl ChangeLogConfig {
             toml_string.insert_str(idx, DISPLAY_SECTIONS_COMMENT)
         } else if let Some(idx) = toml_string.find("display-sections") {
             toml_string.insert_str(idx, DISPLAY_SECTIONS_COMMENT)
+        }
+        if let Some(idx) = toml_string.find("include-merge-commits") {
+            toml_string.insert_str(idx, INCLUDE_MERGE_COMMITS_COMMENT)
         }
 
         if let Some(f) = file {
@@ -434,7 +459,10 @@ impl ChangeLogConfig {
     /// use gen_changelog::ChangeLogConfig;
     ///
     /// let mut config = ChangeLogConfig::default();
-    /// config.add_commit_groups(&["testing".to_string(), "build".to_string()]);
+    /// config.add_commit_groups(&[
+    ///     "testing".to_string(),
+    ///     "build".to_string(),
+    /// ]);
     /// ```
     pub fn add_commit_groups(&mut self, groups: &[String]) -> &mut Self {
         for g in groups {
@@ -489,7 +517,10 @@ impl ChangeLogConfig {
     /// use gen_changelog::ChangeLogConfig;
     ///
     /// let mut config = ChangeLogConfig::default();
-    /// config.remove_commit_groups(&["chore".to_string(), "ci".to_string()]);
+    /// config.remove_commit_groups(&[
+    ///     "chore".to_string(),
+    ///     "ci".to_string(),
+    /// ]);
     /// ```
     pub fn remove_commit_groups(&mut self, groups: &[String]) -> &mut Self {
         for g in groups {
@@ -549,9 +580,8 @@ impl ChangeLogConfig {
 
     /// Returns a reference to the release pattern configuration.
     ///
-    /// The release pattern determines which Git tags are considered release tags
-    /// when generating the changelog.
-    ///
+    /// The release pattern determines which Git tags are considered release
+    /// tags when generating the changelog.
     pub fn release_pattern(&self) -> &ReleasePattern {
         &self.release_pattern
     }
@@ -568,7 +598,8 @@ impl ChangeLogConfig {
     ///
     /// # Arguments
     ///
-    /// * `value` - Optional number of sections to display. If `None`, no change is made.
+    /// * `value` - Optional number of sections to display. If `None`, no change
+    ///   is made.
     ///   - `Some(1)` sets to `DisplaySections::One`
     ///   - `Some(n)` where n > 1 sets to `DisplaySections::Custom(n)`
     ///
@@ -602,14 +633,39 @@ impl ChangeLogConfig {
         log::debug!("Display sections `{:#?}`", self.display_sections);
         self
     }
+
+    /// Returns whether merge commits should be included in the changelog.
+    ///
+    /// Merge commits (commits with two or more parents) are excluded by default
+    /// because they typically duplicate their constituent commits.
+    pub fn include_merge_commits(&self) -> bool {
+        self.include_merge_commits
+    }
+
+    /// Sets whether merge commits should be included in the changelog.
+    ///
+    /// # Arguments
+    ///
+    /// * `value` - Whether to include merge commits
+    ///
+    /// # Returns
+    ///
+    /// A mutable reference to self for method chaining
+    pub fn set_include_merge_commits(&mut self, value: bool) -> &mut Self {
+        self.include_merge_commits = value;
+        log::debug!("Include merge commits: `{}`", self.include_merge_commits);
+        self
+    }
 }
 
 #[cfg(test)]
 mod tests {
+    use std::fs;
+
+    use tempfile::TempDir;
+
     use super::*;
     use crate::test_utils::get_test_logger;
-    use std::fs;
-    use tempfile::TempDir;
 
     // Helper function to create a test config with known state
     fn create_test_config() -> ChangeLogConfig {
@@ -913,8 +969,9 @@ cc-types = ["custom"]
         let mut config = ChangeLogConfig::default();
         let initial_count = config.headings.len();
 
-        // Create a mock group (you'll need to adjust this based on your Group implementation)
-        // This is a placeholder - adjust according to your actual Group struct
+        // Create a mock group (you'll need to adjust this based on your Group
+        // implementation) This is a placeholder - adjust according to your
+        // actual Group struct
         let mock_group = Group::new_with_name_types_and_publish_flag(
             "MockGroup",
             &["mock"],
@@ -1031,7 +1088,8 @@ cc-types = ["custom"]
         let deserialized_config: ChangeLogConfig =
             toml::from_str(&toml_string).expect("Failed to deserialize");
 
-        // Compare key properties (you might need to implement PartialEq or compare manually)
+        // Compare key properties (you might need to implement PartialEq or compare
+        // manually)
         assert_eq!(
             original_config.headings.len(),
             deserialized_config.headings.len()
@@ -1061,6 +1119,57 @@ cc-types = ["custom"]
             Some(&"Continuous Integration".to_string())
         );
         assert_eq!(mapping.get("test"), Some(&"Testing".to_string()));
+    }
+
+    #[test]
+    fn test_include_merge_commits_default() {
+        let config = ChangeLogConfig::default();
+        assert!(!config.include_merge_commits());
+    }
+
+    #[test]
+    fn test_set_include_merge_commits() {
+        let mut config = ChangeLogConfig::default();
+        config.set_include_merge_commits(true);
+        assert!(config.include_merge_commits());
+
+        config.set_include_merge_commits(false);
+        assert!(!config.include_merge_commits());
+    }
+
+    #[test]
+    fn test_include_merge_commits_serialization_roundtrip() {
+        // Default (false)
+        let config = ChangeLogConfig::default();
+        let toml_string = toml::to_string(&config).expect("Failed to serialize");
+        let deserialized: ChangeLogConfig =
+            toml::from_str(&toml_string).expect("Failed to deserialize");
+        assert!(!deserialized.include_merge_commits());
+
+        // Set to true
+        let mut config = ChangeLogConfig::default();
+        config.set_include_merge_commits(true);
+        let toml_string = toml::to_string(&config).expect("Failed to serialize");
+        let deserialized: ChangeLogConfig =
+            toml::from_str(&toml_string).expect("Failed to deserialize");
+        assert!(deserialized.include_merge_commits());
+    }
+
+    #[test]
+    fn test_include_merge_commits_missing_from_toml() {
+        // Existing config files without include-merge-commits should default to false
+        let toml_content = r#"
+[groups.Added]
+name = "Added"
+publish = true
+cc-types = ["feat"]
+
+[headings]
+"Added" = 10
+"#;
+
+        let config: ChangeLogConfig = toml::from_str(toml_content).expect("Failed to deserialize");
+        assert!(!config.include_merge_commits());
     }
 
     #[test]
