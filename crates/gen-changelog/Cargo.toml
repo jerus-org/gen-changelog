@@ -62,3 +62,11 @@ path = "src/cli/main.rs"
 [[bench]]
 name = "config_log"
 harness = false
+
+[package.metadata.binstall]
+pkg-url = "{ repo }/releases/download/{ name }-v{ version }/{ name }-{ target }.tar.gz"
+pkg-fmt = "tgz"
+
+[package.metadata.binstall.signing]
+algorithm = "minisign"
+pubkey = "UNSIGNED"

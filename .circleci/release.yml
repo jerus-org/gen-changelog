@@ -1,0 +1,686 @@
+version: 2.1
+
+parameters:
+  fingerprint:
+    type: string
+    default: SHA256:OkxsH8Z6Iim6WDJBaII9eTT9aaO1f3eDc6IpsgYYPVg
+  min_rust_version:
+    type: string
+    default: "1.87"
+  gen_changelog_version:
+    type: string
+    default: ""
+    description: "Version override for gen-changelog crate (empty = auto-detect)"
+
+orbs:
+  toolkit: jerus-org/circleci-toolkit@4.4.3
+
+# Commands designed for future migration to circleci-toolkit
+# These extend existing toolkit patterns with backward-compatible parameters
+commands:
+  # Enhanced version of toolkit/get_next_version with prefix and subdir support
+  # Backward compatible: existing behavior when prefix/subdir not provided
+  get_next_version:
+    description: >
+      Calculate the next version number and save it to the NEXT_VERSION environment variable.
+      Enhanced version that supports --prefix and --subdir for crate-specific version detection.
+      When prefix/subdir are empty, behaves identically to toolkit/get_next_version.
+    parameters:
+      version:
+        type: string
+        default: ""
+        description: "Specific version number to release (overrides calculation)"
+      package:
+        type: string
+        default: ""
+        description: "Package to release and/or publish"
+      prefix:
+        type: string
+        default: ""
+        description: "Tag prefix for version detection (e.g., gen-changelog-v)"
+      subdir:
+        type: string
+        default: ""
+        description: "Subdirectory containing the crate (for monorepo support)"
+      verbosity:
+        type: string
+        default: "-q"
+        description: "Verbosity flag for nextsv command"
+    steps:
+      - run:
+          name: Calculate next version
+          command: |
+            set -eo pipefail
+
+            # If specific version provided, use it directly
+            if [ "<< parameters.version >>" != "" ]; then
+              version="<< parameters.version >>"
+              echo "Using specified version: $version"
+              echo "export NEXT_VERSION=$version" >> "$BASH_ENV"
+              echo "export SEMVER=$version" >> "$BASH_ENV"
+              exit 0
+            fi
+
+            # Build nextsv arguments
+            nextsv_args="<< parameters.verbosity >> -bn calculate"
+
+            if [ "<< parameters.package >>" != "" ]; then
+              nextsv_args="$nextsv_args --package << parameters.package >>"
+            fi
+
+            if [ "<< parameters.prefix >>" != "" ]; then
+              nextsv_args="$nextsv_args --prefix << parameters.prefix >>"
+            fi
+
+            if [ "<< parameters.subdir >>" != "" ]; then
+              nextsv_args="$nextsv_args --subdir << parameters.subdir >>"
+            fi
+
+            # Calculate version
+            version=$(nextsv $nextsv_args 2>/dev/null || echo "")
+
+            if [ -z "$version" ]; then
+              echo "No release needed"
+              version="none"
+            else
+              echo "Next version: $version"
+            fi
+
+            # Set both NEXT_VERSION (toolkit standard) and SEMVER (for make_cargo_release)
+            echo "export NEXT_VERSION=$version" >> "$BASH_ENV"
+            echo "export SEMVER=$version" >> "$BASH_ENV"
+
+  # New command: Check if version exists on crates.io
+  # Used for recovery scenarios where publish succeeded but workflow failed
+  check_crates_io_version:
+    description: >
+      Check if a version already exists on crates.io.
+      Sets SKIP_PUBLISH=true if version exists, false otherwise.
+      Used for recovery scenarios where crates.io publish succeeded but workflow failed afterward.
+    parameters:
+      package:
+        type: string
+        description: "Crate name on crates.io"
+    steps:
+      - run:
+          name: Check crates.io for << parameters.package >>
+          command: |
+            set -eo pipefail
+
+            # Use SEMVER or NEXT_VERSION (whichever is set)
+            VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
+
+            if [ "$VERSION" = "none" ]; then
+              echo "No version to check"
+              echo "export SKIP_PUBLISH=false" >> "$BASH_ENV"
+              exit 0
+            fi
+
+            USER_AGENT="circleci-toolkit/1.0 (https://github.com/jerus-org/circleci-toolkit)"
+
+            if curl -s -H "User-Agent: ${USER_AGENT}" "https://crates.io/api/v1/crates/<< parameters.package >>/versions" | \
+               jq -e ".versions[] | select(.num == \"${VERSION}\")" > /dev/null 2>&1; then
+              echo "Version ${VERSION} exists on crates.io - will skip publish"
+              echo "export SKIP_PUBLISH=true" >> "$BASH_ENV"
+            else
+              echo "Version ${VERSION} not found on crates.io - will publish"
+              echo "export SKIP_PUBLISH=false" >> "$BASH_ENV"
+            fi
+
+  # New command: Check if release tag already exists
+  # Used for recovery scenarios where tag was created but workflow failed
+  check_tag_exists:
+    description: >
+      Check if the release tag already exists.
+      Sets SKIP_RELEASE=true if tag exists, false otherwise.
+      Used for recovery scenarios where release partially succeeded.
+    parameters:
+      package:
+        type: string
+        description: "Package name (used to construct tag name)"
+    steps:
+      - run:
+          name: Check if tag exists for << parameters.package >>
+          command: |
+            set -eo pipefail
+
+            # Use SEMVER or NEXT_VERSION (whichever is set)
+            VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
+
+            if [ "$VERSION" = "none" ]; then
+              echo "No version to check"
+              echo "export SKIP_RELEASE=false" >> "$BASH_ENV"
+              exit 0
+            fi
+
+            TAG="<< parameters.package >>-v${VERSION}"
+
+            # Fetch tags from remote
+            git fetch --tags
+
+            if git tag -l "$TAG" | grep -q .; then
+              echo "Tag ${TAG} already exists - will skip release"
+              echo "export SKIP_RELEASE=true" >> "$BASH_ENV"
+            else
+              echo "Tag ${TAG} not found - will proceed with release"
+              echo "export SKIP_RELEASE=false" >> "$BASH_ENV"
+            fi
+
+  # Enhanced make_cargo_release with conditional publish support
+  # Backward compatible: publishes by default unless SKIP_PUBLISH=true or publish=false
+  # Also respects SKIP_RELEASE=true to skip entirely when tag already exists
+  make_cargo_release:
+    description: >
+      Make a release using cargo release.
+      Enhanced version that respects SKIP_PUBLISH environment variable for recovery scenarios.
+      When SKIP_PUBLISH=true, adds --no-publish flag to skip crates.io publish.
+      The publish parameter controls default behavior; SKIP_PUBLISH overrides it at runtime.
+    parameters:
+      package:
+        type: string
+        default: ""
+        description: "Package to release"
+      verbosity:
+        type: string
+        default: "-vv"
+        description: "Verbosity for cargo release"
+      publish:
+        type: boolean
+        default: true
+        description: "If true, the release will be published to crates.io"
+      no_push:
+        type: boolean
+        default: false
+        description: "Whether cargo release should push the changes"
+    steps:
+      - run:
+          name: List changes using cargo release
+          command: |
+            set -exo pipefail
+            cargo release changes
+      - run:
+          name: Execute cargo release
+          command: |
+            set -exo pipefail
+
+            # Check if release should be skipped (tag already exists)
+            if [ "$SKIP_RELEASE" = "true" ]; then
+              echo "Skipping release (tag already exists)"
+              exit 0
+            fi
+
+            # Use SEMVER or NEXT_VERSION
+            VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
+
+            if [ "$VERSION" = "none" ]; then
+              echo "No version to release - skipping"
+              exit 0
+            fi
+
+            echo "Releasing version: $VERSION"
+
+            # Build cargo release arguments
+            release_args="--execute --no-confirm --sign-tag"
+
+            if [ "<< parameters.package >>" != "" ]; then
+              release_args="$release_args --package << parameters.package >>"
+            fi
+
+            if [ "<< parameters.no_push >>" = "true" ]; then
+              release_args="$release_args --no-push"
+            fi
+
+            # Handle publish: parameter controls default, SKIP_PUBLISH overrides at runtime
+            if [ "<< parameters.publish >>" = "false" ]; then
+              release_args="$release_args --no-publish"
+              echo "Publishing disabled by parameter"
+            elif [ "$SKIP_PUBLISH" = "true" ]; then
+              release_args="$release_args --no-publish"
+              echo "Skipping publish (version already on crates.io)"
+            fi
+
+            # Map verbosity
+            case "<< parameters.verbosity >>" in
+              "-vvv"|"-vvvv")
+                release_args="-vv $release_args"
+                ;;
+            esac
+
+            cargo release $release_args "$VERSION"
+
+  # Enhanced make_github_release with package support
+  make_github_release:
+    description: >
+      Create a GitHub release using the pcu utility.
+      When package is provided, uses 'pcu release package' which derives the correct tag prefix.
+      When package is empty, uses 'pcu release version' with the specified prefix.
+    parameters:
+      prefix:
+        type: string
+        default: "v"
+        description: "Tag prefix for the release (used when package is empty)"
+      package:
+        type: string
+        default: ""
+        description: "Package name - when provided, derives tag prefix automatically"
+      verbosity:
+        type: string
+        default: "-vv"
+        description: "Verbosity for pcu command"
+      update_prlog:
+        type: boolean
+        default: false
+        description: "Update PRLOG when creating the release"
+    steps:
+      - run:
+          name: Create GitHub release
+          command: |
+            set -exo pipefail
+
+            # Use SEMVER or NEXT_VERSION
+            VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
+
+            if [ "$VERSION" = "none" ]; then
+              echo "No version to release - skipping GitHub release"
+              exit 0
+            fi
+
+            # Determine the tag name
+            if [ "<< parameters.package >>" != "" ]; then
+              TAG="<< parameters.package >>-v${VERSION}"
+            else
+              TAG="<< parameters.prefix >>${VERSION}"
+            fi
+
+            # Check if GitHub release already exists using API
+            # Extract owner/repo from git remote
+            REPO_URL=$(git remote get-url origin)
+            REPO_PATH=$(echo "$REPO_URL" | sed -E 's|.*github\.com[:/]||' | sed 's|\.git$||')
+
+            HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
+              -H "Authorization: token ${GITHUB_TOKEN}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              "https://api.github.com/repos/${REPO_PATH}/releases/tags/${TAG}")
+
+            if [ "$HTTP_STATUS" = "200" ]; then
+              echo "GitHub release ${TAG} already exists - skipping"
+              exit 0
+            fi
+            echo "GitHub release ${TAG} not found (HTTP ${HTTP_STATUS}) - will create"
+
+            pcu_args="<< parameters.verbosity >> release"
+
+            if [ "<< parameters.package >>" != "" ]; then
+              pcu_args="$pcu_args package << parameters.package >>"
+            else
+              pcu_args="$pcu_args version --prefix << parameters.prefix >>"
+            fi
+
+            if [ "<< parameters.update_prlog >>" = "true" ]; then
+              pcu_args="$pcu_args --update-prlog"
+            fi
+
+            pcu $pcu_args
+
+  # Build a release binary using cargo.
+  # Requires VERSION environment variable (skips if "none").
+  build_release_binary:
+    description: >
+      Build a release-optimised binary using cargo build --release.
+      Expects VERSION to be set in BASH_ENV; skips when VERSION is "none".
+    steps:
+      - run:
+          name: Build release binary
+          command: |
+            set -eo pipefail
+
+            VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
+
+            if [ "$VERSION" = "none" ]; then
+              echo "No version to release - skipping"
+              exit 0
+            fi
+
+            cargo build --release
+
+  # Package a binary from target/release into a .tar.gz archive.
+  # Sets ASSET_NAME in BASH_ENV for use by upload_release_asset.
+  package_binary:
+    description: >
+      Package a binary from target/release into a .tar.gz archive named
+      <binary_name>-<target>.tar.gz. Sets ASSET_NAME in BASH_ENV.
+    parameters:
+      binary_name:
+        type: string
+        description: "Name of the binary in target/release"
+      target:
+        type: string
+        default: x86_64-unknown-linux-gnu
+        description: "Rust target triple for the archive name"
+    steps:
+      - run:
+          name: Package binary as tar.gz
+          command: |
+            set -eo pipefail
+
+            VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
+
+            if [ "$VERSION" = "none" ]; then
+              echo "No version to release - skipping"
+              exit 0
+            fi
+
+            ASSET_NAME="<< parameters.binary_name >>-<< parameters.target >>.tar.gz"
+
+            tar czf "$ASSET_NAME" -C target/release "<< parameters.binary_name >>"
+            echo "Created $ASSET_NAME ($(du -h "$ASSET_NAME" | cut -f1))"
+
+            echo "export ASSET_NAME=$ASSET_NAME" >> "$BASH_ENV"
+
+  # Upload a binary asset to a GitHub release.
+  # Adapted from toolkit/upload_release_asset with release_tag parameter
+  # so it works in pipelines where CIRCLE_TAG is not set.
+  upload_release_asset:
+    description: >
+      Upload a binary asset to a GitHub release. Accepts a release_tag
+      parameter instead of relying on CIRCLE_TAG, making it usable in
+      scheduled/manual pipelines. Requires GITHUB_TOKEN environment variable.
+    parameters:
+      asset_path:
+        type: string
+        description: "Path to the asset file to upload"
+      asset_name:
+        type: string
+        default: ""
+        description: "Name for the asset in the release (defaults to filename)"
+      release_tag:
+        type: string
+        description: "Git tag identifying the GitHub release"
+      github_token_var:
+        type: env_var_name
+        default: GITHUB_TOKEN
+        description: "Environment variable containing the GitHub token"
+    steps:
+      - run:
+          name: Upload asset to GitHub release
+          command: |
+            set -eo pipefail
+
+            VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
+
+            if [ "$VERSION" = "none" ]; then
+              echo "No version to release - skipping"
+              exit 0
+            fi
+
+            ASSET_PATH="<< parameters.asset_path >>"
+            ASSET_NAME="<< parameters.asset_name >>"
+            TOKEN="${<< parameters.github_token_var >>}"
+            TAG="<< parameters.release_tag >>"
+
+            if [ -z "${ASSET_NAME}" ]; then
+              ASSET_NAME="$(basename "${ASSET_PATH}")"
+            fi
+
+            if [ ! -f "${ASSET_PATH}" ]; then
+              echo "ERROR: Asset file not found: ${ASSET_PATH}" >&2
+              exit 1
+            fi
+
+            # Derive repo slug from git remote
+            REPO_URL=$(git remote get-url origin)
+            REPO_SLUG=$(echo "$REPO_URL" | sed -E 's|.*github\.com[:/]||' | sed 's|\.git$||')
+            echo "Repository: ${REPO_SLUG}"
+            echo "Looking up release for tag ${TAG}..."
+
+            RELEASE_RESPONSE=$(curl -s -w "\n%{http_code}" \
+              -H "Authorization: Bearer ${TOKEN}" \
+              "https://api.github.com/repos/${REPO_SLUG}/releases/tags/${TAG}")
+
+            HTTP_CODE=$(echo "${RELEASE_RESPONSE}" | tail -1)
+            RELEASE_BODY=$(echo "${RELEASE_RESPONSE}" | sed '$d')
+
+            if [ "${HTTP_CODE}" != "200" ]; then
+              echo "ERROR: GitHub API returned HTTP ${HTTP_CODE}" >&2
+              echo "${RELEASE_BODY}" | jq -r '.message // .' >&2
+              exit 1
+            fi
+
+            RELEASE_ID=$(echo "${RELEASE_BODY}" | jq -r '.id')
+
+            if [ -z "${RELEASE_ID}" ] || [ "${RELEASE_ID}" = "null" ]; then
+              echo "ERROR: Could not find GitHub release for tag ${TAG}" >&2
+              exit 1
+            fi
+
+            echo "Uploading ${ASSET_NAME} to release ${RELEASE_ID}..."
+            UPLOAD_RESPONSE=$(curl -s -w "\n%{http_code}" \
+              -X POST \
+              -H "Authorization: Bearer ${TOKEN}" \
+              -H "Content-Type: application/octet-stream" \
+              "https://uploads.github.com/repos/${REPO_SLUG}/releases/${RELEASE_ID}/assets?name=${ASSET_NAME}" \
+              --data-binary "@${ASSET_PATH}")
+
+            HTTP_CODE=$(echo "${UPLOAD_RESPONSE}" | tail -1)
+            UPLOAD_BODY=$(echo "${UPLOAD_RESPONSE}" | sed '$d')
+
+            if [ "${HTTP_CODE}" != "201" ]; then
+              echo "ERROR: Upload failed with HTTP ${HTTP_CODE}" >&2
+              echo "${UPLOAD_BODY}" | jq -r '.message // .' >&2
+              exit 1
+            fi
+
+            echo "Upload complete: ${ASSET_NAME}"
+
+  # Generate an ephemeral minisign signing keypair for cargo-binstall.
+  # Exports BINSTALL_SIGNING_PUBKEY to BASH_ENV for the pre-release hook
+  # and keeps the private key at /tmp/release-signing/minisign.key for sign_binary.
+  generate_signing_key:
+    description: >
+      Generate an ephemeral minisign keypair for cargo-binstall signature verification.
+      Exports BINSTALL_SIGNING_PUBKEY to BASH_ENV (consumed by the pre-release hook
+      to update Cargo.toml). Private key persists at /tmp/release-signing/minisign.key
+      for the sign_binary command.
+    steps:
+      - run:
+          name: Generate ephemeral signing key
+          command: |
+            set -eo pipefail
+
+            VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
+            if [ "$VERSION" = "none" ]; then
+              echo "No version to release - skipping key generation"
+              exit 0
+            fi
+
+            SIGNING_DIR="/tmp/release-signing"
+            mkdir -p "$SIGNING_DIR"
+
+            rsign generate -W -p "$SIGNING_DIR/minisign.pub" -s "$SIGNING_DIR/minisign.key"
+
+            PUBKEY=$(grep -v '^untrusted' "$SIGNING_DIR/minisign.pub" | tr -d '\n')
+            echo "Generated ephemeral signing pubkey: $PUBKEY"
+
+            echo "export BINSTALL_SIGNING_PUBKEY=$PUBKEY" >> "$BASH_ENV"
+
+            rm -f "$SIGNING_DIR/minisign.pub"
+
+  # Sign a binary archive with the ephemeral minisign key generated by
+  # generate_signing_key (at /tmp/release-signing/minisign.key).
+  sign_binary:
+    description: >
+      Sign a binary archive with the ephemeral minisign key generated by
+      generate_signing_key (at /tmp/release-signing/minisign.key).
+    parameters:
+      asset_path:
+        type: string
+    steps:
+      - run:
+          name: Sign archive with rsign
+          command: |
+            set -eo pipefail
+
+            VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
+
+            if [ "$VERSION" = "none" ]; then exit 0; fi
+
+            KEY_FILE="/tmp/release-signing/minisign.key"
+            if [ ! -f "$KEY_FILE" ]; then
+              echo "ERROR: Signing key not found at $KEY_FILE" >&2
+              echo "The generate_signing_key command should have created this key" >&2
+              exit 1
+            fi
+
+            rsign sign -W \
+              -s "$KEY_FILE" \
+              -x "<< parameters.asset_path >>.sig" \
+              "<< parameters.asset_path >>"
+
+            echo "Signature created: << parameters.asset_path >>.sig"
+
+            # Discard key material
+            rm -f "$KEY_FILE"
+
+jobs:
+  tools:
+    executor:
+      name: toolkit/rust_env_rolling
+    steps:
+      - run:
+          name: Verify tools
+          command: |
+            set -ex
+            nextsv --version
+            pcu --version
+            cargo release --version
+            jq --version
+            rsign --version || echo "rsign2 not pre-installed (will install at runtime)"
+
+  # Self-assessing release job: calculates version, exits early if none needed,
+  # then runs cargo release, optionally builds/signs/uploads binary
+  release-crate:
+    parameters:
+      package:
+        type: string
+      version:
+        type: string
+        default: ""
+        description: "Specific version to release (overrides auto-detection)"
+      build_binary:
+        type: boolean
+        default: false
+        description: "Whether to build and upload a release binary"
+      binary_name:
+        type: string
+        default: ""
+        description: "Name of the binary in target/release"
+      target:
+        type: string
+        default: x86_64-unknown-linux-gnu
+        description: "Rust target triple for the archive name"
+    executor:
+      name: toolkit/rust_env_rolling
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - << pipeline.parameters.fingerprint >>
+      - run:
+          name: Remove original SSH key from agent
+          command: |
+            ssh-add -l
+            # GitHub App integration doesn't create id_rsa.pub, handle gracefully
+            if [ -f ~/.ssh/id_rsa.pub ]; then
+              ssh-add -d ~/.ssh/id_rsa.pub
+            else
+              echo "No id_rsa.pub found (GitHub App integration) - skipping removal"
+            fi
+            ssh-add -l
+      - toolkit/gpg_key
+      - toolkit/git_config
+      # Install rsign2 for binary signing (prototype: migrate to ci-container later)
+      - when:
+          condition: << parameters.build_binary >>
+          steps:
+            - run:
+                name: Install rsign2
+                command: cargo binstall -y rsign2
+      # Step 1: Detect if release needed (or use specified version)
+      - get_next_version:
+          package: << parameters.package >>
+          version: << parameters.version >>
+      # Step 2: Check crates.io for recovery scenarios
+      - check_crates_io_version:
+          package: << parameters.package >>
+      # Step 3: Check if tag already exists for recovery scenarios
+      - check_tag_exists:
+          package: << parameters.package >>
+      # Step 4: Generate ephemeral signing key (when building binaries)
+      # Must run before cargo release so BINSTALL_SIGNING_PUBKEY is available
+      # to the pre-release hook for Cargo.toml injection
+      - when:
+          condition: << parameters.build_binary >>
+          steps:
+            - generate_signing_key
+      # Step 5: Run cargo release (respects SKIP_PUBLISH and SKIP_RELEASE)
+      # The pre-release hook reads BINSTALL_SIGNING_PUBKEY to update Cargo.toml
+      - make_cargo_release:
+          package: << parameters.package >>
+          verbosity: "-vv"
+      # Step 6: Update pcu to latest version
+      - run:
+          name: Update to latest pcu
+          command: |
+            cargo install --force --git https://github.com/jerus-org/pcu --branch main
+      # Step 7: Create GitHub release
+      - make_github_release:
+          package: << parameters.package >>
+          verbosity: "-vv"
+      # Step 8: Build, sign, and upload binary (when build_binary is true)
+      - when:
+          condition: << parameters.build_binary >>
+          steps:
+            - build_release_binary
+            - package_binary:
+                binary_name: << parameters.binary_name >>
+                target: << parameters.target >>
+            - sign_binary:
+                asset_path: << parameters.binary_name >>-<< parameters.target >>.tar.gz
+            - upload_release_asset:
+                asset_path: << parameters.binary_name >>-<< parameters.target >>.tar.gz
+                release_tag: << parameters.package >>-v${VERSION}
+            - upload_release_asset:
+                asset_path: << parameters.binary_name >>-<< parameters.target >>.tar.gz.sig
+                release_tag: << parameters.package >>-v${VERSION}
+
+workflows:
+  release:
+    jobs:
+      - tools
+
+      - approve-release:
+          type: approval
+          requires: [tools]
+
+      - release-crate:
+          name: release-gen-changelog
+          requires: [approve-release]
+          package: gen-changelog
+          version: << pipeline.parameters.gen_changelog_version >>
+          build_binary: true
+          binary_name: gen-changelog
+          context:
+            - release
+            - bot-check
+
+      - toolkit/make_release:
+          requires: [release-gen-changelog]
+          context:
+            - release
+            - bot-check
+          ssh_fingerprint: << pipeline.parameters.fingerprint >>
+          min_rust_version: << pipeline.parameters.min_rust_version >>
+          when_cargo_release: false
+          when_use_workspace: false
+          pcu_update_prlog: true
+          remove_ssh_key: false
