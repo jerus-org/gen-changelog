@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - add security improvements to CI(pr [#196])
 - exclude merge commits from changelog(pr [#197])
+- add cargo-binstall release pipeline(pr [#199])
 
 ### Changed
 
@@ -490,6 +491,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#196]: https://github.com/jerus-org/gen-changelog/pull/196
 [#197]: https://github.com/jerus-org/gen-changelog/pull/197
 [#198]: https://github.com/jerus-org/gen-changelog/pull/198
+[#199]: https://github.com/jerus-org/gen-changelog/pull/199
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
