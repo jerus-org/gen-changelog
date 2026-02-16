@@ -23,3 +23,10 @@ gen-changelog generate \
     --next-version "${VERSION}"
 
 echo "Generated ${NAME} for ${PACKAGE}@${VERSION}"
+
+# Inject ephemeral signing pubkey into Cargo.toml if provided by CI
+# Key generation is handled by the CI generate_signing_key command
+if [[ -n "${BINSTALL_SIGNING_PUBKEY}" ]]; then
+    sed -i "s/pubkey = \".*\"/pubkey = \"$BINSTALL_SIGNING_PUBKEY\"/" Cargo.toml
+    echo "Cargo.toml updated with ephemeral signing key for ${PACKAGE}@${VERSION}"
+fi
