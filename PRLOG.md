@@ -41,6 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update rust crate git2 to 0.20.4(pr [#180])
 - deps: update rust crate uuid to 1.20.0(pr [#181])
 - deps: update dependency toolkit to v4.4.3(pr [#198])
+- deps: update cli test tools to v1 (major)(pr [#200])
 
 ## [0.1.4] - 2026-01-11
 
@@ -492,6 +493,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#197]: https://github.com/jerus-org/gen-changelog/pull/197
 [#198]: https://github.com/jerus-org/gen-changelog/pull/198
 [#199]: https://github.com/jerus-org/gen-changelog/pull/199
+[#200]: https://github.com/jerus-org/gen-changelog/pull/200
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
