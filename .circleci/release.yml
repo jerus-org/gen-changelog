@@ -604,7 +604,7 @@ jobs:
           steps:
             - run:
                 name: Install rsign2
-                command: cargo binstall -y rsign2
+                command: cargo install rsign2
       # Step 1: Detect if release needed (or use specified version)
       - get_next_version:
           package: << parameters.package >>
