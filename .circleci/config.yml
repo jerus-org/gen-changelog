@@ -7,14 +7,10 @@ parameters:
   min-rust-version:
     type: string
     default: "1.87"
-  post_merge_flag:
-    type: boolean
-    default: false
-    description: "If true, the post_merge workflow will be executed."
   success_flag:
     type: boolean
     default: false
-    description: "If true, the success pipeline will be executed."
+    description: "If true, the validation pipeline will be suppressed."
   validation_flag:
     type: boolean
     default: false
@@ -27,149 +23,13 @@ parameters:
 orbs:
   toolkit: jerus-org/circleci-toolkit@4.4.3
 
-executors:
-  rust-env:
-    docker:
-      - image: jerusdp/ci-rust:<<pipeline.parameters.min-rust-version>>
-commands:
-  pipeline_by_committer:
-    description: >
-      Makes a post request to the project branch pipeline endpoint to call the
-      next pipeline based on the committer of the last commit
-
-    parameters:
-      committer:
-        type: string
-        description: The name of the bot to check for
-      branch:
-        type: env_var_name
-        default: CIRCLE_BRANCH
-        description: The branch for the pipeline
-      pipeline_flag_if_not:
-        type: string
-        description: The pipeline flag to set if the last commit was not by the committer
-      pipeline_flag_if:
-        type: string
-        description: The pipeline flag to set if the last commit was by the committer
-    steps:
-      - run:
-          name: Check if last commit made by bot
-          command: |
-            committer=$(git log -1 HEAD --pretty=format:%cn)
-            PROJECT_SLUG="gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
-            BODY='{"branch":"'
-            BODY+=${<< parameters.branch >>}
-            if [[ "$committer" == "<< parameters.committer >>" ]]; then
-              echo "Last committer is the bot"
-              if [[ "" == "<< parameters.pipeline_flag_if >>" ]]; then
-                echo "No flag to set; workflows end."
-              else 
-                BODY+='","parameters":{"<< parameters.pipeline_flag_if >>":true}}'
-                echo $BODY
-                curl -u ${CIRCLE_TOKEN}: \
-                  -X POST \
-                  --header 'content-type: application/json' \
-                  -d $BODY \
-                  https://circleci.com/api/v2/project/$PROJECT_SLUG/pipeline
-              fi
-            else
-              echo "Last committer is not the bot"
-              if [[ "" == "<< parameters.pipeline_flag_if_not >>" ]]; then
-                echo "No flag to set; workflows end."
-              else 
-                BODY+='","parameters":{"<< parameters.pipeline_flag_if_not >>":true}}'
-                echo $BODY
-                curl -u ${CIRCLE_TOKEN}: \
-                  -X POST \
-                  --header 'content-type: application/json' \
-                  -d $BODY \
-                  https://circleci.com/api/v2/project/$PROJECT_SLUG/pipeline
-              fi
-            fi
-
-jobs:
-  choose_pipeline:
-    description: >
-      Check if the last commit was made by a bot and if so cancel the workflow
-
-    executor:
-      name: toolkit/base_env
-
-    parameters:
-      criterion:
-        type: enum
-        enum: ["committer"]
-        default: "committer"
-        description: The criterion to use to select between pipeline options
-      committer:
-        type: string
-        default: "Jerus Bot"
-        description: The name of the bot to check for
-      pipeline_flag_test_failed:
-        type: string
-        default: "validation_flag"
-        description: The pipeline flag to set if the test failed
-      pipeline_flag_test_passed:
-        type: string
-        default: "success_flag"
-        description: The pipeline flag to set if the test passed
-    steps:
-      - checkout
-      - when:
-          condition: << parameters.criterion >> == "committer"
-          steps:
-            - pipeline_by_committer:
-                committer: "<< parameters.committer >>"
-                pipeline_flag_if_not: "<< parameters.pipeline_flag_test_failed >>"
-                pipeline_flag_if: "<< parameters.pipeline_flag_test_passed >>"
-
 workflows:
-  check_last_commit:
-    when:
-      and:
-        - not:
-            equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - not: << pipeline.parameters.post_merge_flag >>
-        - not: << pipeline.parameters.success_flag >>
-        - not: << pipeline.parameters.validation_flag >>
-
-    jobs:
-      - toolkit/choose_pipeline:
-          filters:
-            branches:
-              ignore:
-                - main
-          name: choose pipeline based on committer for branches
-          context: bot-check
-
-  check_last_commit_on_main:
-    when:
-      and:
-        - not:
-            equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - not: << pipeline.parameters.post_merge_flag >>
-        - not: << pipeline.parameters.success_flag >>
-        - not: << pipeline.parameters.validation_flag >>
-
-    jobs:
-      - choose_pipeline:
-          filters:
-            branches:
-              only:
-                - main
-          name: choose pipeline based on committer for main
-          pipeline_flag_test_failed: post_merge_flag
-          pipeline_flag_test_passed: ""
-          context: bot-check
-
   validation:
     when:
       and:
         - not:
             equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - not: << pipeline.parameters.post_merge_flag >>
         - not: << pipeline.parameters.success_flag >>
-        - << pipeline.parameters.validation_flag >>
     jobs:
       # Signature verification for trusted PRs (with write access for comments)
       - toolkit/verify_commit_signatures:
@@ -235,44 +95,3 @@ workflows:
                 - /pull\/[0-9]+/
                 - main
 
-  post_merge_main:
-    when:
-      and:
-        - not:
-            equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - << pipeline.parameters.post_merge_flag >>
-        - not: << pipeline.parameters.success_flag >>
-
-    jobs:
-      - toolkit/update_prlog:
-          filters:
-            branches:
-              only:
-                - main
-          context:
-            - release
-            - bot-check
-          min_rust_version: << pipeline.parameters.min-rust-version >>
-          ssh_fingerprint: << pipeline.parameters.fingerprint >>
-          update_log_option: halt
-          update_pcu: << pipeline.parameters.update_pcu >>
-          pcu_from_merge: --from-merge
-          pcu_verbosity: -vvv
-      - toolkit/label:
-          filters:
-            branches:
-              only:
-                - main
-          min_rust_version: << pipeline.parameters.min-rust-version >>
-          context: pcu-app
-          requires:
-            - toolkit/update_prlog
-      - toolkit/trigger_pipeline:
-          filters:
-            branches:
-              only:
-                - main
-          requires:
-            - toolkit/label
-          pipeline_parameter: validation_flag
-          context: bot-check
