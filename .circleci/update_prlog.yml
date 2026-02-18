@@ -73,8 +73,21 @@ jobs:
       - run:
           name: Update PRLOG or halt
           command: |
-            set -ex
-            result=$(pcu -vvv pr --early-exit --push --from-merge)
+            set -e
+
+            # Capture stderr separately so debug logs are visible even when
+            # the step halts (successful pipelines don't surface logs otherwise)
+            result=$(pcu -vvv pr --early-exit --push --from-merge \
+              2>/tmp/pcu_debug.log) || {
+              echo "=== pcu stderr (error) ==="
+              cat /tmp/pcu_debug.log
+              exit 1
+            }
+
+            echo "=== pcu stderr (debug) ==="
+            cat /tmp/pcu_debug.log
+            echo "=== pcu result: '$result' ==="
+
             if [ "$result" == "halt" ]; then
               circleci-agent step halt
             fi
