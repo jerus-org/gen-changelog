@@ -653,6 +653,47 @@ jobs:
                 asset_path: << parameters.binary_name >>-<< parameters.target >>.tar.gz.sig
                 release_tag: << parameters.package >>-v${VERSION}
 
+  # Self-assessing workspace release job: calculates next v* version, exits early
+  # if none needed, then creates the GitHub release and updates PRLOG.md.
+  # Runs after all crate releases because a crate release only tags with the
+  # crate-prefixed tag (gen-changelog-v*); the workspace (v*) release is separate.
+  release-prlog:
+    executor:
+      name: toolkit/rust_env_rolling
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints:
+            - << pipeline.parameters.fingerprint >>
+      - run:
+          name: Remove original SSH key from agent
+          command: |
+            ssh-add -l
+            if [ -f ~/.ssh/id_rsa.pub ]; then
+              ssh-add -d ~/.ssh/id_rsa.pub
+            else
+              echo "No id_rsa.pub found (GitHub App integration) - skipping removal"
+            fi
+            ssh-add -l
+      - toolkit/gpg_key
+      - toolkit/git_config
+      - run:
+          name: Pull latest main
+          command: git pull --rebase origin main
+      # Self-assess workspace version using v* tags (independent of crate tags)
+      - get_next_version:
+          prefix: "v"
+      # Update pcu to latest (workspace release command not yet in toolkit release)
+      - run:
+          name: Update to latest pcu
+          command: |
+            cargo install --force --git https://github.com/jerus-org/pcu --branch main
+      # Create workspace GitHub release and update PRLOG.md with release date
+      - make_github_release:
+          prefix: "v"
+          verbosity: "-vv"
+          update_prlog: true
+
 workflows:
   release:
     jobs:
@@ -673,14 +714,11 @@ workflows:
             - release
             - bot-check
 
-      - toolkit/make_release:
+      # Release workspace (v* tag) and update PRLOG after crate release.
+      # Crate release only creates gen-changelog-v* tags; workspace release
+      # is independent and tracks all changes via v* tags.
+      - release-prlog:
           requires: [release-gen-changelog]
           context:
             - release
             - bot-check
-          ssh_fingerprint: << pipeline.parameters.fingerprint >>
-          min_rust_version: << pipeline.parameters.min_rust_version >>
-          when_cargo_release: false
-          when_use_workspace: false
-          pcu_update_prlog: true
-          remove_ssh_key: false
