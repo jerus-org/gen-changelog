@@ -46,6 +46,7 @@ jobs:
           command: |
             git fetch origin main
             git checkout main
+            echo 'export CIRCLE_BRANCH=main' >> "$BASH_ENV"
       - add_ssh_keys:
           fingerprints:
             - << pipeline.parameters.fingerprint >>
