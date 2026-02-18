@@ -104,6 +104,7 @@ workflows:
           context:
             - release
             - bot-check
+            - pcu-app
       - toolkit/label:
           min_rust_version: << pipeline.parameters.min-rust-version >>
           context: pcu-app
