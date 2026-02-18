@@ -4,10 +4,11 @@ version: 2.1
 # settings under "Triggers"). Runs independently of the push-triggered config.yml,
 # so the PRLOG update commit does not re-trigger this workflow.
 #
-# NOTE: The GitHub "pr merged" event sets pipeline.git.branch to the PR's HEAD
-# branch (deleted after merge). The custom update-prlog-on-main job explicitly
-# switches to main after checkout so that pcu --from-merge runs on main and
-# pushes the PRLOG update to origin/main.
+# NOTE: The GitHub "pr merged" event sets both pipeline.git.branch AND
+# CIRCLE_BRANCH to the PR's HEAD branch (deleted after merge). pcu reads
+# CIRCLE_BRANCH for its push target, so the custom update-prlog-on-main job
+# both checks out main AND overrides CIRCLE_BRANCH=main via $BASH_ENV before
+# pcu runs, ensuring pcu pushes the PRLOG update to origin/main.
 #
 # Workflow:
 #   update_prlog  - adds merged PR entry to PRLOG.md, commits and pushes to main
@@ -32,9 +33,10 @@ jobs:
   update-prlog-on-main:
     # SOURCE: toolkit@4.4.3/jobs/update_prlog
     # ENHANCEMENT: Added "Switch to main branch" step after checkout to handle the
-    #   GitHub "pr merged" event, which sets pipeline.git.branch to the PR's HEAD
-    #   branch (now deleted). Without this step pcu --push fails because the remote
-    #   tracking branch no longer exists.
+    #   GitHub "pr merged" event, which sets pipeline.git.branch AND CIRCLE_BRANCH
+    #   to the PR's HEAD branch (now deleted). pcu reads CIRCLE_BRANCH for its push
+    #   target, so git checkout alone is insufficient — CIRCLE_BRANCH must also be
+    #   overridden via $BASH_ENV before pcu runs.
     # PLAN: Propose target_branch parameter upstream to toolkit/update_prlog
     executor:
       name: toolkit/rust_env
@@ -46,6 +48,7 @@ jobs:
           command: |
             git fetch origin main
             git checkout main
+            echo 'export CIRCLE_BRANCH=main' >> "$BASH_ENV"
       - add_ssh_keys:
           fingerprints:
             - << pipeline.parameters.fingerprint >>
