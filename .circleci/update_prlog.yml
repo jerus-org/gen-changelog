@@ -27,10 +27,6 @@ workflows:
   update_prlog:
     jobs:
       - toolkit/update_prlog:
-          filters:
-            branches:
-              only:
-                - main
           context:
             - release
             - bot-check
@@ -41,10 +37,6 @@ workflows:
           pcu_from_merge: --from-merge
           pcu_verbosity: -vvv
       - toolkit/label:
-          filters:
-            branches:
-              only:
-                - main
           min_rust_version: << pipeline.parameters.min-rust-version >>
           context: pcu-app
           requires:
