@@ -5,10 +5,10 @@ version: 2.1
 # so the PRLOG update commit does not re-trigger this workflow.
 #
 # NOTE: The GitHub "pr merged" event sets both pipeline.git.branch AND
-# CIRCLE_BRANCH to the PR's HEAD branch (deleted after merge). pcu reads
-# CIRCLE_BRANCH for its push target, so the custom update-prlog-on-main job
-# both checks out main AND overrides CIRCLE_BRANCH=main via $BASH_ENV before
-# pcu runs, ensuring pcu pushes the PRLOG update to origin/main.
+# CIRCLE_BRANCH to the PR's HEAD branch (deleted after merge). The custom
+# update-prlog-on-main job switches to main via git checkout and overrides
+# CIRCLE_BRANCH=main in $BASH_ENV so pcu operates on the correct branch.
+# The push is done explicitly (not via pcu --push) so push failures are visible.
 #
 # Workflow:
 #   update_prlog  - adds merged PR entry to PRLOG.md, commits and pushes to main
@@ -76,8 +76,9 @@ jobs:
             set -e
 
             # Capture stderr separately so debug logs are visible even when
-            # the step halts (successful pipelines don't surface logs otherwise)
-            result=$(pcu -vvv pr --early-exit --push --from-merge \
+            # the step halts (successful pipelines don't surface logs otherwise).
+            # --push omitted: push is handled by the next step so failures are visible.
+            result=$(pcu -vvv pr --early-exit --from-merge \
               2>/tmp/pcu_debug.log) || {
               echo "=== pcu stderr (error) ==="
               cat /tmp/pcu_debug.log
@@ -91,6 +92,10 @@ jobs:
             if [ "$result" == "halt" ]; then
               circleci-agent step halt
             fi
+      - run:
+          name: Push PRLOG update
+          command: |
+            git push origin main
 
 workflows:
   update_prlog:
