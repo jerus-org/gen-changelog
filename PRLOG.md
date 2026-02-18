@@ -43,6 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update dependency toolkit to v4.4.3(pr [#198])
 - deps: update cli test tools to v1 (major)(pr [#200])
 - deps: update rust crate toml to v1(pr [#201])
+- ci: use cargo install for rsign2(pr [#202])
 
 ## [0.1.4] - 2026-01-11
 
@@ -496,6 +497,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#199]: https://github.com/jerus-org/gen-changelog/pull/199
 [#200]: https://github.com/jerus-org/gen-changelog/pull/200
 [#201]: https://github.com/jerus-org/gen-changelog/pull/201
+[#202]: https://github.com/jerus-org/gen-changelog/pull/202
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
