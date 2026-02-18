@@ -4,6 +4,11 @@ version: 2.1
 # settings under "Triggers"). Runs independently of the push-triggered config.yml,
 # so the PRLOG update commit does not re-trigger this workflow.
 #
+# NOTE: The GitHub "pr merged" event sets pipeline.git.branch to the PR's HEAD
+# branch (deleted after merge). The custom update-prlog-on-main job explicitly
+# switches to main after checkout so that pcu --from-merge runs on main and
+# pushes the PRLOG update to origin/main.
+#
 # Workflow:
 #   update_prlog  - adds merged PR entry to PRLOG.md, commits and pushes to main
 #   label         - labels the next queued Renovate PR so it is rebased and runs
@@ -23,21 +28,63 @@ parameters:
 orbs:
   toolkit: jerus-org/circleci-toolkit@4.4.3
 
+jobs:
+  update-prlog-on-main:
+    # SOURCE: toolkit@4.4.3/jobs/update_prlog
+    # ENHANCEMENT: Added "Switch to main branch" step after checkout to handle the
+    #   GitHub "pr merged" event, which sets pipeline.git.branch to the PR's HEAD
+    #   branch (now deleted). Without this step pcu --push fails because the remote
+    #   tracking branch no longer exists.
+    # PLAN: Propose target_branch parameter upstream to toolkit/update_prlog
+    executor:
+      name: toolkit/rust_env
+      min_rust_version: << pipeline.parameters.min-rust-version >>
+    steps:
+      - checkout
+      - run:
+          name: Switch to main branch
+          command: |
+            git fetch origin main
+            git checkout main
+      - add_ssh_keys:
+          fingerprints:
+            - << pipeline.parameters.fingerprint >>
+      - run:
+          name: Remove original SSH key from agent
+          command: |
+            ssh-add -l
+            if [ -f ~/.ssh/id_rsa.pub ]; then
+              ssh-add -d ~/.ssh/id_rsa.pub
+            else
+              echo "No id_rsa.pub found (GitHub App integration) - skipping removal"
+            fi
+      - toolkit/gpg_key
+      - toolkit/git_config
+      - when:
+          condition: << pipeline.parameters.update_pcu >>
+          steps:
+            - toolkit/install_latest_pcu
+      - run:
+          name: pcu version
+          command: pcu --version
+      - run:
+          name: Update PRLOG or halt
+          command: |
+            set -ex
+            result=$(pcu -vvv pr --early-exit --push --from-merge)
+            if [ "$result" == "halt" ]; then
+              circleci-agent step halt
+            fi
+
 workflows:
   update_prlog:
     jobs:
-      - toolkit/update_prlog:
+      - update-prlog-on-main:
           context:
             - release
             - bot-check
-          min_rust_version: << pipeline.parameters.min-rust-version >>
-          ssh_fingerprint: << pipeline.parameters.fingerprint >>
-          update_log_option: halt
-          update_pcu: << pipeline.parameters.update_pcu >>
-          pcu_from_merge: --from-merge
-          pcu_verbosity: -vvv
       - toolkit/label:
           min_rust_version: << pipeline.parameters.min-rust-version >>
           context: pcu-app
           requires:
-            - toolkit/update_prlog
+            - update-prlog-on-main
