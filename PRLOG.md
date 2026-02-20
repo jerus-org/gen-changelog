@@ -59,6 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ci: switch remote to SSH before pcu push(pr [#216])
 - ci: add github.com to SSH known_hosts(pr [#217])
 - ci: remove explicit SSH key, rely on pcu-app context(pr [#218])
+- prlog: backfill missing entries for PRs #205-#217(pr [#219])
 
 ## [0.1.4] - 2026-01-11
 
@@ -528,6 +529,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#216]: https://github.com/jerus-org/gen-changelog/pull/216
 [#217]: https://github.com/jerus-org/gen-changelog/pull/217
 [#218]: https://github.com/jerus-org/gen-changelog/pull/218
+[#219]: https://github.com/jerus-org/gen-changelog/pull/219
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
