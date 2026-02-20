@@ -8,20 +8,12 @@ version: 2.1
 # CIRCLE_BRANCH to the PR's HEAD branch (deleted after merge). The custom
 # update-prlog-on-main job switches to main via git checkout and overrides
 # CIRCLE_BRANCH=main in $BASH_ENV so pcu operates on the correct branch.
-# CircleCI checkout sets the git remote URL to HTTPS. pcu's git2-based push uses
-# whatever protocol the remote URL specifies — HTTPS auth (PAT) has no branch
-# protection bypass authority. The "Switch remote to SSH" step converts the remote
-# URL to SSH so git2 uses the deploy key loaded by add_ssh_keys, which carries the
-# GitHub App's bypass authority.
 #
 # Workflow:
 #   update_prlog  - adds merged PR entry to PRLOG.md, commits and pushes to main
 #   label         - labels the next queued Renovate PR so it is rebased and runs
 
 parameters:
-  fingerprint:
-    type: string
-    default: SHA256:OkxsH8Z6Iim6WDJBaII9eTT9aaO1f3eDc6IpsgYYPVg
   min-rust-version:
     type: string
     default: "1.87"
@@ -53,25 +45,6 @@ jobs:
             git fetch origin main
             git checkout main
             echo 'export CIRCLE_BRANCH=main' >> "$BASH_ENV"
-      - add_ssh_keys:
-          fingerprints:
-            - << pipeline.parameters.fingerprint >>
-      - run:
-          name: Switch remote to SSH
-          command: |
-            git remote set-url origin \
-              "git@github.com:${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git"
-            echo "Remote URL: $(git remote get-url origin)"
-            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
-      - run:
-          name: Remove original SSH key from agent
-          command: |
-            ssh-add -l
-            if [ -f ~/.ssh/id_rsa.pub ]; then
-              ssh-add -d ~/.ssh/id_rsa.pub
-            else
-              echo "No id_rsa.pub found (GitHub App integration) - skipping removal"
-            fi
       - toolkit/gpg_key
       - toolkit/git_config
       - when:
@@ -88,7 +61,6 @@ jobs:
 
             # Capture stderr separately so debug logs are visible even when
             # the step halts (successful pipelines don't surface logs otherwise).
-            # pcu --push uses the GitHub App API, providing branch protection bypass.
             result=$(pcu -vvv pr --early-exit --push --from-merge \
               2>/tmp/pcu_debug.log) || {
               echo "=== pcu stderr (error) ==="
