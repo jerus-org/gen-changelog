@@ -62,6 +62,7 @@ jobs:
             git remote set-url origin \
               "git@github.com:${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git"
             echo "Remote URL: $(git remote get-url origin)"
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
       - run:
           name: Remove original SSH key from agent
           command: |
