@@ -62,6 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ci: remove explicit SSH key, rely on pcu-app context(pr [#218])
 - prlog: backfill missing entries for PRs #205-#217(pr [#219])
 - release: remove non-existent src/lib.rs from replacements(pr [#221])
+- include docs/lib.md in cargo package(pr [#222])
 
 ## [0.1.4] - 2026-01-11
 
@@ -534,6 +535,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#219]: https://github.com/jerus-org/gen-changelog/pull/219
 [#220]: https://github.com/jerus-org/gen-changelog/pull/220
 [#221]: https://github.com/jerus-org/gen-changelog/pull/221
+[#222]: https://github.com/jerus-org/gen-changelog/pull/222
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
