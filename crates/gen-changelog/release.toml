@@ -4,5 +4,4 @@ tag-name = "gen-changelog-v{{version}}"
 pre-release-hook = ["./release-hook.sh"]
 pre-release-replacements = [
     { file = "README.md", search = "gen-changelog = \"\\d+\\.\\d+\\.\\d+\"", replace = "gen-changelog = \"{{version}}\"", min = 0 },
-    { file = "src/lib.rs", search = "gen-changelog = \"\\d+\\.\\d+\\.\\d+\"", replace = "gen-changelog = \"{{version}}\"", min = 0 },
 ]
