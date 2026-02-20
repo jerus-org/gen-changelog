@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - add release-prlog job for workspace release(pr [#204])
 - ci: move post-merge work to update_prlog.yml(pr [#205])
 - add AGENTS.md for Warp IDE guidance(pr [#215])
+- calculate versions before approval gate(pr [#220])
 
 ### Changed
 
@@ -530,6 +531,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#217]: https://github.com/jerus-org/gen-changelog/pull/217
 [#218]: https://github.com/jerus-org/gen-changelog/pull/218
 [#219]: https://github.com/jerus-org/gen-changelog/pull/219
+[#220]: https://github.com/jerus-org/gen-changelog/pull/220
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
