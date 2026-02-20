@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - exclude merge commits from changelog(pr [#197])
 - add cargo-binstall release pipeline(pr [#199])
 - add release-prlog job for workspace release(pr [#204])
+- feat(ci): move post-merge work to update_prlog.yml(pr [#205])
+- docs: add AGENTS.md for Warp IDE guidance(pr [#215])
 
 ### Changed
 
@@ -32,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ♻️ refactor(gen-changelog)-reorganize source files structure(pr [#193])
 - 👷 ci(circleci)-add pipeline control based on committer(pr [#194])
 - 👷 ci(circleci)-fix pipeline flag configuration(pr [#195])
+- 📦 build(dependencies): update toml dependencies(pr [#206])
 
 ### Fixed
 
@@ -46,6 +49,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update rust crate toml to v1(pr [#201])
 - ci: use cargo install for rsign2(pr [#202])
 - ci: install rsign2 outside workspace(pr [#203])
+- fix(ci): remove branch filters from update_prlog.yml(pr [#207])
+- fix(ci): switch to main in update-prlog-on-main job(pr [#208])
+- fix(ci): override CIRCLE_BRANCH=main before pcu runs(pr [#210])
+- fix(ci): add debug logging to pcu early-exit(pr [#211])
+- fix(ci): push PRLOG update explicitly(pr [#212])
+- fix(ci): add pcu-app context to update_prlog job(pr [#213])
+- fix(ci): enable update_pcu in update_prlog pipeline(pr [#214])
+- fix(ci): switch remote to SSH before pcu push(pr [#216])
+- fix(ci): add github.com to SSH known_hosts(pr [#217])
 - ci: remove explicit SSH key, rely on pcu-app context(pr [#218])
 
 ## [0.1.4] - 2026-01-11
@@ -503,6 +515,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#202]: https://github.com/jerus-org/gen-changelog/pull/202
 [#203]: https://github.com/jerus-org/gen-changelog/pull/203
 [#204]: https://github.com/jerus-org/gen-changelog/pull/204
+[#205]: https://github.com/jerus-org/gen-changelog/pull/205
+[#206]: https://github.com/jerus-org/gen-changelog/pull/206
+[#207]: https://github.com/jerus-org/gen-changelog/pull/207
+[#208]: https://github.com/jerus-org/gen-changelog/pull/208
+[#210]: https://github.com/jerus-org/gen-changelog/pull/210
+[#211]: https://github.com/jerus-org/gen-changelog/pull/211
+[#212]: https://github.com/jerus-org/gen-changelog/pull/212
+[#213]: https://github.com/jerus-org/gen-changelog/pull/213
+[#214]: https://github.com/jerus-org/gen-changelog/pull/214
+[#215]: https://github.com/jerus-org/gen-changelog/pull/215
+[#216]: https://github.com/jerus-org/gen-changelog/pull/216
+[#217]: https://github.com/jerus-org/gen-changelog/pull/217
 [#218]: https://github.com/jerus-org/gen-changelog/pull/218
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
