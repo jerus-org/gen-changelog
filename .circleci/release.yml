@@ -556,16 +556,63 @@ jobs:
             jq --version
             rsign --version || echo "rsign2 not pre-installed (will install at runtime)"
 
-  # Self-assessing release job: calculates version, exits early if none needed,
-  # then runs cargo release, optionally builds/signs/uploads binary
+  # Pre-approval version calculation job.
+  # Runs BEFORE the approval gate so the reviewer knows exactly what will be
+  # released. Persists calculated versions to the workspace; release jobs read
+  # from there and never recalculate, guaranteeing the approved versions are used.
+  calculate-versions:
+    executor:
+      name: toolkit/rust_env_rolling
+    steps:
+      - checkout
+      - run:
+          name: Calculate release versions
+          command: |
+            set -eo pipefail
+
+            # gen-changelog crate version: use override if provided, else nextsv
+            if [ "<< pipeline.parameters.gen_changelog_version >>" != "" ]; then
+              GEN_CHANGELOG_VERSION="<< pipeline.parameters.gen_changelog_version >>"
+              echo "gen-changelog: using specified version: $GEN_CHANGELOG_VERSION"
+            else
+              GEN_CHANGELOG_VERSION=$(nextsv -q -bn calculate \
+                --package gen-changelog --prefix gen-changelog-v 2>/dev/null || echo "none")
+              echo "gen-changelog: calculated version: $GEN_CHANGELOG_VERSION"
+            fi
+
+            # Workspace version: v* tags, independent of crate releases
+            WORKSPACE_VERSION=$(nextsv -q -bn calculate --prefix v 2>/dev/null || echo "none")
+            echo "workspace: calculated version: $WORKSPACE_VERSION"
+
+            echo ""
+            echo "======================================="
+            echo "  Versions pending release approval"
+            echo "======================================="
+            echo "  gen-changelog crate : ${GEN_CHANGELOG_VERSION}"
+            echo "  workspace (v*)      : ${WORKSPACE_VERSION}"
+            echo "======================================="
+            echo ""
+            echo "Approve the 'approve-release' job to proceed with the above versions."
+
+            # Persist to workspace so downstream jobs use exactly these versions
+            mkdir -p /tmp/release-versions
+            {
+              echo "GEN_CHANGELOG_VERSION=${GEN_CHANGELOG_VERSION}"
+              echo "WORKSPACE_VERSION=${WORKSPACE_VERSION}"
+            } > /tmp/release-versions/versions.env
+            cat /tmp/release-versions/versions.env
+      - persist_to_workspace:
+          root: /tmp/release-versions
+          paths:
+            - versions.env
+
+  # Release job: reads pre-calculated version from workspace (set by
+  # calculate-versions before the approval gate) then runs cargo release,
+  # optionally builds/signs/uploads binary.
   release-crate:
     parameters:
       package:
         type: string
-      version:
-        type: string
-        default: ""
-        description: "Specific version to release (overrides auto-detection)"
       build_binary:
         type: boolean
         default: false
@@ -582,6 +629,29 @@ jobs:
       name: toolkit/rust_env_rolling
     steps:
       - checkout
+      # Load the version approved before the gate — never recalculate
+      - attach_workspace:
+          at: /tmp/release-versions
+      - run:
+          name: Load approved version for << parameters.package >>
+          command: |
+            set -eo pipefail
+            source /tmp/release-versions/versions.env
+
+            # Select the version for this specific package
+            case "<< parameters.package >>" in
+              gen-changelog)
+                VERSION="$GEN_CHANGELOG_VERSION"
+                ;;
+              *)
+                echo "Unknown package: << parameters.package >>" >&2
+                exit 1
+                ;;
+            esac
+
+            echo "Approved version for << parameters.package >>: $VERSION"
+            echo "export NEXT_VERSION=$VERSION" >> "$BASH_ENV"
+            echo "export SEMVER=$VERSION" >> "$BASH_ENV"
       - add_ssh_keys:
           fingerprints:
             - << pipeline.parameters.fingerprint >>
@@ -605,14 +675,10 @@ jobs:
             - run:
                 name: Install rsign2
                 command: cd /tmp && cargo install rsign2
-      # Step 1: Detect if release needed (or use specified version)
-      - get_next_version:
-          package: << parameters.package >>
-          version: << parameters.version >>
-      # Step 2: Check crates.io for recovery scenarios
+      # Step 1: Check crates.io for recovery scenarios
       - check_crates_io_version:
           package: << parameters.package >>
-      # Step 3: Check if tag already exists for recovery scenarios
+      # Step 2: Check if tag already exists for recovery scenarios
       - check_tag_exists:
           package: << parameters.package >>
       # Step 4: Generate ephemeral signing key (when building binaries)
@@ -653,8 +719,9 @@ jobs:
                 asset_path: << parameters.binary_name >>-<< parameters.target >>.tar.gz.sig
                 release_tag: << parameters.package >>-v${VERSION}
 
-  # Self-assessing workspace release job: calculates next v* version, exits early
-  # if none needed, then creates the GitHub release and updates PRLOG.md.
+  # Workspace release job: reads the pre-calculated v* version from the workspace
+  # (set by calculate-versions before the approval gate), then creates the GitHub
+  # release and updates PRLOG.md.
   # Runs after all crate releases because a crate release only tags with the
   # crate-prefixed tag (gen-changelog-v*); the workspace (v*) release is separate.
   release-prlog:
@@ -662,6 +729,17 @@ jobs:
       name: toolkit/rust_env_rolling
     steps:
       - checkout
+      # Load the version approved before the gate — never recalculate
+      - attach_workspace:
+          at: /tmp/release-versions
+      - run:
+          name: Load approved workspace version
+          command: |
+            set -eo pipefail
+            source /tmp/release-versions/versions.env
+            echo "Approved workspace version: $WORKSPACE_VERSION"
+            echo "export NEXT_VERSION=$WORKSPACE_VERSION" >> "$BASH_ENV"
+            echo "export SEMVER=$WORKSPACE_VERSION" >> "$BASH_ENV"
       - add_ssh_keys:
           fingerprints:
             - << pipeline.parameters.fingerprint >>
@@ -680,9 +758,6 @@ jobs:
       - run:
           name: Pull latest main
           command: git pull --rebase origin main
-      # Self-assess workspace version using v* tags (independent of crate tags)
-      - get_next_version:
-          prefix: "v"
       # Update pcu to latest (workspace release command not yet in toolkit release)
       - run:
           name: Update to latest pcu
@@ -699,15 +774,22 @@ workflows:
     jobs:
       - tools
 
+      # Calculate versions BEFORE the approval gate so the reviewer knows
+      # exactly what will be released. The approved versions are persisted to
+      # the workspace and used unchanged by the release jobs after approval.
+      - calculate-versions:
+          requires: [tools]
+          context:
+            - release
+
       - approve-release:
           type: approval
-          requires: [tools]
+          requires: [calculate-versions]
 
       - release-crate:
           name: release-gen-changelog
           requires: [approve-release]
           package: gen-changelog
-          version: << pipeline.parameters.gen_changelog_version >>
           build_binary: true
           binary_name: gen-changelog
           context:
