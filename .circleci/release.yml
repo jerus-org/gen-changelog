@@ -5,6 +5,10 @@ parameters:
     type: string
     default: ""
     description: "Version override for gen-changelog crate (empty = auto-detect)"
+  workspace_version:
+    type: string
+    default: ""
+    description: "Version override for workspace release (empty = auto-detect via nextsv)"
 
 orbs:
   toolkit: jerus-org/circleci-toolkit@4.4.3
@@ -302,19 +306,17 @@ commands:
             fi
             echo "GitHub release ${TAG} not found (HTTP ${HTTP_STATUS}) - will create"
 
-            pcu_args="<< parameters.verbosity >> release"
+            # --update-prlog and --prefix are release-level flags (before the subcommand)
+            release_opts=""
+            if [ "<< parameters.update_prlog >>" = "true" ]; then
+              release_opts="$release_opts --update-prlog"
+            fi
 
             if [ "<< parameters.package >>" != "" ]; then
-              pcu_args="$pcu_args package << parameters.package >>"
+              pcu << parameters.verbosity >> release $release_opts package << parameters.package >>
             else
-              pcu_args="$pcu_args version --prefix << parameters.prefix >>"
+              pcu << parameters.verbosity >> release $release_opts --prefix << parameters.prefix >> version "$VERSION"
             fi
-
-            if [ "<< parameters.update_prlog >>" = "true" ]; then
-              pcu_args="$pcu_args --update-prlog"
-            fi
-
-            pcu $pcu_args
 
   # Build a release binary using cargo.
   # Requires VERSION environment variable (skips if "none").
@@ -634,8 +636,13 @@ jobs:
             fi
 
             # Workspace version: v* tags, independent of crate releases
-            WORKSPACE_VERSION=$(nextsv -q -bn calculate --prefix v 2>/dev/null || echo "none")
-            echo "workspace: calculated version: $WORKSPACE_VERSION"
+            if [ "<< pipeline.parameters.workspace_version >>" != "" ]; then
+              WORKSPACE_VERSION="<< pipeline.parameters.workspace_version >>"
+              echo "workspace: using specified version: $WORKSPACE_VERSION"
+            else
+              WORKSPACE_VERSION=$(nextsv -q -bn calculate --prefix v 2>/dev/null || echo "none")
+              echo "workspace: calculated version: $WORKSPACE_VERSION"
+            fi
 
             echo ""
             echo "======================================="
