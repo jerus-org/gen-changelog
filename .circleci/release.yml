@@ -631,11 +631,7 @@ jobs:
               echo "gen-changelog: calculated version: $GEN_CHANGELOG_VERSION"
             fi
 
-            # Workspace version: v* tags, independent of crate releases.
-            # nextsv regex (v\d+\.\d+\.\d+) matches inside crate-prefixed tags like
-            # gen-changelog-v0.1.6 because the embedded v0.1.6 satisfies the pattern.
-            # Work around by deleting local crate-prefixed tags so nextsv only sees v*.
-            git tag -l 'gen-changelog-v*' | xargs -r git tag -d
+            # Workspace version: v* tags, independent of crate releases
             WORKSPACE_VERSION=$(nextsv -q -bn calculate --prefix v 2>/dev/null || echo "none")
             echo "workspace: calculated version: $WORKSPACE_VERSION"
 
