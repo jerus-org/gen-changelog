@@ -1,12 +1,6 @@
 version: 2.1
 
 parameters:
-  fingerprint:
-    type: string
-    default: SHA256:OkxsH8Z6Iim6WDJBaII9eTT9aaO1f3eDc6IpsgYYPVg
-  min_rust_version:
-    type: string
-    default: "1.87"
   gen_changelog_version:
     type: string
     default: ""
@@ -328,6 +322,8 @@ commands:
     description: >
       Build a release-optimised binary using cargo build --release.
       Expects VERSION to be set in BASH_ENV; skips when VERSION is "none".
+      Also skips when SKIP_PUBLISH=true (ephemeral signing key unavailable)
+      or SKIP_RELEASE=true (key from the original release session is gone).
     steps:
       - run:
           name: Build release binary
@@ -338,6 +334,13 @@ commands:
 
             if [ "$VERSION" = "none" ]; then
               echo "No version to release - skipping"
+              exit 0
+            fi
+
+            # Skip binary when the release commit is already on remote.
+            # SKIP_RELEASE=true means the original ephemeral key session is gone.
+            if [ "$SKIP_RELEASE" = "true" ]; then
+              echo "Skipping binary build: tag already on remote, ephemeral key unavailable"
               exit 0
             fi
 
@@ -365,8 +368,8 @@ commands:
 
             VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
 
-            if [ "$VERSION" = "none" ]; then
-              echo "No version to release - skipping"
+            if [ "$VERSION" = "none" ] || [ "$SKIP_RELEASE" = "true" ]; then
+              echo "No version to release or binary skipped - skipping"
               exit 0
             fi
 
@@ -408,8 +411,8 @@ commands:
 
             VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
 
-            if [ "$VERSION" = "none" ]; then
-              echo "No version to release - skipping"
+            if [ "$VERSION" = "none" ] || [ "$SKIP_RELEASE" = "true" ]; then
+              echo "No version to release or binary skipped - skipping asset upload"
               exit 0
             fi
 
@@ -478,9 +481,9 @@ commands:
   generate_signing_key:
     description: >
       Generate an ephemeral minisign keypair for cargo-binstall signature verification.
-      Exports BINSTALL_SIGNING_PUBKEY to BASH_ENV (consumed by the pre-release hook
-      to update Cargo.toml). Private key persists at /tmp/release-signing/minisign.key
-      for the sign_binary command.
+      Exports BINSTALL_SIGNING_PUBKEY to BASH_ENV for inject_pubkey_and_amend.
+      Private key persists at /tmp/release-signing/minisign.key for sign_binary.
+      Skipped when SKIP_RELEASE=true: the original key session is gone.
     steps:
       - run:
           name: Generate ephemeral signing key
@@ -488,8 +491,8 @@ commands:
             set -eo pipefail
 
             VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
-            if [ "$VERSION" = "none" ]; then
-              echo "No version to release - skipping key generation"
+            if [ "$VERSION" = "none" ] || [ "$SKIP_RELEASE" = "true" ]; then
+              echo "No version to release or already released - skipping key generation"
               exit 0
             fi
 
@@ -504,6 +507,53 @@ commands:
             echo "export BINSTALL_SIGNING_PUBKEY=$PUBKEY" >> "$BASH_ENV"
 
             rm -f "$SIGNING_DIR/minisign.pub"
+
+  # After sign_binary succeeds: write the proven pubkey into Cargo.toml,
+  # amend the release commit (made by cargo release --no-push), and move
+  # the signed tag to the amended commit. Only then is the pubkey committed.
+  inject_pubkey_and_amend:
+    description: >
+      Inject the confirmed signing pubkey into Cargo.toml, amend the release
+      commit produced by cargo release --no-push, and move the signed tag to
+      the amended commit. Must run after sign_binary succeeds and before push.
+      Skipped when SKIP_RELEASE=true (commit already pushed) or when
+      BINSTALL_SIGNING_PUBKEY is unset (non-binary release).
+    parameters:
+      package:
+        type: string
+        description: "Package name (used to locate Cargo.toml and derive tag name)"
+    steps:
+      - run:
+          name: Inject pubkey into Cargo.toml and amend release commit
+          command: |
+            set -eo pipefail
+
+            VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
+
+            if [ "$VERSION" = "none" ] || [ "$SKIP_RELEASE" = "true" ]; then
+              echo "Skipping pubkey injection (no version or already released)"
+              exit 0
+            fi
+
+            if [ -z "$BINSTALL_SIGNING_PUBKEY" ]; then
+              echo "No signing pubkey available - skipping Cargo.toml update"
+              exit 0
+            fi
+
+            TAG="<< parameters.package >>-v${VERSION}"
+            CARGO_TOML="crates/<< parameters.package >>/Cargo.toml"
+
+            # Update Cargo.toml with the pubkey confirmed by successful signing
+            sed -i "s|pubkey = \".*\"|pubkey = \"$BINSTALL_SIGNING_PUBKEY\"|" "$CARGO_TOML"
+            echo "Updated $CARGO_TOML with confirmed signing pubkey"
+
+            # Amend the release commit to include the pubkey
+            git add "$CARGO_TOML"
+            git commit --amend --no-edit -S
+
+            # Move the signed tag to the amended commit
+            git tag -f -s "${TAG}" -m "${TAG}"
+            echo "Release commit amended and tag ${TAG} moved to amended commit"
 
   # Sign a binary archive with the ephemeral minisign key generated by
   # generate_signing_key (at /tmp/release-signing/minisign.key).
@@ -522,7 +572,10 @@ commands:
 
             VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
 
-            if [ "$VERSION" = "none" ]; then exit 0; fi
+            if [ "$VERSION" = "none" ] || [ "$SKIP_RELEASE" = "true" ]; then
+              echo "Binary signing skipped"
+              exit 0
+            fi
 
             KEY_FILE="/tmp/release-signing/minisign.key"
             if [ ! -f "$KEY_FILE" ]; then
@@ -652,22 +705,13 @@ jobs:
             echo "Approved version for << parameters.package >>: $VERSION"
             echo "export NEXT_VERSION=$VERSION" >> "$BASH_ENV"
             echo "export SEMVER=$VERSION" >> "$BASH_ENV"
-      - add_ssh_keys:
-          fingerprints:
-            - << pipeline.parameters.fingerprint >>
-      - run:
-          name: Remove original SSH key from agent
-          command: |
-            ssh-add -l
-            # GitHub App integration doesn't create id_rsa.pub, handle gracefully
-            if [ -f ~/.ssh/id_rsa.pub ]; then
-              ssh-add -d ~/.ssh/id_rsa.pub
-            else
-              echo "No id_rsa.pub found (GitHub App integration) - skipping removal"
-            fi
-            ssh-add -l
       - toolkit/gpg_key
       - toolkit/git_config
+      # Update pcu to latest (needed for make_github_release and push with GitHub App authority)
+      - run:
+          name: Update to latest pcu
+          command: |
+            cargo install --force --git https://github.com/jerus-org/pcu --branch main
       # Install rsign2 for binary signing (prototype: migrate to ci-container later)
       - when:
           condition: << parameters.build_binary >>
@@ -681,28 +725,18 @@ jobs:
       # Step 2: Check if tag already exists for recovery scenarios
       - check_tag_exists:
           package: << parameters.package >>
-      # Step 4: Generate ephemeral signing key (when building binaries)
-      # Must run before cargo release so BINSTALL_SIGNING_PUBKEY is available
-      # to the pre-release hook for Cargo.toml injection
-      - when:
-          condition: << parameters.build_binary >>
-          steps:
-            - generate_signing_key
-      # Step 5: Run cargo release (respects SKIP_PUBLISH and SKIP_RELEASE)
-      # The pre-release hook reads BINSTALL_SIGNING_PUBKEY to update Cargo.toml
+      # Step 4: cargo release WITHOUT publish or push.
+      # The pre-release hook rebuilds README and generates CHANGELOG.
+      # Cargo.toml pubkey is NOT updated here — that happens after signing succeeds.
       - make_cargo_release:
           package: << parameters.package >>
           verbosity: "-vv"
-      # Step 6: Update pcu to latest version
-      - run:
-          name: Update to latest pcu
-          command: |
-            cargo install --force --git https://github.com/jerus-org/pcu --branch main
-      # Step 7: Create GitHub release
-      - make_github_release:
-          package: << parameters.package >>
-          verbosity: "-vv"
-      # Step 8: Build, sign, and upload binary (when build_binary is true)
+          publish: false
+          no_push: true
+      # Steps 5-8: Build binary, generate key, sign, then inject pubkey.
+      # All skipped when SKIP_RELEASE=true (tag already on remote, key session gone).
+      # Order is deliberate: pubkey only enters Cargo.toml after signing proves the key
+      # works, then the release commit is amended and the tag moved — before any push.
       - when:
           condition: << parameters.build_binary >>
           steps:
@@ -710,14 +744,54 @@ jobs:
             - package_binary:
                 binary_name: << parameters.binary_name >>
                 target: << parameters.target >>
+            - generate_signing_key
             - sign_binary:
                 asset_path: << parameters.binary_name >>-<< parameters.target >>.tar.gz
+            - inject_pubkey_and_amend:
+                package: << parameters.package >>
+      # Step 9: Push the amended release commit and tag via pcu (GitHub App authority).
+      # pcu push uses the GitHub App installation token, which has branch protection
+      # bypass authority. Skipped when SKIP_RELEASE=true (already on remote).
+      - run:
+          name: Push release commit and tag
+          command: |
+            set -eo pipefail
+            VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
+            if [ "$VERSION" = "none" ] || [ "$SKIP_RELEASE" = "true" ]; then
+              echo "Skipping push (no version or tag already on remote)"
+              exit 0
+            fi
+            echo "Pushing main and << parameters.package >>-v${VERSION} via pcu..."
+            pcu push --semver "${VERSION}" --prefix "<< parameters.package >>-v"
+      # Step 10: Create GitHub release (idempotent — checks for existing release first)
+      - make_github_release:
+          package: << parameters.package >>
+          verbosity: "-vv"
+      # Step 12: Upload binary and signature.
+      # Skipped when SKIP_RELEASE=true (key session gone, binary can't be signed).
+      - when:
+          condition: << parameters.build_binary >>
+          steps:
             - upload_release_asset:
                 asset_path: << parameters.binary_name >>-<< parameters.target >>.tar.gz
                 release_tag: << parameters.package >>-v${VERSION}
             - upload_release_asset:
                 asset_path: << parameters.binary_name >>-<< parameters.target >>.tar.gz.sig
                 release_tag: << parameters.package >>-v${VERSION}
+      # Step 13: Publish to crates.io LAST.
+      # The pubkey in the published Cargo.toml always matches the signed binary above
+      # because we only reach this step after signing and pushing succeed.
+      # SKIP_PUBLISH=true means crates.io already has this version — skip.
+      - run:
+          name: Publish to crates.io
+          command: |
+            set -eo pipefail
+            VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
+            if [ "$VERSION" = "none" ] || [ "$SKIP_PUBLISH" = "true" ]; then
+              echo "Skipping publish (no version or already published)"
+              exit 0
+            fi
+            cargo publish --package << parameters.package >>
 
   # Workspace release job: reads the pre-calculated v* version from the workspace
   # (set by calculate-versions before the approval gate), then creates the GitHub
@@ -740,19 +814,6 @@ jobs:
             echo "Approved workspace version: $WORKSPACE_VERSION"
             echo "export NEXT_VERSION=$WORKSPACE_VERSION" >> "$BASH_ENV"
             echo "export SEMVER=$WORKSPACE_VERSION" >> "$BASH_ENV"
-      - add_ssh_keys:
-          fingerprints:
-            - << pipeline.parameters.fingerprint >>
-      - run:
-          name: Remove original SSH key from agent
-          command: |
-            ssh-add -l
-            if [ -f ~/.ssh/id_rsa.pub ]; then
-              ssh-add -d ~/.ssh/id_rsa.pub
-            else
-              echo "No id_rsa.pub found (GitHub App integration) - skipping removal"
-            fi
-            ssh-add -l
       - toolkit/gpg_key
       - toolkit/git_config
       - run:
@@ -795,6 +856,7 @@ workflows:
           context:
             - release
             - bot-check
+            - pcu-app
 
       # Release workspace (v* tag) and update PRLOG after crate release.
       # Crate release only creates gen-changelog-v* tags; workspace release
@@ -804,3 +866,4 @@ workflows:
           context:
             - release
             - bot-check
+            - pcu-app
