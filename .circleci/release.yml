@@ -5,6 +5,10 @@ parameters:
     type: string
     default: ""
     description: "Version override for gen-changelog crate (empty = auto-detect)"
+  workspace_version:
+    type: string
+    default: ""
+    description: "Version override for workspace release (empty = auto-detect via nextsv)"
 
 orbs:
   toolkit: jerus-org/circleci-toolkit@4.4.3
@@ -632,8 +636,13 @@ jobs:
             fi
 
             # Workspace version: v* tags, independent of crate releases
-            WORKSPACE_VERSION=$(nextsv -q -bn calculate --prefix v 2>/dev/null || echo "none")
-            echo "workspace: calculated version: $WORKSPACE_VERSION"
+            if [ "<< pipeline.parameters.workspace_version >>" != "" ]; then
+              WORKSPACE_VERSION="<< pipeline.parameters.workspace_version >>"
+              echo "workspace: using specified version: $WORKSPACE_VERSION"
+            else
+              WORKSPACE_VERSION=$(nextsv -q -bn calculate --prefix v 2>/dev/null || echo "none")
+              echo "workspace: calculated version: $WORKSPACE_VERSION"
+            fi
 
             echo ""
             echo "======================================="
