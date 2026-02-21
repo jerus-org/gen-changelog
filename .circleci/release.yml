@@ -749,9 +749,9 @@ jobs:
                 asset_path: << parameters.binary_name >>-<< parameters.target >>.tar.gz
             - inject_pubkey_and_amend:
                 package: << parameters.package >>
-      # Step 9: Push the amended release commit and tag via GitHub App HTTPS.
-      # GITHUB_TOKEN from pcu-app context carries branch protection bypass authority.
-      # Skipped when SKIP_RELEASE=true (already on remote).
+      # Step 9: Push the amended release commit and tag via pcu (GitHub App authority).
+      # pcu push uses the GitHub App installation token, which has branch protection
+      # bypass authority. Skipped when SKIP_RELEASE=true (already on remote).
       - run:
           name: Push release commit and tag
           command: |
@@ -761,9 +761,8 @@ jobs:
               echo "Skipping push (no version or tag already on remote)"
               exit 0
             fi
-            TAG="<< parameters.package >>-v${VERSION}"
-            echo "Pushing main and ${TAG}..."
-            git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git" main "${TAG}"
+            echo "Pushing main and << parameters.package >>-v${VERSION} via pcu..."
+            pcu push --semver "${VERSION}" --prefix "<< parameters.package >>-v"
       # Step 10: Create GitHub release (idempotent — checks for existing release first)
       - make_github_release:
           package: << parameters.package >>
