@@ -65,6 +65,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - include docs/lib.md in cargo package(pr [#222])
 - ci: use | delimiter in sed to handle / in pubkey(pr [#223])
 - ci: switch git remote to SSH before cargo release(pr [#224])
+- ci: correct pcu release args and nextsv workspace tag(pr [#225])
 
 ## [0.1.4] - 2026-01-11
 
@@ -540,6 +541,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#222]: https://github.com/jerus-org/gen-changelog/pull/222
 [#223]: https://github.com/jerus-org/gen-changelog/pull/223
 [#224]: https://github.com/jerus-org/gen-changelog/pull/224
+[#225]: https://github.com/jerus-org/gen-changelog/pull/225
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
