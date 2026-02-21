@@ -1,12 +1,6 @@
 version: 2.1
 
 parameters:
-  fingerprint:
-    type: string
-    default: SHA256:OkxsH8Z6Iim6WDJBaII9eTT9aaO1f3eDc6IpsgYYPVg
-  min_rust_version:
-    type: string
-    default: "1.87"
   gen_changelog_version:
     type: string
     default: ""
@@ -711,29 +705,13 @@ jobs:
             echo "Approved version for << parameters.package >>: $VERSION"
             echo "export NEXT_VERSION=$VERSION" >> "$BASH_ENV"
             echo "export SEMVER=$VERSION" >> "$BASH_ENV"
-      - add_ssh_keys:
-          fingerprints:
-            - << pipeline.parameters.fingerprint >>
-      - run:
-          name: Remove original SSH key from agent
-          command: |
-            ssh-add -l
-            # GitHub App integration doesn't create id_rsa.pub, handle gracefully
-            if [ -f ~/.ssh/id_rsa.pub ]; then
-              ssh-add -d ~/.ssh/id_rsa.pub
-            else
-              echo "No id_rsa.pub found (GitHub App integration) - skipping removal"
-            fi
-            ssh-add -l
       - toolkit/gpg_key
       - toolkit/git_config
+      # Update pcu to latest (needed for make_github_release and push with GitHub App authority)
       - run:
-          name: Switch git remote to SSH for branch-protection bypass
+          name: Update to latest pcu
           command: |
-            HTTPS_URL=$(git remote get-url origin)
-            SSH_URL=$(echo "$HTTPS_URL" | sed 's|https://github.com/|git@github.com:|')
-            git remote set-url origin "$SSH_URL"
-            echo "Remote updated: $SSH_URL"
+            cargo install --force --git https://github.com/jerus-org/pcu --branch main
       # Install rsign2 for binary signing (prototype: migrate to ci-container later)
       - when:
           condition: << parameters.build_binary >>
@@ -771,10 +749,11 @@ jobs:
                 asset_path: << parameters.binary_name >>-<< parameters.target >>.tar.gz
             - inject_pubkey_and_amend:
                 package: << parameters.package >>
-      # Step 9: Push the amended release commit and tag via SSH.
+      # Step 9: Push the amended release commit and tag via GitHub App HTTPS.
+      # GITHUB_TOKEN from pcu-app context carries branch protection bypass authority.
       # Skipped when SKIP_RELEASE=true (already on remote).
       - run:
-          name: Push release commit and tag via SSH
+          name: Push release commit and tag
           command: |
             set -eo pipefail
             VERSION="${SEMVER:-${NEXT_VERSION:-none}}"
@@ -784,13 +763,8 @@ jobs:
             fi
             TAG="<< parameters.package >>-v${VERSION}"
             echo "Pushing main and ${TAG}..."
-            git push origin main "${TAG}"
-      # Step 10: Update pcu to latest version
-      - run:
-          name: Update to latest pcu
-          command: |
-            cargo install --force --git https://github.com/jerus-org/pcu --branch main
-      # Step 11: Create GitHub release (idempotent — checks for existing release first)
+            git push "https://x-access-token:${GITHUB_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}.git" main "${TAG}"
+      # Step 10: Create GitHub release (idempotent — checks for existing release first)
       - make_github_release:
           package: << parameters.package >>
           verbosity: "-vv"
@@ -841,28 +815,8 @@ jobs:
             echo "Approved workspace version: $WORKSPACE_VERSION"
             echo "export NEXT_VERSION=$WORKSPACE_VERSION" >> "$BASH_ENV"
             echo "export SEMVER=$WORKSPACE_VERSION" >> "$BASH_ENV"
-      - add_ssh_keys:
-          fingerprints:
-            - << pipeline.parameters.fingerprint >>
-      - run:
-          name: Remove original SSH key from agent
-          command: |
-            ssh-add -l
-            if [ -f ~/.ssh/id_rsa.pub ]; then
-              ssh-add -d ~/.ssh/id_rsa.pub
-            else
-              echo "No id_rsa.pub found (GitHub App integration) - skipping removal"
-            fi
-            ssh-add -l
       - toolkit/gpg_key
       - toolkit/git_config
-      - run:
-          name: Switch git remote to SSH for branch-protection bypass
-          command: |
-            HTTPS_URL=$(git remote get-url origin)
-            SSH_URL=$(echo "$HTTPS_URL" | sed 's|https://github.com/|git@github.com:|')
-            git remote set-url origin "$SSH_URL"
-            echo "Remote updated: $SSH_URL"
       - run:
           name: Pull latest main
           command: git pull --rebase origin main
@@ -903,6 +857,7 @@ workflows:
           context:
             - release
             - bot-check
+            - pcu-app
 
       # Release workspace (v* tag) and update PRLOG after crate release.
       # Crate release only creates gen-changelog-v* tags; workspace release
@@ -912,3 +867,4 @@ workflows:
           context:
             - release
             - bot-check
+            - pcu-app
