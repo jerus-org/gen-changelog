@@ -11,7 +11,7 @@ parameters:
     description: "Version override for workspace release (empty = auto-detect via nextsv)"
 
 orbs:
-  toolkit: jerus-org/circleci-toolkit@4.4.3
+  toolkit: jerus-org/circleci-toolkit@4.5.0
 
 # Commands designed for future migration to circleci-toolkit
 # These extend existing toolkit patterns with backward-compatible parameters
