@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - deps: update dependency toolkit to v4.5.0(pr [#234])
+- deps: update dependency toolkit to v4.5.1(pr [#236])
 
 ## [0.1.5] - 2026-02-21
 
@@ -554,6 +555,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#225]: https://github.com/jerus-org/gen-changelog/pull/225
 [#234]: https://github.com/jerus-org/gen-changelog/pull/234
 [#235]: https://github.com/jerus-org/gen-changelog/pull/235
+[#236]: https://github.com/jerus-org/gen-changelog/pull/236
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...HEAD
 [0.1.5]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
