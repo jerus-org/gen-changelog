@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- replace inline jobs with toolkit jobs(pr [#235])
+
 ### Fixed
 
 - deps: update dependency toolkit to v4.5.0(pr [#234])
@@ -549,6 +553,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#224]: https://github.com/jerus-org/gen-changelog/pull/224
 [#225]: https://github.com/jerus-org/gen-changelog/pull/225
 [#234]: https://github.com/jerus-org/gen-changelog/pull/234
+[#235]: https://github.com/jerus-org/gen-changelog/pull/235
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...HEAD
 [0.1.5]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
