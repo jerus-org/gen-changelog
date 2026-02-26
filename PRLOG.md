@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - replace inline jobs with toolkit jobs(pr [#235])
 
+### Changed
+
+- chore-remove redundant pcu runtime installs(pr [#238])
+
 ### Fixed
 
 - deps: update dependency toolkit to v4.5.0(pr [#234])
@@ -558,6 +562,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#235]: https://github.com/jerus-org/gen-changelog/pull/235
 [#236]: https://github.com/jerus-org/gen-changelog/pull/236
 [#237]: https://github.com/jerus-org/gen-changelog/pull/237
+[#238]: https://github.com/jerus-org/gen-changelog/pull/238
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...HEAD
 [0.1.5]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
