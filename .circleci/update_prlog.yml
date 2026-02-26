@@ -19,7 +19,7 @@ parameters:
     default: "1.87"
   update_pcu:
     type: boolean
-    default: false
+    default: true
     description: "If true, pcu is updated from its main github branch before running."
 
 orbs:
@@ -27,30 +27,26 @@ orbs:
 
 jobs:
   update-prlog-on-main:
-    # SOURCE: toolkit@4.4.3/jobs/update_prlog
-    # ENHANCEMENT: Added "Switch to main branch" step after checkout to handle the
-    #   GitHub "pr merged" event, which sets pipeline.git.branch AND CIRCLE_BRANCH
-    #   to the PR's HEAD branch (now deleted). pcu reads CIRCLE_BRANCH for its push
-    #   target, so git checkout alone is insufficient — CIRCLE_BRANCH must also be
-    #   overridden via $BASH_ENV before pcu runs.
-    # PLAN: Propose target_branch parameter upstream to toolkit/update_prlog
+    # SOURCE: toolkit@4.5.2/jobs/update_prlog
+    # ENHANCEMENT: Uses `pcu checkout --branch main` to handle the GitHub "pr merged"
+    #   event, which sets pipeline.git.branch AND CIRCLE_BRANCH to the PR's HEAD
+    #   branch (now deleted). pcu checkout fetches, switches branch, AND overrides
+    #   CIRCLE_BRANCH in $BASH_ENV — replacing three bash lines with one command.
+    # PLAN: Propose target_branch parameter upstream to toolkit/update_prlog@4.5.3
     executor:
       name: toolkit/rust_env
       min_rust_version: << pipeline.parameters.min-rust-version >>
     steps:
       - checkout
-      - run:
-          name: Switch to main branch
-          command: |
-            git fetch origin main
-            git checkout main
-            echo 'export CIRCLE_BRANCH=main' >> "$BASH_ENV"
-      - toolkit/gpg_key
-      - toolkit/git_config
       - when:
           condition: << pipeline.parameters.update_pcu >>
           steps:
             - toolkit/install_latest_pcu
+      - run:
+          name: Switch to main branch
+          command: pcu checkout --branch main
+      - toolkit/gpg_key
+      - toolkit/git_config
       - run:
           name: pcu version
           command: pcu --version
