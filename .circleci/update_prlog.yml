@@ -19,7 +19,7 @@ parameters:
     default: "1.87"
   update_pcu:
     type: boolean
-    default: true
+    default: false
     description: "If true, pcu is updated from its main github branch before running."
 
 orbs:
