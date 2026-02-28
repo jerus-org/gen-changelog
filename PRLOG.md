@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - use pcu checkout in update_prlog(pr [#239])
 
+### Changed
+
+- chore-use toolkit/update_prlog@4.6.0(pr [#240])
+
 ## [0.1.6] - 2026-02-26
 
 ### Added
@@ -570,6 +574,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#237]: https://github.com/jerus-org/gen-changelog/pull/237
 [#238]: https://github.com/jerus-org/gen-changelog/pull/238
 [#239]: https://github.com/jerus-org/gen-changelog/pull/239
+[#240]: https://github.com/jerus-org/gen-changelog/pull/240
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...HEAD
 [0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...v0.1.5
