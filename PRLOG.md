@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - chore-use toolkit/update_prlog@4.6.0(pr [#240])
+- chore-rolling builds, remove obsolete params, bump toolkit to 4.7.0(pr [#241])
 
 ## [0.1.6] - 2026-02-26
 
@@ -575,6 +576,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#238]: https://github.com/jerus-org/gen-changelog/pull/238
 [#239]: https://github.com/jerus-org/gen-changelog/pull/239
 [#240]: https://github.com/jerus-org/gen-changelog/pull/240
+[#241]: https://github.com/jerus-org/gen-changelog/pull/241
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...HEAD
 [0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...v0.1.5
