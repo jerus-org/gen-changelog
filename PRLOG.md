@@ -6,6 +6,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- use pcu checkout in update_prlog(pr [#239])
+
+### Changed
+
+- chore-use toolkit/update_prlog@4.6.0(pr [#240])
+- chore-rolling builds, remove obsolete params, bump toolkit to 4.7.0(pr [#241])
+- chore-update toolkit to 4.7.1(pr [#242])
+
+### Fixed
+
+- use container pcu in update_prlog(pr [#243])
+- deps: update rust crate chrono to 0.4.44(pr [#226])
+- deps: update rust crate clap to 4.5.60(pr [#227])
+- deps: update rust crate env_logger to 0.11.9(pr [#229])
+- deps: update rust crate toml to 1.0.3(pr [#230])
+
+## [0.1.6] - 2026-02-26
+
+### Added
+
+- replace inline jobs with toolkit jobs(pr [#235])
+
+### Changed
+
+- chore-remove redundant pcu runtime installs(pr [#238])
+
+### Fixed
+
+- deps: update dependency toolkit to v4.5.0(pr [#234])
+- deps: update dependency toolkit to v4.5.1(pr [#236])
+- deps: update dependency toolkit to v4.5.2(pr [#237])
+
 ## [0.1.5] - 2026-02-21
 
 ### Added
@@ -542,6 +578,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#223]: https://github.com/jerus-org/gen-changelog/pull/223
 [#224]: https://github.com/jerus-org/gen-changelog/pull/224
 [#225]: https://github.com/jerus-org/gen-changelog/pull/225
+[#234]: https://github.com/jerus-org/gen-changelog/pull/234
+[#235]: https://github.com/jerus-org/gen-changelog/pull/235
+[#236]: https://github.com/jerus-org/gen-changelog/pull/236
+[#237]: https://github.com/jerus-org/gen-changelog/pull/237
+[#238]: https://github.com/jerus-org/gen-changelog/pull/238
+[#239]: https://github.com/jerus-org/gen-changelog/pull/239
+[#240]: https://github.com/jerus-org/gen-changelog/pull/240
+[#241]: https://github.com/jerus-org/gen-changelog/pull/241
+[#242]: https://github.com/jerus-org/gen-changelog/pull/242
+[#243]: https://github.com/jerus-org/gen-changelog/pull/243
+[#226]: https://github.com/jerus-org/gen-changelog/pull/226
+[#227]: https://github.com/jerus-org/gen-changelog/pull/227
+[#229]: https://github.com/jerus-org/gen-changelog/pull/229
+[#230]: https://github.com/jerus-org/gen-changelog/pull/230
+[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...HEAD
+[0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3

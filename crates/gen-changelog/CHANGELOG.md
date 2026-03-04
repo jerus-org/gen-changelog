@@ -5,134 +5,106 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.6] - 2026-02-21
+## [0.1.7] - 2026-02-26
 
-Summary: Added[13], Build[2], Changed[9], Chore[42], Continuous Integration[25], Documentation[2], Fixed[58]
+Summary: Added[2], Chore[8], Fixed[4]
 
 ### Added
 
- - feat(ci): calculate versions before approval gate (#220)
+ - feat(ci): replace inline jobs with toolkit jobs
+ - feat(ci): add workspace_version pipeline parameter
+
+### Fixed
+
+ - fix(deps): update dependency toolkit to v4.5.2
+ - fix(deps): update dependency toolkit to v4.5.1
+ - fix(deps): update dependency toolkit to v4.5.0
+ - fix(ci): correct pcu release args and nextsv workspace tag
+
+## [0.1.6] - 2026-02-21
+
+Summary: 
+
+## [0.1.5] - 2026-02-21
+
+Summary: Added[8], Build[1], Changed[6], Chore[43], Continuous Integration[15], Documentation[1], Fixed[33]
+
+### Added
+
+ - feat(ci): add workspace_version pipeline parameter
  - feat(ci): calculate versions before approval gate
- - feat(ci): move post-merge work to update_prlog.yml (#205)
  - feat(ci): move post-merge work to update_prlog.yml
- - feat(ci): add release-prlog job for workspace release (#204)
  - feat(ci): add release-prlog job for workspace release
- - feat: add cargo-binstall release pipeline (#199)
  - feat: add cargo-binstall release pipeline
- - feat: exclude merge commits from changelog (#197)
  - feat: exclude merge commits from changelog
- - feat: add security improvements to CI (#196)
  - feat: add security improvements to CI
  - ✨ feat(package): add commit relation detection to RustPackage
 
 ### Fixed
 
- - fix(ci): switch git remote to SSH before cargo release (#224)
+ - fix(ci): correct pcu release args and nextsv workspace tag
  - fix(ci): use pcu push for release commit and tag
  - fix(ci): replace SSH push with GitHub App HTTPS
  - fix(ci): correct release ordering and SSH push for binstall key integrity
- - fix(ci): use | delimiter in sed to handle / in pubkey (#223)
  - fix(ci): use | delimiter in sed to handle / in pubkey
- - fix: include docs/lib.md in cargo package (#222)
  - fix: move docs into crate and restore README rebuild
  - fix: include docs/lib.md in cargo package
- - fix(release): remove non-existent src/lib.rs from replacements (#221)
  - fix(release): remove non-existent src/lib.rs from replacements
- - fix(prlog): backfill missing entries for PRs #205-#217 (#219)
  - fix(prlog): conform entries to pcu format
  - fix(prlog): backfill missing entries for PRs #205-#217
- - fix(ci): remove explicit SSH key, rely on pcu-app context (#218)
  - fix(ci): remove explicit SSH key, rely on pcu-app context
- - fix(ci): add github.com to SSH known_hosts (#217)
  - fix(ci): add github.com to SSH known_hosts
- - fix(ci): switch remote to SSH before pcu push (#216)
  - fix(ci): switch remote to SSH before pcu push
- - fix(ci): enable update_pcu in update_prlog pipeline (#214)
  - fix(ci): enable update_pcu in update_prlog pipeline
- - fix(ci): add pcu-app context to update_prlog job (#213)
  - fix(ci): restore pcu --push for GitHub App authority
  - fix(ci): add pcu-app context to update_prlog job
- - fix(ci): push PRLOG update explicitly (#212)
  - fix(ci): push PRLOG update explicitly
- - fix(ci): add debug logging to pcu early-exit (#211)
  - fix(ci): add debug logging to pcu early-exit
- - fix(ci): override CIRCLE_BRANCH=main before pcu runs (#210)
  - fix(ci): override CIRCLE_BRANCH=main before pcu runs
- - fix(ci): switch to main in update-prlog-on-main job (#208)
  - fix(ci): switch to main in update-prlog-on-main job
- - fix(ci): remove branch filters from update_prlog.yml (#207)
  - fix(ci): remove branch filters from update_prlog.yml
- - fix(ci): install rsign2 outside workspace (#203)
  - fix(ci): install rsign2 outside workspace
- - fix(ci): use cargo install for rsign2 (#202)
  - fix(ci): use cargo install for rsign2
- - fix(deps): update rust crate toml to v1 (#201)
  - fix(deps): update rust crate toml to v1
- - fix(deps): update cli test tools to v1 (major) (#200)
  - fix(deps): update cli test tools to v1
- - fix(deps): update dependency toolkit to v4.4.3 (#198)
  - fix(deps): update dependency toolkit to v4.4.3
- - fix(deps): update rust crate uuid to 1.20.0 (#181)
  - fix(deps): update rust crate uuid to 1.20.0
- - fix(deps): update rust crate git2 to 0.20.4 (#180)
  - fix(deps): update rust crate git2 to 0.20.4
- - fix(deps): update rust crate clap to 4.5.56 (#179)
  - fix(deps): update rust crate clap to 4.5.56
- - fix(deps): update dependency toolkit to v4.2.4 (#178)
  - fix(deps): update dependency toolkit to v4.2.4
- - fix(deps): update rust crate thiserror to 2.0.18 (#177)
  - fix(deps): update rust crate thiserror to 2.0.18
- - fix(deps): update rust crate chrono to 0.4.43 (#176)
  - fix(deps): update rust crate chrono to 0.4.43
  - fix: mark doc tests requiring git repo as ignored
 
 ### Changed
 
- - ♻️ refactor(gen-changelog): reorganize source files structure (#193)
  - ♻️ refactor(gen-changelog): reorganize source files structure
- - ♻️ refactor(gen-changelog): remove unnecessary package argument (#192)
  - ♻️ refactor(gen-changelog): remove unnecessary package argument
  - ♻️ refactor(package): enhance logging in package relation check
  - ♻️ refactor(change_log): integrate RustPackage for commit filtering
  - ♻️ refactor(package): restructure Cargo handling
- - refactor: convert to workspace structure (#175)
  - refactor: convert to workspace structure
 
 ## [0.1.4] - 2026-01-11
 
-Summary: Chore[17], Continuous Integration[1], Fixed[32]
+Summary: Chore[17], Continuous Integration[1], Fixed[17]
 
 ### Fixed
 
- - fix(deps): update rust crate uuid to 1.19.0 (#172)
  - fix(deps): update rust crate uuid to 1.19.0
- - fix(deps): update rust crate tempfile to 3.24.0 (#171)
  - fix(deps): update rust crate tempfile to 3.24.0
- - fix(deps): update rust crate lazy-regex to 3.5.1 (#170)
  - fix(deps): update rust crate lazy-regex to 3.5.1
- - fix(deps): update rust crate criterion to 0.8.1 (#169)
  - fix(deps): update rust crate criterion to 0.8.1
- - fix(deps): update rust crate url to 2.5.8 (#166)
  - fix(deps): update rust crate url to 2.5.8
- - fix(deps): update serde packages (#167)
  - fix(deps): update serde packages
- - fix(deps): update rust crate trycmd to 0.15.11 (#165)
  - fix(deps): update rust crate trycmd to 0.15.11
- - fix(deps): update rust crate toml to 0.9.11 (#164)
  - fix(deps): update rust crate toml to 0.9.11
- - fix(deps): update rust crate thiserror to 2.0.17 (#163)
  - fix(deps): update rust crate thiserror to 2.0.17
- - fix(deps): update rust crate snapbox to 0.6.24 (#162)
  - fix(deps): update rust crate snapbox to 0.6.24
- - fix(deps): update rust crate semver to 1.0.27 (#161)
  - fix(deps): update rust crate semver to 1.0.27
- - fix(deps): update rust crate log to 0.4.29 (#160)
  - fix(deps): update rust crate log to 0.4.29
- - fix(deps): update rust crate git2 to 0.20.3 (#159)
  - fix(deps): update rust crate git2 to 0.20.3
- - fix(deps): update rust crate clap to 4.5.54 (#158)
  - fix(deps): update rust crate clap to 4.5.54
- - fix(deps): update rust crate chrono to 0.4.42 (#157)
  - fix(deps): update rust crate chrono to 0.4.42
  - 🐛 fix(change_log): correct trace log placement in section.rs
  - fix(deps): update dependency toolkit to v4
@@ -482,7 +454,9 @@ Summary: Added[62], Build[6], Changed[59], Chore[96], Continuous Integration[21]
 
 Summary: 
 
-[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...HEAD
+[0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...v0.1.6
+[0.1.5]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/jerus-org/gen-changelog/compare/v0.1.1...v0.1.2
