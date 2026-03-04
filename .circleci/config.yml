@@ -1,35 +1,15 @@
 version: 2.1
 
 parameters:
-  fingerprint:
-    type: string
-    default: SHA256:OkxsH8Z6Iim6WDJBaII9eTT9aaO1f3eDc6IpsgYYPVg
   min-rust-version:
     type: string
     default: "1.87"
-  success_flag:
-    type: boolean
-    default: false
-    description: "If true, the validation pipeline will be suppressed."
-  validation_flag:
-    type: boolean
-    default: false
-    description: "If true, the validation pipeline will be executed."
-  update_pcu:
-    type: boolean
-    default: false
-    description: "If true, the pcu tool is updated from its main github branch."
 
 orbs:
-  toolkit: jerus-org/circleci-toolkit@4.4.3
+  toolkit: jerus-org/circleci-toolkit@4.7.1
 
 workflows:
   validation:
-    when:
-      and:
-        - not:
-            equal: [scheduled_pipeline, << pipeline.trigger_source >>]
-        - not: << pipeline.parameters.success_flag >>
     jobs:
       # Signature verification for trusted PRs (with write access for comments)
       - toolkit/verify_commit_signatures:
@@ -50,42 +30,39 @@ workflows:
           filters:
             branches:
               only: /pull\/[0-9]+/
-      - toolkit/required_builds:
+      - toolkit/required_builds_rolling:
           min_rust_version: << pipeline.parameters.min-rust-version >>
-          requires:
-            - security audit only
       - toolkit/optional_builds:
           filters:
             branches:
               ignore:
                 - main
           min_rust_version: << pipeline.parameters.min-rust-version >>
-          requires:
-            - security audit only
       - toolkit/test_doc_build:
           filters:
             branches:
               ignore:
                 - main
           min_rust_version: << pipeline.parameters.min-rust-version >>
-          requires:
-            - security audit only
-      - toolkit/common_tests:
+      - toolkit/common_tests_rolling:
           min_rust_version: << pipeline.parameters.min-rust-version >>
           test_runner: nextest
-          requires:
-            - security audit only
       - toolkit/idiomatic_rust:
           filters:
             branches:
               ignore:
                 - main
           min_rust_version: << pipeline.parameters.min-rust-version >>
-          requires:
-            - security audit only
+      # security audit only: runs on forked PRs (no secrets exposure) and main
       - toolkit/security:
           name: security audit only
           sonarcloud: false
+          filters:
+            branches:
+              only:
+                - main
+                - /pull\/[0-9]+/
+      # security with sonarcloud: runs on trusted feature branches only
       - toolkit/security:
           name: security with sonarcloud
           context: SonarCloud
