@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - use container pcu in update_prlog(pr [#243])
+- deps: update rust crate chrono to 0.4.44(pr [#226])
 
 ## [0.1.6] - 2026-02-26
 
@@ -584,6 +585,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#241]: https://github.com/jerus-org/gen-changelog/pull/241
 [#242]: https://github.com/jerus-org/gen-changelog/pull/242
 [#243]: https://github.com/jerus-org/gen-changelog/pull/243
+[#226]: https://github.com/jerus-org/gen-changelog/pull/226
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...HEAD
 [0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...v0.1.5
