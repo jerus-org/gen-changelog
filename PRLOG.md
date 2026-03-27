@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - chore-use toolkit/update_prlog@4.6.0(pr [#240])
 - chore-rolling builds, remove obsolete params, bump toolkit to 4.7.0(pr [#241])
 - chore-update toolkit to 4.7.1(pr [#242])
+- chore-migrate CI to circleci-toolkit 6.0.0(pr [#252])
 
 ### Fixed
 
@@ -598,6 +599,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#232]: https://github.com/jerus-org/gen-changelog/pull/232
 [#233]: https://github.com/jerus-org/gen-changelog/pull/233
 [#231]: https://github.com/jerus-org/gen-changelog/pull/231
+[#252]: https://github.com/jerus-org/gen-changelog/pull/252
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...HEAD
 [0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...v0.1.5
