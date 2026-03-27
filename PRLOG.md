@@ -18,6 +18,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - chore-rolling builds, remove obsolete params, bump toolkit to 4.7.0(pr [#241])
 - chore-update toolkit to 4.7.1(pr [#242])
 
+### Fixed
+
+- use container pcu in update_prlog(pr [#243])
+- deps: update rust crate chrono to 0.4.44(pr [#226])
+- deps: update rust crate clap to 4.5.60(pr [#227])
+- deps: update rust crate env_logger to 0.11.9(pr [#229])
+- deps: update rust crate toml to 1.0.3(pr [#230])
+- deps: update rust crate tempfile to 3.25.0(pr [#232])
+- deps: update rust crate uuid to 1.21.0(pr [#233])
+- deps: update rust crate lazy-regex to 3.6.0(pr [#231])
+
 ## [0.1.6] - 2026-02-26
 
 ### Added
@@ -579,6 +590,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#240]: https://github.com/jerus-org/gen-changelog/pull/240
 [#241]: https://github.com/jerus-org/gen-changelog/pull/241
 [#242]: https://github.com/jerus-org/gen-changelog/pull/242
+[#243]: https://github.com/jerus-org/gen-changelog/pull/243
+[#226]: https://github.com/jerus-org/gen-changelog/pull/226
+[#227]: https://github.com/jerus-org/gen-changelog/pull/227
+[#229]: https://github.com/jerus-org/gen-changelog/pull/229
+[#230]: https://github.com/jerus-org/gen-changelog/pull/230
+[#232]: https://github.com/jerus-org/gen-changelog/pull/232
+[#233]: https://github.com/jerus-org/gen-changelog/pull/233
+[#231]: https://github.com/jerus-org/gen-changelog/pull/231
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...HEAD
 [0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...v0.1.5
