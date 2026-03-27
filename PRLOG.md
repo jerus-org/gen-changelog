@@ -30,6 +30,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update rust crate uuid to 1.21.0(pr [#233])
 - deps: update rust crate lazy-regex to 3.6.0(pr [#231])
 - deps: update rust crate env_logger to 0.11.10(pr [#244])
+- deps: update cli test tools to 1.2.0(pr [#245])
 
 ## [0.1.6] - 2026-02-26
 
@@ -602,6 +603,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#231]: https://github.com/jerus-org/gen-changelog/pull/231
 [#252]: https://github.com/jerus-org/gen-changelog/pull/252
 [#244]: https://github.com/jerus-org/gen-changelog/pull/244
+[#245]: https://github.com/jerus-org/gen-changelog/pull/245
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...HEAD
 [0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...v0.1.5
