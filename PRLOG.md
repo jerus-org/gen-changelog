@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update rust crate clap to 4.6.0(pr [#247])
 - deps: update rust crate tempfile to 3.27.0(pr [#248])
 - deps: update rust crate toml to 1.1.0(pr [#249])
+- deps: update rust crate uuid to 1.23.0(pr [#250])
 
 ## [0.1.6] - 2026-02-26
 
@@ -610,6 +611,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#247]: https://github.com/jerus-org/gen-changelog/pull/247
 [#248]: https://github.com/jerus-org/gen-changelog/pull/248
 [#249]: https://github.com/jerus-org/gen-changelog/pull/249
+[#250]: https://github.com/jerus-org/gen-changelog/pull/250
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...HEAD
 [0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...v0.1.5
