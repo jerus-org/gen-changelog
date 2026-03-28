@@ -5,9 +5,40 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.8] - 2026-03-28
+
+Summary: Added[1], Chore[25], Fixed[16]
+
+### Added
+
+ - feat: use pcu checkout in update_prlog
+
+### Fixed
+
+ - fix: remove jq from tools verification (not in rust_env_rolling)
+ - fix(deps): update rust crate uuid to 1.23.0
+ - fix(deps): update rust crate toml to 1.1.0
+ - fix(deps): update rust crate tempfile to 3.27.0
+ - fix(deps): update rust crate clap to 4.6.0
+ - fix(deps): update cli test tools to 1.2.0
+ - fix(deps): update rust crate env_logger to 0.11.10
+ - fix(deps): update rust crate lazy-regex to 3.6.0
+ - fix(deps): update rust crate toml to 1.0.3
+ - fix(deps): update rust crate env_logger to 0.11.9
+ - fix(deps): update rust crate criterion to 0.8.2
+ - fix(deps): update rust crate clap to 4.5.60
+ - fix(deps): update rust crate chrono to 0.4.44
+ - fix: use container pcu in update_prlog
+ - fix(deps): update rust crate uuid to 1.21.0
+ - fix(deps): update rust crate tempfile to 3.25.0
+
 ## [0.1.7] - 2026-02-26
 
-Summary: Added[2], Chore[8], Fixed[4]
+Summary: 
+
+## [0.1.6] - 2026-02-26
+
+Summary: Added[2], Chore[10], Fixed[4]
 
 ### Added
 
@@ -454,7 +485,9 @@ Summary: Added[62], Build[6], Changed[59], Chore[96], Continuous Integration[21]
 
 Summary: 
 
-[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...HEAD
+[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.7...HEAD
+[0.1.7]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...v0.1.7
+[0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...v0.1.6
 [0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4

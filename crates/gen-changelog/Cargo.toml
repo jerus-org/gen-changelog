@@ -2,7 +2,7 @@
 name = "gen-changelog"
 description = """Generate a change log based on the git commits compatible
 with keep-a-changelog and using conventional commits to categorise commits."""
-version = "0.1.7"
+version = "0.1.8"
 license = "MIT OR Apache-2.0"
 readme = "README.md"
 keywords = ["keep-a-changelog", "conventional-commits", "changelog"]
@@ -69,4 +69,4 @@ pkg-fmt = "tgz"
 
 [package.metadata.binstall.signing]
 algorithm = "minisign"
-pubkey = "RWTcYF6Cb1IHR+l0T7nUZiDgHMxYaWLu6f9mE5UG37i7RRqaJF0Z4iwL"
+pubkey = "RWTGY9jKlOgs3sSx/g9WV8Lri/K/JuUqkvpisNY+rb008bw0Bn2ERdKs"
