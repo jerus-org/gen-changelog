@@ -119,12 +119,17 @@ impl Section {
             if !self.include_merge_commits && commit.parent_count() > 1 {
                 log::debug!(
                     "Skipping merge commit: {}",
-                    commit.summary().unwrap_or("***no subject***")
+                    commit
+                        .summary()
+                        .ok()
+                        .flatten()
+                        .unwrap_or("***no subject***")
                 );
                 continue;
             }
 
-            let summary = commit.summary();
+            // git2 0.21: Commit::summary() returns Result<Option<&str>, Error>.
+            let summary = commit.summary().ok().flatten();
 
             // Filter out commits not in scope for a package
             if let Some(rp) = rust_package {
@@ -145,7 +150,8 @@ impl Section {
                 }
             }
 
-            let body = commit.body();
+            // git2 0.21: Commit::body() returns Result<Option<&str>, Error>.
+            let body = commit.body().ok().flatten();
             if summary.is_some() {
                 self.add_commit(summary, body);
             }

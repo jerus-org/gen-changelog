@@ -546,9 +546,8 @@ impl ChangeLogBuilder {
     fn get_remote_details(&mut self, repository: &Repository) -> Result<(), Error> {
         let config = repository.config()?;
         let url = config.get_entry("remote.origin.url")?;
-        let Some(haystack) = url.value() else {
-            return Err(Error::UrlNotFound);
-        };
+        // git2 0.21: ConfigEntry::value() returns Result<&str, Error>.
+        let haystack = url.value().map_err(|_| Error::UrlNotFound)?;
 
         let captures = REMOTE.captures(haystack);
 
