@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- ci-run sonarcloud security on main(pr [#262])
+
 ### Fixed
 
 - deps: update dependency toolkit to v6.2.0(pr [#259])
@@ -635,6 +639,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#258]: https://github.com/jerus-org/gen-changelog/pull/258
 [#260]: https://github.com/jerus-org/gen-changelog/pull/260
 [#261]: https://github.com/jerus-org/gen-changelog/pull/261
+[#262]: https://github.com/jerus-org/gen-changelog/pull/262
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.7...HEAD
 [0.1.7]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...v0.1.6
