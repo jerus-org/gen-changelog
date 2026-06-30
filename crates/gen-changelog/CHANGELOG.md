@@ -5,9 +5,38 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.9] - 2026-06-30
+
+Summary: Chore[18], Continuous Integration[1], Fixed[18]
+
+### Fixed
+
+ - fix(deps): update rust crate cargo_toml to v1
+ - fix(deps): update rust crate env_logger to 0.11.11
+ - fix(deps): update rust crate uuid to 1.23.4
+ - fix(deps): update rust crate log to 0.4.33
+ - fix(deps): update rust crate chrono to 0.4.45
+ - fix(deps): update rust crate snapbox to 1.2.2
+ - fix: update anyhow to fix RUSTSEC-2026-0190
+ - fix(deps): update dependency toolkit to v6.5.0
+ - fix(deps): update dependency toolkit to v6.4.2
+ - fix: adapt to git2 0.21 breaking changes
+ - fix(deps): update git2 packages to 0.21.0
+ - fix(deps): update rust crate serde_json to 1.0.150
+ - fix(deps): update rust crate uuid to 1.23.1
+ - fix(deps): update rust crate toml to 1.1.2
+ - fix(deps): update rust crate snapbox to 1.2.1
+ - fix(deps): update rust crate semver to 1.0.28
+ - fix(deps): update rust crate clap to 4.6.1
+ - fix(deps): update dependency toolkit to v6.2.0
+
 ## [0.1.8] - 2026-03-28
 
-Summary: Added[1], Chore[25], Fixed[16]
+Summary: 
+
+## [0.1.7] - 2026-03-28
+
+Summary: Added[1], Chore[27], Fixed[16]
 
 ### Added
 
@@ -485,7 +514,9 @@ Summary: Added[62], Build[6], Changed[59], Chore[96], Continuous Integration[21]
 
 Summary: 
 
-[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.7...HEAD
+[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.8...HEAD
+[0.1.8]: https://github.com/jerus-org/gen-changelog/compare/v0.1.7...v0.1.8
+[0.1.7]: https://github.com/jerus-org/gen-changelog/compare/v0.1.7...v0.1.7
 [0.1.7]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...v0.1.6
 [0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...v0.1.6
