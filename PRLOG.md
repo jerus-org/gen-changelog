@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update git2 packages to 0.21.0(pr [#261])
 - deps: update dependency toolkit to v6.4.2(pr [#267])
 - deps: update dependency toolkit to v6.5.0(pr [#271])
+- deps: update rust crate snapbox to 1.2.2(pr [#263])
 
 ## [0.1.7] - 2026-03-28
 
@@ -644,6 +645,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#262]: https://github.com/jerus-org/gen-changelog/pull/262
 [#267]: https://github.com/jerus-org/gen-changelog/pull/267
 [#271]: https://github.com/jerus-org/gen-changelog/pull/271
+[#263]: https://github.com/jerus-org/gen-changelog/pull/263
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.7...HEAD
 [0.1.7]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...v0.1.7
 [0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...v0.1.6
