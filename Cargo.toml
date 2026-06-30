@@ -13,7 +13,7 @@ cargo_toml = "0.22.3"
 chrono = { version = "0.4.45", features = ["alloc"] }
 clap = { version = "4.6.1", features = ["derive"] }
 clap-verbosity-flag = "3.0.4"
-env_logger = "0.11.10"
+env_logger = "0.11.11"
 git2 = "0.21.0"
 lazy-regex = "3.6.0"
 log = "0.4.33"
