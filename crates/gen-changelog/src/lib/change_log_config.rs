@@ -586,6 +586,27 @@ impl ChangeLogConfig {
         &self.release_pattern
     }
 
+    /// Sets the release pattern used to identify Git tags as release tags.
+    ///
+    /// The default is [`ReleasePattern::Prefix`] with a `"v"` prefix (matching
+    /// bare workspace tags such as `v1.0.0`). Selecting
+    /// [`ReleasePattern::PackagePrefix`] restricts release boundaries to a
+    /// single package's `<package>-v*` tags, which — combined with
+    /// [`ChangeLogBuilder::with_package_name`](crate::ChangeLogBuilder) — lets a
+    /// per-crate changelog ignore the workspace shadow `v*` tags.
+    ///
+    /// # Arguments
+    ///
+    /// * `pattern` - The release pattern to use
+    ///
+    /// # Returns
+    ///
+    /// A mutable reference to self for method chaining
+    pub fn set_release_pattern(&mut self, pattern: ReleasePattern) -> &mut Self {
+        self.release_pattern = pattern;
+        self
+    }
+
     /// Returns a reference to the display sections configuration.
     ///
     /// This determines how many changelog sections will be included in the

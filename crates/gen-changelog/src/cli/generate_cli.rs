@@ -1,7 +1,9 @@
 use std::path::PathBuf;
 
 use clap::Parser;
-use gen_changelog::{ChangeLog, ChangeLogConfig, DEFAULT_CHANGELOG_FILENAME, Error, RustPackages};
+use gen_changelog::{
+    ChangeLog, ChangeLogConfig, DEFAULT_CHANGELOG_FILENAME, Error, ReleasePattern, RustPackages,
+};
 use git2::Repository;
 
 #[derive(Parser, Debug)]
@@ -64,13 +66,21 @@ impl GenerateCli {
             None
         };
 
-        let config = self.make_config()?;
+        let mut config = self.make_config()?;
+
+        // When targeting a specific package, treat only that package's
+        // `<package>-v*` tags as release boundaries so the workspace shadow
+        // `v*` tags do not produce duplicate/empty sections (issue #274).
+        if self.package.is_some() {
+            config.set_release_pattern(ReleasePattern::PackagePrefix("v".to_string()));
+        }
 
         let mut change_log_builder = ChangeLog::builder();
         let change_log = change_log_builder
             .with_config(config)
             .with_summary_flag(self.display_summaries)
             .with_rust_package(rust_package)
+            .with_package_name(self.package.clone())
             .walk_repository(&repository)
             .unwrap()
             .update_unreleased_to_next_version(self.next_version.as_ref())

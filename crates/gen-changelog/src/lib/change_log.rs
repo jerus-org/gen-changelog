@@ -187,6 +187,9 @@ pub struct ChangeLogBuilder {
     links: Vec<Link>,
     /// Configuration for changelog generation
     config: ChangeLogConfig,
+    /// Name of the package being generated for, used to restrict release tags
+    /// to that package's `<package>-v*` family (issue #274).
+    package_name: Option<String>,
 }
 
 impl Debug for ChangeLogBuilder {
@@ -221,6 +224,7 @@ impl ChangeLogBuilder {
             summary_flag: bool::default(),
             include_merge_commits: bool::default(),
             config: ChangeLogConfig::default(),
+            package_name: None,
         }
     }
 
@@ -330,6 +334,22 @@ impl ChangeLogBuilder {
     /// Add the package root and dependencies to the configuration
     pub fn with_rust_package(&mut self, rust_package: Option<RustPackage>) -> &mut Self {
         self.rust_package = rust_package;
+        self
+    }
+
+    /// Sets the package name used to restrict release tags to that package's
+    /// `<package>-v*` family.
+    ///
+    /// This is required for [`ReleasePattern::PackagePrefix`] to match: the
+    /// captured package segment of each tag is compared against this name so
+    /// that only the selected package's release tags become changelog
+    /// boundaries, ignoring workspace shadow `v*` tags (issue #274). Has no
+    /// effect under the default [`ReleasePattern::Prefix`].
+    ///
+    /// [`ReleasePattern::PackagePrefix`]: crate::ReleasePattern::PackagePrefix
+    /// [`ReleasePattern::Prefix`]: crate::ReleasePattern::Prefix
+    pub fn with_package_name(&mut self, name: Option<String>) -> &mut Self {
+        self.package_name = name;
         self
     }
 
@@ -647,6 +667,9 @@ impl ChangeLogBuilder {
             let name = String::from_utf8(name.to_vec()).unwrap_or("invalid utf8".to_string());
             log::trace!("processing {name} as a tag");
             let mut tag_builder = Tag::builder(Some(id), name, repository);
+            if let Some(pkg) = &self.package_name {
+                tag_builder.set_package(pkg);
+            }
             let tag = tag_builder
                 .get_semver(self.config.release_pattern())
                 .get_date()
@@ -1141,5 +1164,99 @@ mod tests {
         assert!(output.contains("My Awesome Project"));
         assert!(output.contains("This project does amazing things"));
         assert!(output.contains("Version history below"));
+    }
+
+    /// Builds a temp git repo carrying two version-tag families at different
+    /// commits: a crate tag `gen-circleci-orb-v0.1.0` on commit A and a
+    /// workspace shadow tag `v0.1.0` on commit B. Mirrors the jerus-org
+    /// workspace layout described in issue #274.
+    fn fixture_repo_with_shadow_tags() -> (TempDir, Repository) {
+        let td = setup_temp_dir();
+        let repo = Repository::init(td.path()).expect("init repo");
+        {
+            let mut cfg = repo.config().expect("config");
+            cfg.set_str("user.name", "Test User").unwrap();
+            cfg.set_str("user.email", "test@example.com").unwrap();
+        }
+        // Scope all repo-borrowing objects so they drop before `repo` is moved
+        // out on return.
+        {
+            let sig = repo.signature().expect("signature");
+            let tree_id = repo.index().unwrap().write_tree().unwrap();
+            let tree = repo.find_tree(tree_id).unwrap();
+
+            // Commit A + crate tag
+            let commit_a = repo
+                .commit(Some("HEAD"), &sig, &sig, "feat: initial", &tree, &[])
+                .unwrap();
+            let obj_a = repo.find_object(commit_a, None).unwrap();
+            repo.tag_lightweight("gen-circleci-orb-v0.1.0", &obj_a, false)
+                .unwrap();
+
+            // Commit B (different commit) + workspace shadow tag
+            let parent = repo.find_commit(commit_a).unwrap();
+            let commit_b = repo
+                .commit(Some("HEAD"), &sig, &sig, "chore: ci", &tree, &[&parent])
+                .unwrap();
+            let obj_b = repo.find_object(commit_b, None).unwrap();
+            repo.tag_lightweight("v0.1.0", &obj_b, false).unwrap();
+        }
+
+        (td, repo)
+    }
+
+    /// #274: with a package selected, only that package's `<pkg>-v*` tags are
+    /// treated as release boundaries; the workspace `v*` shadow tag is ignored.
+    #[test]
+    fn test_get_version_tags_package_mode_excludes_shadow() {
+        let (_td, repo) = fixture_repo_with_shadow_tags();
+
+        let mut config = ChangeLogConfig::default();
+        config.set_release_pattern(crate::change_log_config::ReleasePattern::PackagePrefix(
+            "v".to_string(),
+        ));
+
+        let mut builder = ChangeLogBuilder::new();
+        builder
+            .with_config(config)
+            .with_package_name(Some("gen-circleci-orb".to_string()));
+
+        let tags = builder.get_version_tags(&repo).expect("version tags");
+
+        assert_eq!(
+            tags.len(),
+            1,
+            "expected exactly one release tag, got: {:?}",
+            tags.iter().map(|t| t.name()).collect::<Vec<_>>()
+        );
+        assert!(
+            tags[0].name().contains("gen-circleci-orb-v0.1.0"),
+            "expected the crate tag, got `{}`",
+            tags[0].name()
+        );
+    }
+
+    /// #274: workspace-level generation (no package) treats only bare `v*` tags
+    /// as release boundaries; the crate `<pkg>-v*` tag is ignored.
+    #[test]
+    fn test_get_version_tags_workspace_mode_excludes_crate_tag() {
+        let (_td, repo) = fixture_repo_with_shadow_tags();
+
+        // Default config uses ReleasePattern::Prefix("v").
+        let builder = ChangeLogBuilder::new();
+
+        let tags = builder.get_version_tags(&repo).expect("version tags");
+
+        assert_eq!(
+            tags.len(),
+            1,
+            "expected exactly one release tag, got: {:?}",
+            tags.iter().map(|t| t.name()).collect::<Vec<_>>()
+        );
+        assert!(
+            tags[0].name().ends_with("v0.1.0") && !tags[0].name().contains("gen-circleci-orb"),
+            "expected the bare workspace tag, got `{}`",
+            tags[0].name()
+        );
     }
 }
