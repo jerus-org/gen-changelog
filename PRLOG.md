@@ -18,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - scope release tags to package family(pr [#275])
 - drop redundant borrow in panic! arg(pr [#278])
 - deps: update dependency toolkit to v6.6.2(pr [#277])
+- deps: lock file maintenance(pr [#273])
 
 ## [0.1.8] - 2026-06-30
 
@@ -674,6 +675,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#276]: https://github.com/jerus-org/gen-changelog/pull/276
 [#278]: https://github.com/jerus-org/gen-changelog/pull/278
 [#277]: https://github.com/jerus-org/gen-changelog/pull/277
+[#273]: https://github.com/jerus-org/gen-changelog/pull/273
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.8...HEAD
 [0.1.8]: https://github.com/jerus-org/gen-changelog/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...v0.1.7
