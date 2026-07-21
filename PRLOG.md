@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update serde packages(pr [#283])
 - deps: update rust crate clap to 4.6.3(pr [#279])
 - deps: update rust crate thiserror to 2.0.19(pr [#280])
+- deps: update rust crate toml to 1.1.3(pr [#281])
 
 ## [0.1.8] - 2026-06-30
 
@@ -682,6 +683,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#283]: https://github.com/jerus-org/gen-changelog/pull/283
 [#279]: https://github.com/jerus-org/gen-changelog/pull/279
 [#280]: https://github.com/jerus-org/gen-changelog/pull/280
+[#281]: https://github.com/jerus-org/gen-changelog/pull/281
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.8...HEAD
 [0.1.8]: https://github.com/jerus-org/gen-changelog/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...v0.1.7
