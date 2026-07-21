@@ -5,9 +5,30 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.10] - 2026-07-21
+
+Summary: Chore[12], Fixed[10], Testing[1]
+
+### Fixed
+
+ - fix(deps): update rust crate uuid to 1.24.0
+ - fix(deps): update rust crate toml to 1.1.3
+ - fix(deps): update rust crate thiserror to 2.0.19
+ - fix(deps): update rust crate clap to 4.6.3
+ - fix(deps): update serde packages
+ - fix(deps): lock file maintenance
+ - fix: drop redundant borrow in panic! arg
+ - fix(deps): update dependency toolkit to v6.6.2
+ - fix: scope release tags to package family
+ - fix(deps): bump crossbeam-epoch to 0.9.20 (RUSTSEC-2026-0204)
+
 ## [0.1.9] - 2026-06-30
 
-Summary: Chore[18], Continuous Integration[1], Fixed[18]
+Summary: 
+
+## [0.1.8] - 2026-06-30
+
+Summary: Chore[20], Continuous Integration[1], Fixed[18]
 
 ### Fixed
 
@@ -514,7 +535,9 @@ Summary: Added[62], Build[6], Changed[59], Chore[96], Continuous Integration[21]
 
 Summary: 
 
-[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.8...HEAD
+[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.9...HEAD
+[0.1.9]: https://github.com/jerus-org/gen-changelog/compare/v0.1.8...v0.1.9
+[0.1.8]: https://github.com/jerus-org/gen-changelog/compare/v0.1.8...v0.1.8
 [0.1.8]: https://github.com/jerus-org/gen-changelog/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/jerus-org/gen-changelog/compare/v0.1.7...v0.1.7
 [0.1.7]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...v0.1.7
