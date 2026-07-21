@@ -52,7 +52,7 @@ impl GenerateCli {
         let repo_dir = PathBuf::new().join(&self.repository_dir);
         log::debug!("{}", repo_dir.display());
         let repository = Repository::open(&repo_dir)
-            .unwrap_or_else(|_| panic!("unable to open the repository at {}", &repo_dir.display()));
+            .unwrap_or_else(|_| panic!("unable to open the repository at {}", repo_dir.display()));
 
         let rust_package = if self.package.is_some() {
             let packages = RustPackages::new(&repo_dir)?;

@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - deps: bump crossbeam-epoch to 0.9.20 (RUSTSEC-2026-0204)(pr [#272])
 - scope release tags to package family(pr [#275])
+- drop redundant borrow in panic! arg(pr [#278])
 
 ## [0.1.8] - 2026-06-30
 
@@ -670,6 +671,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#272]: https://github.com/jerus-org/gen-changelog/pull/272
 [#275]: https://github.com/jerus-org/gen-changelog/pull/275
 [#276]: https://github.com/jerus-org/gen-changelog/pull/276
+[#278]: https://github.com/jerus-org/gen-changelog/pull/278
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.8...HEAD
 [0.1.8]: https://github.com/jerus-org/gen-changelog/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...v0.1.7
