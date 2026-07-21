@@ -190,6 +190,10 @@ pub struct ChangeLogBuilder {
     /// Name of the package being generated for, used to restrict release tags
     /// to that package's `<package>-v*` family (issue #274).
     package_name: Option<String>,
+    /// Absolute path to the repository working directory. The changelog output
+    /// path is anchored to this so `save` is independent of the current working
+    /// directory (issue #284).
+    repository_root: Option<PathBuf>,
 }
 
 impl Debug for ChangeLogBuilder {
@@ -225,6 +229,7 @@ impl ChangeLogBuilder {
             include_merge_commits: bool::default(),
             config: ChangeLogConfig::default(),
             package_name: None,
+            repository_root: None,
         }
     }
 
@@ -245,11 +250,21 @@ impl ChangeLogBuilder {
         }
     }
 
+    /// Computes the directory the changelog is written into.
+    ///
+    /// The package root (`rp.root`) is stored relative to the repository (e.g.
+    /// `crates/foo`), so it is anchored to the repository working directory when
+    /// known. This keeps `ChangeLog::save` independent of the current working
+    /// directory — e.g. a per-crate release hook that runs from the crate
+    /// directory still writes to `<repo>/crates/foo/CHANGELOG.md` (issue #284).
+    ///
+    /// When the repository root is unknown, falls back to the previous
+    /// CWD-relative behaviour.
     fn package_root(&self) -> PathBuf {
-        if let Some(rp) = &self.rust_package {
-            PathBuf::new().join(rp.root.clone())
-        } else {
-            PathBuf::new()
+        let base = self.repository_root.clone().unwrap_or_default();
+        match &self.rust_package {
+            Some(rp) => base.join(&rp.root),
+            None => base,
         }
     }
 
@@ -353,6 +368,19 @@ impl ChangeLogBuilder {
         self
     }
 
+    /// Sets the repository working directory that the changelog output path is
+    /// anchored to.
+    ///
+    /// Prefer an absolute path so [`ChangeLog::save`] is independent of the
+    /// current working directory (issue #284). When left unset,
+    /// [`walk_repository`](Self::walk_repository) populates it from the
+    /// repository's working directory; if that is also unavailable the output
+    /// path falls back to being relative to the current directory.
+    pub fn with_repository_root(&mut self, root: Option<PathBuf>) -> &mut Self {
+        self.repository_root = root;
+        self
+    }
+
     /// Sets whether merge commits should be included in the changelog.
     ///
     /// Merge commits (commits with two or more parents) are excluded by
@@ -402,6 +430,15 @@ impl ChangeLogBuilder {
     /// # }
     /// ```
     pub fn walk_repository(&mut self, repository: &Repository) -> Result<&mut Self, Error> {
+        // Anchor the output path to the repository so `save` does not depend on
+        // the current working directory (issue #284). An explicitly configured
+        // root takes precedence.
+        if self.repository_root.is_none() {
+            if let Some(workdir) = repository.workdir() {
+                self.repository_root = Some(workdir.to_path_buf());
+            }
+        }
+
         self.get_remote_details(repository)?;
 
         let version_tags = self.get_version_tags(repository)?;
@@ -822,6 +859,39 @@ mod tests {
             let content = fs::read_to_string(temp_path.join("CHANGELOG.md")).unwrap();
             assert!(!content.is_empty());
         });
+    }
+
+    /// #284: with a package set, `save` must write under the repository root
+    /// (`<repo>/<package-root>/<name>`), not relative to the current working
+    /// directory — otherwise a per-crate release hook run from the crate dir
+    /// writes to the wrong path (or nowhere).
+    #[test]
+    fn test_save_package_anchored_to_repository_root() {
+        let repo = setup_temp_dir();
+        let repo_root = repo.path().to_path_buf();
+        std::fs::create_dir_all(repo_root.join("crates/foo")).unwrap();
+
+        let mut builder = ChangeLogBuilder::new();
+        builder
+            .with_header("Foo", &["desc"])
+            .with_rust_package(Some(RustPackage {
+                root: "crates/foo".to_string(),
+                dependencies: Vec::new(),
+            }))
+            .with_repository_root(Some(repo_root.clone()));
+        let changelog = builder.build();
+
+        // Save from an unrelated working directory.
+        crate::test_utils::with_isolated_cwd(|_| {
+            changelog.save("CHANGELOG.md").expect("save should succeed");
+        });
+
+        let expected = repo_root.join("crates/foo/CHANGELOG.md");
+        assert!(
+            expected.exists(),
+            "expected changelog at {} (anchored to repo root), not relative to CWD",
+            expected.display()
+        );
     }
 
     #[test]

@@ -54,6 +54,12 @@ impl GenerateCli {
         let repository = Repository::open(&repo_dir)
             .unwrap_or_else(|_| panic!("unable to open the repository at {}", repo_dir.display()));
 
+        // Anchor output to an absolute repository path so the changelog is
+        // written to the right place regardless of the working directory the
+        // command runs from (e.g. a crate dir under a release hook) — issue
+        // #284. Fall back to the given path if it cannot be canonicalised.
+        let repo_root = repo_dir.canonicalize().unwrap_or_else(|_| repo_dir.clone());
+
         let rust_package = if self.package.is_some() {
             let packages = RustPackages::new(&repo_dir)?;
             log::debug!("{packages:?}");
@@ -81,13 +87,15 @@ impl GenerateCli {
             .with_summary_flag(self.display_summaries)
             .with_rust_package(rust_package)
             .with_package_name(self.package.clone())
+            .with_repository_root(Some(repo_root))
             .walk_repository(&repository)
             .unwrap()
             .update_unreleased_to_next_version(self.next_version.as_ref())
             .build();
 
         if !self.no_save {
-            let _ = change_log.save(&self.name);
+            // Propagate save failures instead of silently exiting 0 (issue #284).
+            change_log.save(&self.name)?;
         }
         if self.show {
             println!("{change_log}");
