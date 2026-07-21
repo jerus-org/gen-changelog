@@ -397,7 +397,7 @@ impl ChangeLogConfig {
     ///
     /// # Examples
     ///
-    /// ```rust
+    /// ```rust,no_run
     /// use gen_changelog::ChangeLogConfig;
     ///
     /// # #[allow(non_snake_case)]
@@ -783,25 +783,17 @@ mod tests {
     #[test]
     fn test_from_file_or_default_no_file() {
         get_test_logger();
-        let dcf = PathBuf::new().join(DEFAULT_CONFIG_FILE);
-        let mut safe_dcf = String::from(DEFAULT_CONFIG_FILE);
-        safe_dcf.push_str("-safe");
-        let safe_dcf = PathBuf::new().join(safe_dcf);
-        let mut renamed = false;
-        if dcf.exists() {
-            let _ = fs::rename(&dcf, &safe_dcf);
-            renamed = true;
-        }
-        // When no config file exists, should return default config
-        let result = ChangeLogConfig::from_file_or_default();
-        if renamed {
-            let _ = fs::rename(&safe_dcf, &dcf);
-        }
-        assert!(result.is_ok());
+        // Run in an empty temp CWD so no default config file is present, rather
+        // than renaming the crate's default config in place.
+        crate::test_utils::with_isolated_cwd(|_| {
+            // When no config file exists, should return default config
+            let result = ChangeLogConfig::from_file_or_default();
+            assert!(result.is_ok());
 
-        let config = result.unwrap();
-        log::debug!("{config:#?}");
-        assert!(matches!(config.display_sections, DisplaySections::All));
+            let config = result.unwrap();
+            log::debug!("{config:#?}");
+            assert!(matches!(config.display_sections, DisplaySections::All));
+        });
     }
 
     #[test]
@@ -820,20 +812,19 @@ cc-types = ["test"]
 "TestGroup" = 10
 "#;
 
-        let (_temp_dir, _file_path) = create_temp_config_file(toml_content);
+        // Create the default config file inside an isolated temp CWD so
+        // `from_file_or_default` reads it there instead of the crate directory.
+        crate::test_utils::with_isolated_cwd(|temp_path| {
+            let default_config_path = temp_path.join(DEFAULT_CONFIG_FILE);
+            fs::write(&default_config_path, toml_content).expect("Failed to write default config");
 
-        // Temporarily create the default config file
-        let default_config_path = PathBuf::from(DEFAULT_CONFIG_FILE);
-        fs::write(&default_config_path, toml_content).expect("Failed to write default config");
+            let result = ChangeLogConfig::from_file_or_default();
+            log::debug!("{result:?}");
 
-        let result = ChangeLogConfig::from_file_or_default();
-        log::debug!("{result:?}");
-        // Clean up
-        let _ = fs::remove_file(default_config_path);
-
-        assert!(result.is_ok());
-        let config = result.unwrap();
-        assert!(matches!(config.display_sections, DisplaySections::One));
+            assert!(result.is_ok());
+            let config = result.unwrap();
+            assert!(matches!(config.display_sections, DisplaySections::One));
+        });
     }
 
     #[test]
