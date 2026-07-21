@@ -6,6 +6,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- anchor package changelog path to repo root(pr [#285])
+
 ## [0.1.9] - 2026-07-21
 
 ### Changed
@@ -686,6 +692,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#280]: https://github.com/jerus-org/gen-changelog/pull/280
 [#281]: https://github.com/jerus-org/gen-changelog/pull/281
 [#282]: https://github.com/jerus-org/gen-changelog/pull/282
+[#285]: https://github.com/jerus-org/gen-changelog/pull/285
+[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.9...HEAD
 [0.1.9]: https://github.com/jerus-org/gen-changelog/compare/v0.1.8...v0.1.9
 [0.1.8]: https://github.com/jerus-org/gen-changelog/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...v0.1.7
