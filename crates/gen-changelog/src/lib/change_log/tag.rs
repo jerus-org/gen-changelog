@@ -8,11 +8,15 @@ use thiserror::Error;
 
 use crate::change_log_config::ReleasePattern;
 
+// Both patterns are anchored (`^…$`) and are applied to tag names with the
+// `refs/tags/` ref prefix stripped (see `TagBuilder::get_semver`). Anchoring is
+// what keeps a bare `v` prefix from matching the `v<X.Y.Z>` embedded inside a
+// package tag such as `mypkg-v1.2.3` (issue #274).
 pub static PREFIX: Lazy<Regex> = lazy_regex!(
-    r#"(?P<prefix>\w+)(?P<semver>(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<pre>-[a-z\.A-Z0-9]+)?(?P<build>\+[0-9A-Za-z-\.]+)?)"#
+    r#"^(?P<prefix>\w+)(?P<semver>(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<pre>-[a-z\.A-Z0-9]+)?(?P<build>\+[0-9A-Za-z-\.]+)?)$"#
 );
 pub static PACKAGE_PREFIX: Lazy<Regex> = lazy_regex!(
-    r#"(?P<package>(([-_]?\w+)+))-(?P<prefix>\w+)(?P<semver>(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<pre>-[a-z\.A-Z0-9]+)?(?P<build>\+[0-9A-Za-z-\.]+)?)"#
+    r#"^(?P<package>(([-_]?\w+)+))-(?P<prefix>\w+)(?P<semver>(?P<major>\d+)\.(?P<minor>\d+)\.(?P<patch>\d+)(?P<pre>-[a-z\.A-Z0-9]+)?(?P<build>\+[0-9A-Za-z-\.]+)?)$"#
 );
 
 #[derive(Debug, Clone)]
@@ -140,7 +144,10 @@ impl<'a> TagBuilder<'a> {
             "getting semver for {} using the pattern {release_pattern:?}",
             self.name
         );
-        let haystack = self.name.clone();
+        // Match against the short tag name; `tag_foreach` yields full ref names
+        // like `refs/tags/v1.2.3`, and the anchored patterns expect the tag name
+        // to start at the prefix (or package) segment.
+        let haystack = self.name.trim_start_matches("refs/tags/").to_string();
 
         match release_pattern {
             ReleasePattern::Prefix(p) => {
@@ -324,3 +331,56 @@ impl<'a> TagBuilder<'a> {
 //         assert_eq!(tag.id, id);
 //     }
 // }
+
+#[cfg(test)]
+mod regex_tests {
+    //! Anchoring contract for the tag-matching regexes (issue #274).
+    //!
+    //! Names here are already stripped of the `refs/tags/` ref prefix, matching
+    //! what [`TagBuilder::get_semver`] feeds the regexes after trimming.
+    use super::{PACKAGE_PREFIX, PREFIX};
+
+    #[test]
+    fn prefix_matches_bare_version() {
+        let caps = PREFIX.captures("v0.1.2").expect("should match bare v tag");
+        assert_eq!(caps.name("prefix").unwrap().as_str(), "v");
+        assert_eq!(caps.name("semver").unwrap().as_str(), "0.1.2");
+    }
+
+    #[test]
+    fn prefix_matches_pre_release() {
+        let caps = PREFIX
+            .captures("v1.0.0-rc.1")
+            .expect("should match pre-release");
+        assert_eq!(caps.name("prefix").unwrap().as_str(), "v");
+        assert_eq!(caps.name("semver").unwrap().as_str(), "1.0.0-rc.1");
+    }
+
+    #[test]
+    fn prefix_rejects_package_tag() {
+        // The core of #274: a bare `v` prefix must NOT match the `v0.1.2`
+        // embedded inside a crate tag.
+        assert!(
+            PREFIX.captures("gen-circleci-orb-v0.1.2").is_none(),
+            "bare-v PREFIX must not match a package-prefixed tag"
+        );
+    }
+
+    #[test]
+    fn package_prefix_matches_crate_tag() {
+        let caps = PACKAGE_PREFIX
+            .captures("gen-circleci-orb-v0.1.2")
+            .expect("should match crate tag");
+        assert_eq!(caps.name("package").unwrap().as_str(), "gen-circleci-orb");
+        assert_eq!(caps.name("prefix").unwrap().as_str(), "v");
+        assert_eq!(caps.name("semver").unwrap().as_str(), "0.1.2");
+    }
+
+    #[test]
+    fn package_prefix_rejects_bare_version() {
+        assert!(
+            PACKAGE_PREFIX.captures("v0.1.2").is_none(),
+            "package-prefix pattern must not match a bare workspace tag"
+        );
+    }
+}
