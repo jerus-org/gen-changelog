@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update dependency toolkit to v6.6.2(pr [#277])
 - deps: lock file maintenance(pr [#273])
 - deps: update serde packages(pr [#283])
+- deps: update rust crate clap to 4.6.3(pr [#279])
 
 ## [0.1.8] - 2026-06-30
 
@@ -678,6 +679,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#277]: https://github.com/jerus-org/gen-changelog/pull/277
 [#273]: https://github.com/jerus-org/gen-changelog/pull/273
 [#283]: https://github.com/jerus-org/gen-changelog/pull/283
+[#279]: https://github.com/jerus-org/gen-changelog/pull/279
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.8...HEAD
 [0.1.8]: https://github.com/jerus-org/gen-changelog/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...v0.1.7
