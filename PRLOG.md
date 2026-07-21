@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- test-stop tests writing into the crate dir(pr [#276])
+
 ### Fixed
 
 - deps: bump crossbeam-epoch to 0.9.20 (RUSTSEC-2026-0204)(pr [#272])
@@ -665,6 +669,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#270]: https://github.com/jerus-org/gen-changelog/pull/270
 [#272]: https://github.com/jerus-org/gen-changelog/pull/272
 [#275]: https://github.com/jerus-org/gen-changelog/pull/275
+[#276]: https://github.com/jerus-org/gen-changelog/pull/276
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.8...HEAD
 [0.1.8]: https://github.com/jerus-org/gen-changelog/compare/v0.1.7...v0.1.8
 [0.1.7]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...v0.1.7
