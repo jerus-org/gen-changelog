@@ -43,7 +43,7 @@ static REMOTE: Lazy<Regex> = lazy_regex!(
 ///
 /// # Example
 ///
-/// ```rust
+/// ```rust,no_run
 /// use gen_changelog::ChangeLog;
 ///
 /// let changelog = ChangeLog::builder()
@@ -109,7 +109,7 @@ impl ChangeLog {
     ///
     /// # Example
     ///
-    /// ```rust
+    /// ```rust,no_run
     /// use gen_changelog::ChangeLog;
     ///
     /// let changelog = ChangeLog::builder().build();
@@ -809,24 +809,19 @@ mod tests {
 
     #[test]
     fn test_changelog_save() {
-        let temp_dir = setup_temp_dir();
-        let temp_path = temp_dir.path();
+        // `save` writes relative to the current directory when no package root
+        // is set, so run inside an isolated temp CWD to avoid writing into the
+        // crate directory.
+        crate::test_utils::with_isolated_cwd(|temp_path| {
+            let changelog = ChangeLog::builder().build();
+            let result = changelog.save(DEFAULT_CHANGELOG_FILENAME);
 
-        // Change to temp directory
-        let original_dir = std::env::current_dir().unwrap();
-        std::env::set_current_dir(temp_path).unwrap();
+            assert!(result.is_ok());
+            assert!(temp_path.join("CHANGELOG.md").exists());
 
-        let changelog = ChangeLog::builder().build();
-        let result = changelog.save(DEFAULT_CHANGELOG_FILENAME);
-
-        // Restore original directory
-        std::env::set_current_dir(original_dir).unwrap();
-
-        assert!(result.is_ok());
-        assert!(temp_path.join("CHANGELOG.md").exists());
-
-        let content = fs::read_to_string(temp_path.join("CHANGELOG.md")).unwrap();
-        assert!(!content.is_empty());
+            let content = fs::read_to_string(temp_path.join("CHANGELOG.md")).unwrap();
+            assert!(!content.is_empty());
+        });
     }
 
     #[test]
