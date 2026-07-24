@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - deps: update rust crate clap to 4.6.4(pr [#286])
+- deps: update rust crate trycmd to 1.2.1(pr [#287])
 
 ## [0.1.10] - 2026-07-21
 
@@ -700,6 +701,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#282]: https://github.com/jerus-org/gen-changelog/pull/282
 [#285]: https://github.com/jerus-org/gen-changelog/pull/285
 [#286]: https://github.com/jerus-org/gen-changelog/pull/286
+[#287]: https://github.com/jerus-org/gen-changelog/pull/287
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.10...HEAD
 [0.1.10]: https://github.com/jerus-org/gen-changelog/compare/v0.1.9...v0.1.10
 [0.1.9]: https://github.com/jerus-org/gen-changelog/compare/v0.1.8...v0.1.9
