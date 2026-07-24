@@ -5,9 +5,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.12] - 2026-07-24
+
+Summary: Chore[3], Fixed[2]
+
+### Fixed
+
+ - fix(deps): update rust crate trycmd to 1.2.1
+ - fix(deps): update rust crate clap to 4.6.4
+
 ## [0.1.11] - 2026-07-21
 
-Summary: Chore[2], Fixed[1]
+Summary: 
+
+## [0.1.10] - 2026-07-21
+
+Summary: Chore[4], Fixed[1]
 
 ### Fixed
 
@@ -547,7 +560,9 @@ Summary: Added[62], Build[6], Changed[59], Chore[96], Continuous Integration[21]
 
 Summary: 
 
-[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.10...HEAD
+[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.11...HEAD
+[0.1.11]: https://github.com/jerus-org/gen-changelog/compare/v0.1.10...v0.1.11
+[0.1.10]: https://github.com/jerus-org/gen-changelog/compare/v0.1.10...v0.1.10
 [0.1.10]: https://github.com/jerus-org/gen-changelog/compare/v0.1.9...v0.1.10
 [0.1.9]: https://github.com/jerus-org/gen-changelog/compare/v0.1.9...v0.1.9
 [0.1.9]: https://github.com/jerus-org/gen-changelog/compare/v0.1.8...v0.1.9
