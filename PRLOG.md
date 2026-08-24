@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - deps: update dependency toolkit to v7(pr [#296])
+- deps: lock file maintenance(pr [#289])
 
 ## [0.1.11] - 2026-07-24
 
@@ -714,6 +715,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#287]: https://github.com/jerus-org/gen-changelog/pull/287
 [#288]: https://github.com/jerus-org/gen-changelog/pull/288
 [#296]: https://github.com/jerus-org/gen-changelog/pull/296
+[#289]: https://github.com/jerus-org/gen-changelog/pull/289
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.11...HEAD
 [0.1.11]: https://github.com/jerus-org/gen-changelog/compare/v0.1.10...v0.1.11
 [0.1.10]: https://github.com/jerus-org/gen-changelog/compare/v0.1.9...v0.1.10
