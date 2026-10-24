@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: update rust crate toml to 1.1.4(pr [#294])
 - deps: update rust crate uuid to 1.25.0(pr [#295])
 - deps: lock file maintenance(pr [#297])
+- deps: update rust crate uuid to 1.29.0(pr [#306])
 
 ## [0.1.11] - 2026-07-24
 
@@ -730,6 +731,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#294]: https://github.com/jerus-org/gen-changelog/pull/294
 [#295]: https://github.com/jerus-org/gen-changelog/pull/295
 [#297]: https://github.com/jerus-org/gen-changelog/pull/297
+[#306]: https://github.com/jerus-org/gen-changelog/pull/306
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.11...HEAD
 [0.1.11]: https://github.com/jerus-org/gen-changelog/compare/v0.1.10...v0.1.11
 [0.1.10]: https://github.com/jerus-org/gen-changelog/compare/v0.1.9...v0.1.10
