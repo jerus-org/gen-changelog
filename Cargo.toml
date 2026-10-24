@@ -28,7 +28,7 @@ url = "2.5.8"
 # Dev dependencies
 copy_dir = "0.1.3"
 criterion = "0.8.2"
-rstest = "0.26.1"
+rstest = "0.28.0"
 serde_test = "1.0.177"
 snapbox = "1.2.2"
 tempfile = "3.27.0"
