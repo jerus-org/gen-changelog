@@ -5,41 +5,212 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.1.4] - 2026-01-11
+## [0.1.13] - 2026-10-25
 
-Summary: Chore[16], Continuous Integration[1], Fixed[32]
+Summary: Chore[21], Fixed[19]
 
 ### Fixed
 
- - fix(deps): update rust crate uuid to 1.19.0 (#172)
- - fix(deps): update rust crate uuid to 1.19.0
- - fix(deps): update rust crate tempfile to 3.24.0 (#171)
- - fix(deps): update rust crate tempfile to 3.24.0
- - fix(deps): update rust crate lazy-regex to 3.5.1 (#170)
- - fix(deps): update rust crate lazy-regex to 3.5.1
- - fix(deps): update rust crate criterion to 0.8.1 (#169)
- - fix(deps): update rust crate criterion to 0.8.1
- - fix(deps): update rust crate url to 2.5.8 (#166)
- - fix(deps): update rust crate url to 2.5.8
- - fix(deps): update serde packages (#167)
+ - fix(deps): update dependency toolkit to v8
+ - fix(deps): update rust crate rstest to 0.28.0
+ - fix(deps): update dependency toolkit to v7.4.0
+ - fix(deps): update rust crate toml to 1.1.8
+ - fix(deps): update rust crate thiserror to 2.0.21
+ - fix(deps): update rust crate serde_json to 1.0.154
+ - fix(deps): update rust crate lazy-regex to 3.6.2
+ - fix(deps): update rust crate clap to 4.6.7
+ - fix(deps): update rust crate cargo_toml to 1.0.1
+ - fix(deps): update rust crate uuid to 1.29.0
+ - fix(deps): lock file maintenance
+ - fix(deps): update rust crate uuid to 1.25.0
+ - fix(deps): update rust crate toml to 1.1.4
+ - fix(deps): update rust crate thiserror to 2.0.20
+ - fix(deps): update rust crate log to 0.4.34
+ - fix(deps): update rust crate lazy-regex to 3.6.1
+ - fix(deps): update rust crate clap to 4.6.6
+ - fix(deps): lock file maintenance
+ - fix(deps): update dependency toolkit to v7
+
+## [0.1.11] - 2026-07-24
+
+Summary: Chore[4], Fixed[2]
+
+### Fixed
+
+ - fix(deps): update rust crate trycmd to 1.2.1
+ - fix(deps): update rust crate clap to 4.6.4
+
+## [0.1.10] - 2026-07-21
+
+Summary: Chore[3], Fixed[1]
+
+### Fixed
+
+ - fix: anchor package changelog path to repo root
+
+## [0.1.9] - 2026-07-21
+
+Summary: Chore[13], Fixed[10], Testing[1]
+
+### Fixed
+
+ - fix(deps): update rust crate uuid to 1.24.0
+ - fix(deps): update rust crate toml to 1.1.3
+ - fix(deps): update rust crate thiserror to 2.0.19
+ - fix(deps): update rust crate clap to 4.6.3
  - fix(deps): update serde packages
- - fix(deps): update rust crate trycmd to 0.15.11 (#165)
+ - fix(deps): lock file maintenance
+ - fix: drop redundant borrow in panic! arg
+ - fix(deps): update dependency toolkit to v6.6.2
+ - fix: scope release tags to package family
+ - fix(deps): bump crossbeam-epoch to 0.9.20 (RUSTSEC-2026-0204)
+
+## [0.1.8] - 2026-06-30
+
+Summary: Chore[19], Continuous Integration[1], Fixed[18]
+
+### Fixed
+
+ - fix(deps): update rust crate cargo_toml to v1
+ - fix(deps): update rust crate env_logger to 0.11.11
+ - fix(deps): update rust crate uuid to 1.23.4
+ - fix(deps): update rust crate log to 0.4.33
+ - fix(deps): update rust crate chrono to 0.4.45
+ - fix(deps): update rust crate snapbox to 1.2.2
+ - fix: update anyhow to fix RUSTSEC-2026-0190
+ - fix(deps): update dependency toolkit to v6.5.0
+ - fix(deps): update dependency toolkit to v6.4.2
+ - fix: adapt to git2 0.21 breaking changes
+ - fix(deps): update git2 packages to 0.21.0
+ - fix(deps): update rust crate serde_json to 1.0.150
+ - fix(deps): update rust crate uuid to 1.23.1
+ - fix(deps): update rust crate toml to 1.1.2
+ - fix(deps): update rust crate snapbox to 1.2.1
+ - fix(deps): update rust crate semver to 1.0.28
+ - fix(deps): update rust crate clap to 4.6.1
+ - fix(deps): update dependency toolkit to v6.2.0
+
+## [0.1.7] - 2026-03-28
+
+Summary: Added[1], Chore[26], Fixed[16]
+
+### Added
+
+ - feat: use pcu checkout in update_prlog
+
+### Fixed
+
+ - fix: remove jq from tools verification (not in rust_env_rolling)
+ - fix(deps): update rust crate uuid to 1.23.0
+ - fix(deps): update rust crate toml to 1.1.0
+ - fix(deps): update rust crate tempfile to 3.27.0
+ - fix(deps): update rust crate clap to 4.6.0
+ - fix(deps): update cli test tools to 1.2.0
+ - fix(deps): update rust crate env_logger to 0.11.10
+ - fix(deps): update rust crate lazy-regex to 3.6.0
+ - fix(deps): update rust crate toml to 1.0.3
+ - fix(deps): update rust crate env_logger to 0.11.9
+ - fix(deps): update rust crate criterion to 0.8.2
+ - fix(deps): update rust crate clap to 4.5.60
+ - fix(deps): update rust crate chrono to 0.4.44
+ - fix: use container pcu in update_prlog
+ - fix(deps): update rust crate uuid to 1.21.0
+ - fix(deps): update rust crate tempfile to 3.25.0
+
+## [0.1.6] - 2026-02-26
+
+Summary: Added[1], Chore[8], Fixed[3]
+
+### Added
+
+ - feat(ci): replace inline jobs with toolkit jobs
+
+### Fixed
+
+ - fix(deps): update dependency toolkit to v4.5.2
+ - fix(deps): update dependency toolkit to v4.5.1
+ - fix(deps): update dependency toolkit to v4.5.0
+
+## [0.1.5] - 2026-02-21
+
+Summary: Added[8], Build[1], Changed[6], Chore[43], Continuous Integration[15], Documentation[1], Fixed[33]
+
+### Added
+
+ - feat(ci): add workspace_version pipeline parameter
+ - feat(ci): calculate versions before approval gate
+ - feat(ci): move post-merge work to update_prlog.yml
+ - feat(ci): add release-prlog job for workspace release
+ - feat: add cargo-binstall release pipeline
+ - feat: exclude merge commits from changelog
+ - feat: add security improvements to CI
+ - ✨ feat(package): add commit relation detection to RustPackage
+
+### Fixed
+
+ - fix(ci): correct pcu release args and nextsv workspace tag
+ - fix(ci): use pcu push for release commit and tag
+ - fix(ci): replace SSH push with GitHub App HTTPS
+ - fix(ci): correct release ordering and SSH push for binstall key integrity
+ - fix(ci): use | delimiter in sed to handle / in pubkey
+ - fix: move docs into crate and restore README rebuild
+ - fix: include docs/lib.md in cargo package
+ - fix(release): remove non-existent src/lib.rs from replacements
+ - fix(prlog): conform entries to pcu format
+ - fix(prlog): backfill missing entries for PRs #205-#217
+ - fix(ci): remove explicit SSH key, rely on pcu-app context
+ - fix(ci): add github.com to SSH known_hosts
+ - fix(ci): switch remote to SSH before pcu push
+ - fix(ci): enable update_pcu in update_prlog pipeline
+ - fix(ci): restore pcu --push for GitHub App authority
+ - fix(ci): add pcu-app context to update_prlog job
+ - fix(ci): push PRLOG update explicitly
+ - fix(ci): add debug logging to pcu early-exit
+ - fix(ci): override CIRCLE_BRANCH=main before pcu runs
+ - fix(ci): switch to main in update-prlog-on-main job
+ - fix(ci): remove branch filters from update_prlog.yml
+ - fix(ci): install rsign2 outside workspace
+ - fix(ci): use cargo install for rsign2
+ - fix(deps): update rust crate toml to v1
+ - fix(deps): update cli test tools to v1
+ - fix(deps): update dependency toolkit to v4.4.3
+ - fix(deps): update rust crate uuid to 1.20.0
+ - fix(deps): update rust crate git2 to 0.20.4
+ - fix(deps): update rust crate clap to 4.5.56
+ - fix(deps): update dependency toolkit to v4.2.4
+ - fix(deps): update rust crate thiserror to 2.0.18
+ - fix(deps): update rust crate chrono to 0.4.43
+ - fix: mark doc tests requiring git repo as ignored
+
+### Changed
+
+ - ♻️ refactor(gen-changelog): reorganize source files structure
+ - ♻️ refactor(gen-changelog): remove unnecessary package argument
+ - ♻️ refactor(package): enhance logging in package relation check
+ - ♻️ refactor(change_log): integrate RustPackage for commit filtering
+ - ♻️ refactor(package): restructure Cargo handling
+ - refactor: convert to workspace structure
+
+## [0.1.4] - 2026-01-11
+
+Summary: Chore[17], Continuous Integration[1], Fixed[17]
+
+### Fixed
+
+ - fix(deps): update rust crate uuid to 1.19.0
+ - fix(deps): update rust crate tempfile to 3.24.0
+ - fix(deps): update rust crate lazy-regex to 3.5.1
+ - fix(deps): update rust crate criterion to 0.8.1
+ - fix(deps): update rust crate url to 2.5.8
+ - fix(deps): update serde packages
  - fix(deps): update rust crate trycmd to 0.15.11
- - fix(deps): update rust crate toml to 0.9.11 (#164)
  - fix(deps): update rust crate toml to 0.9.11
- - fix(deps): update rust crate thiserror to 2.0.17 (#163)
  - fix(deps): update rust crate thiserror to 2.0.17
- - fix(deps): update rust crate snapbox to 0.6.24 (#162)
  - fix(deps): update rust crate snapbox to 0.6.24
- - fix(deps): update rust crate semver to 1.0.27 (#161)
  - fix(deps): update rust crate semver to 1.0.27
- - fix(deps): update rust crate log to 0.4.29 (#160)
  - fix(deps): update rust crate log to 0.4.29
- - fix(deps): update rust crate git2 to 0.20.3 (#159)
  - fix(deps): update rust crate git2 to 0.20.3
- - fix(deps): update rust crate clap to 4.5.54 (#158)
  - fix(deps): update rust crate clap to 4.5.54
- - fix(deps): update rust crate chrono to 0.4.42 (#157)
  - fix(deps): update rust crate chrono to 0.4.42
  - 🐛 fix(change_log): correct trace log placement in section.rs
  - fix(deps): update dependency toolkit to v4
@@ -389,7 +560,15 @@ Summary: Added[62], Build[6], Changed[59], Chore[96], Continuous Integration[21]
 
 Summary: 
 
-[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.11...HEAD
+[0.1.11]: https://github.com/jerus-org/gen-changelog/compare/v0.1.10...v0.1.11
+[0.1.10]: https://github.com/jerus-org/gen-changelog/compare/v0.1.9...v0.1.10
+[0.1.9]: https://github.com/jerus-org/gen-changelog/compare/v0.1.8...v0.1.9
+[0.1.8]: https://github.com/jerus-org/gen-changelog/compare/v0.1.7...v0.1.8
+[0.1.7]: https://github.com/jerus-org/gen-changelog/compare/v0.1.6...v0.1.7
+[0.1.6]: https://github.com/jerus-org/gen-changelog/compare/v0.1.5...v0.1.6
+[0.1.5]: https://github.com/jerus-org/gen-changelog/compare/v0.1.4...v0.1.5
+[0.1.4]: https://github.com/jerus-org/gen-changelog/compare/v0.1.3...v0.1.4
 [0.1.3]: https://github.com/jerus-org/gen-changelog/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/jerus-org/gen-changelog/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/jerus-org/gen-changelog/compare/v0.1.0...v0.1.1
