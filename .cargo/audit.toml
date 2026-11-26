@@ -1,0 +1,12 @@
+# DERIVED FILE — do not edit by hand.
+# Regenerated from the canonical deny.toml [advisories].ignore by
+# `jci-audit sync`. deny.toml is the single source of truth for advisory
+# ignores; this file lets `cargo audit` (run without cargo-deny) honour the
+# same ignore set.
+[advisories]
+ignore = [
+    # RUSTSEC-2026-0543: chrono is unmaintained (informational).
+    "RUSTSEC-2026-0543",
+    # RUSTSEC-2026-0542: humantime is unmaintained (informational).
+    "RUSTSEC-2026-0542",
+]
