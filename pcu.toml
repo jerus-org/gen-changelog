@@ -1,5 +1,7 @@
 # [verify_signatures] is read from origin/main, never from the branch under review.
 [verify_signatures]
+# Fail any commit whose author is neither a trusted collaborator nor allow-listed.
+fail_on_external = true
 
 # The web-flow key signs for any author, so `pr_authors` also checks who opened the PR.
 [[verify_signatures.allow]]
