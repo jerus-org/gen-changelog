@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- chore-add the verify-signatures policy(pr [#318])
+
 ### Fixed
 
 - deps: lock file maintenance(pr [#308])
@@ -761,6 +765,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#308]: https://github.com/jerus-org/gen-changelog/pull/308
 [#317]: https://github.com/jerus-org/gen-changelog/pull/317
 [#314]: https://github.com/jerus-org/gen-changelog/pull/314
+[#318]: https://github.com/jerus-org/gen-changelog/pull/318
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.12...HEAD
 [0.1.12]: https://github.com/jerus-org/gen-changelog/compare/v0.1.11...v0.1.12
 [0.1.11]: https://github.com/jerus-org/gen-changelog/compare/v0.1.10...v0.1.11
