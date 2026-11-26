@@ -1,0 +1,2 @@
+Throwaway negative test for the verify-signatures pilot (jerus-org/pcu#1201).
+Case 1: this commit is deliberately unsigned. Close the PR without merging.
