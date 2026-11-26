@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - deps: lock file maintenance(pr [#308])
 - clear the cargo audit failures(pr [#317])
 - deps: update dependency toolkit to v8.1.0(pr [#314])
+- deps: update rust crate clap to 4.6.10(pr [#310])
 
 ## [0.1.12] - 2026-10-25
 
@@ -766,6 +767,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [#317]: https://github.com/jerus-org/gen-changelog/pull/317
 [#314]: https://github.com/jerus-org/gen-changelog/pull/314
 [#318]: https://github.com/jerus-org/gen-changelog/pull/318
+[#310]: https://github.com/jerus-org/gen-changelog/pull/310
 [Unreleased]: https://github.com/jerus-org/gen-changelog/compare/v0.1.12...HEAD
 [0.1.12]: https://github.com/jerus-org/gen-changelog/compare/v0.1.11...v0.1.12
 [0.1.11]: https://github.com/jerus-org/gen-changelog/compare/v0.1.10...v0.1.11
