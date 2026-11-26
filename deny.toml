@@ -8,7 +8,17 @@
 # More documentation for the advisories section can be found here:
 # https://embarkstudios.github.io/cargo-deny/checks/advisories/cfg.html
 [advisories]
-ignore = []
+ignore = [
+    # RUSTSEC-2026-0543: chrono is unmaintained (informational, not a
+    # vulnerability). No patched release exists. chrono is a direct dependency
+    # of gen-changelog. Remove when gen-changelog no longer depends on it.
+    { id = "RUSTSEC-2026-0543", reason = "chrono is unmaintained; no fixed release" },
+
+    # RUSTSEC-2026-0542: humantime is unmaintained (informational). Reaches the
+    # tree only through trycmd, a dev-dependency used by the CLI tests, so it
+    # is not in the shipped binary. Remove when trycmd stops using it.
+    { id = "RUSTSEC-2026-0542", reason = "humantime is unmaintained; dev-dependency only, via trycmd" },
+]
 
 # This section is considered when running `cargo deny check licenses`
 # More documentation for the licenses section can be found here:
