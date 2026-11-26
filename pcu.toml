@@ -1,0 +1,9 @@
+# [verify_signatures] is read from origin/main, never from the branch under review.
+[verify_signatures]
+
+# The web-flow key signs for any author, so `pr_authors` also checks who opened the PR.
+[[verify_signatures.allow]]
+email = "29139614+renovate[bot]@users.noreply.github.com"
+keys = ["B5690EEEBB952194"]
+pr_authors = ["renovate[bot]"]
+description = "Renovate: commits created through GitHub's API, signed by the web-flow key"
