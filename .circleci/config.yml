@@ -16,7 +16,10 @@ workflows:
           name: verify_commit_signatures_trusted
           context: bot-check
           post_comment: true
-          update_pcu: false
+          # Built from pcu main: the image's pcu cannot read pcu.toml in a blobless checkout.
+          update_pcu: true
+          # Compiling pcu needs more memory than the default small class has.
+          resource_class: large
           filters:
             branches:
               ignore:
